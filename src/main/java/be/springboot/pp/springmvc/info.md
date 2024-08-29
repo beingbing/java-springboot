@@ -46,4 +46,7 @@
   - had some benefits as well -
     - multiple application can be run on it.
 - Containerisation: everything is bundled in a container, so application and server shares same environment.
+
+### Q. Difference between @Controller and @RestController ?
+- @RestController = @Controller + @ResponseBody
 - 
