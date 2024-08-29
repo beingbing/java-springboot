@@ -10,3 +10,12 @@
 - using cookies/tokens
 - It goes as a part of HTTP request and helps server form a unique response tailored for you using info stored in your cookies/tokens
 
+## Components of a Request
+- Method: GET, POST, PUT, PATCH, etc.
+- URL: Uniform Resource Locator
+- Version: 
+- Headers: It contains additional information. Like,
+  - Content-Type: 
+- Body: (Optional)
+- request-path:
+- request-params:
