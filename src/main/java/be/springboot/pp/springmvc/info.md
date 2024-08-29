@@ -19,3 +19,9 @@
 - Body: (Optional)
 - request-path:
 - request-params:
+
+## Components of a Response
+- Status-code:
+- Status-message:
+- Header:
+- Body:
