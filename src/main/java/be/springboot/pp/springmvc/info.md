@@ -49,4 +49,8 @@
 
 ### Q. Difference between @Controller and @RestController ?
 - @RestController = @Controller + @ResponseBody
-- 
+
+### Request-param vs path-variable
+- Request-param may have optional fields but path-variable need to be filled mandatory in the URL.
+- URL should be highly readable.
+- large values in params is acceptable but not in path.
