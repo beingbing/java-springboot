@@ -54,3 +54,7 @@
 - Request-param may have optional fields but path-variable need to be filled mandatory in the URL.
 - URL should be highly readable.
 - large values in params is acceptable but not in path.
+
+### Note:
+- While dealing with Object serialization and deserialization of web request is an important aspect of web framework.
+- 

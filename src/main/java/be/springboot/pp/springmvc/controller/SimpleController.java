@@ -1,5 +1,6 @@
 package be.springboot.pp.springmvc.controller;
 
+import be.springboot.pp.springmvc.dto.ExamResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +49,25 @@ public class SimpleController {
             @PathVariable("name") String name) {
         System.out.println("Received request with path variable 'name' " + name);
         return String.format("Good Bye %s!", name);
+    }
+
+    // http://localhost:8080/simple/result
+    @GetMapping("/result")
+    public ExamResult getExamResult() {
+        System.out.println("Received result request");
+        return new ExamResult(70, 80, 90);
+    }
+
+//    @NotGoodPractice:1
+    // curl --location 'http://localhost:8080/simple/result/examine?physics=70&chemistry=65&maths=80'
+    // Spring binds parameters into ExamResult object by using its constructor
+    @RequestMapping(method = RequestMethod.GET, value = "result/examine")
+    public String examineResult(ExamResult examResult) {
+        System.out.println("Received examine result request with " + examResult);
+        if ((double)examResult.getTotal() /examResult.getMaxScore() >= 0.7) {
+            return "passed";
+        }
+        return "failed";
     }
 
 }
