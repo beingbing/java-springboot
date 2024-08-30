@@ -47,6 +47,35 @@
     - multiple application can be run on it.
 - Containerisation: everything is bundled in a container, so application and server shares same environment.
 
+## Dispatcher Servlet
+- Tomcat world ends and spring world begins as soon as request enters dispatcher-servlet.
+- Servlet passes request to spring-mvc
+- the component in spring-mvc which receives the request from servlet is called 'Dispatcher Servlet'
+- Dispatcher-servlet forwards request to a particular controller
+- Dispatcher-servlet keeps all request-mapping
+- this Dispatcher-servlet design pattern is called 'Front Controller'
+- Dispatcher-servlet => Interceptor => Controller => Interceptor => Dispatcher-servlet => Tomcat
+
+## Interceptor
+- it is an interface called HandlerInterceptor
+- `preHandle()` is invoked before request is handed over to controller
+- `postHandler()` is invoked when Controller hands over response to Interceptor
+- there purpose is to take care of cross-cutting concerns
+- cross-cutting concerns: concerns not related to regular algorithms/business-logic
+- concerns related to logging request, measure API latency, adding missing header, processing header.
+- concerns which are associated with incoming request, before we get into processing business logic on it.
+- to register an Interceptor in MVC flow, we use `WebMvcConfigurer` interface.
+- When `http://localhost:8080/simple/greet/samar` request came, order was -
+  - `SimpleInterceptor: preHandle` org.apache.catalina.connector.RequestFacade@510cb46d
+  - `SecondInterceptor: preHandle` org.apache.catalina.connector.RequestFacade@510cb46d
+  - `Received request with path variable 'name' samar`
+  - `SecondInterceptor: postHandle` org.apache.catalina.connector.RequestFacade@510cb46d
+  - `SimpleInterceptor: postHandle` org.apache.catalina.connector.RequestFacade@510cb46d
+- After adding `/result` path in `.excludePathPatterns()` for `SecondInterceptor` then once `http://localhost:8080/simple/result` request came, order was -
+  - `SimpleInterceptor: preHandle` org.apache.catalina.connector.RequestFacade@6cba67d9
+  - `Received result request`
+  - `SimpleInterceptor: postHandle` org.apache.catalina.connector.RequestFacade@6cba67d9
+
 ### Q. Difference between @Controller and @RestController ?
 - @RestController = @Controller + @ResponseBody
 
@@ -57,4 +86,3 @@
 
 ### Note:
 - While dealing with Object serialization and deserialization of web request is an important aspect of web framework.
-- 
