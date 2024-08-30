@@ -47,7 +47,7 @@
     - multiple application can be run on it.
 - Containerisation: everything is bundled in a container, so application and server shares same environment.
 
-## Dispatcher Servlet
+## DispatcherServlet
 - Tomcat world ends and spring world begins as soon as request enters dispatcher-servlet.
 - Servlet passes request to spring-mvc
 - the component in spring-mvc which receives the request from servlet is called 'Dispatcher Servlet'
@@ -56,7 +56,7 @@
 - this Dispatcher-servlet design pattern is called 'Front Controller'
 - Dispatcher-servlet => Interceptor => Controller => Interceptor => Dispatcher-servlet => Tomcat
 
-### code architecture of Dispatcher Servlet
+### code architecture of DispatcherServlet
 - it maintains a list of handler-mapping (controller methods mapped to a route)
 - maintains a list of handler-adapters
 - every method we write is internally converted to an object of `Method` by Java.
@@ -70,6 +70,17 @@
 - as soon as a request is handed over to dispatcher-servlet, `preHandle()` of all interceptors are executed on it. Then controller method is executed by handler-adapter which gives a response. Then `postHandle()` of interceptors in reverse order of registry is executed. Finally, the response is handed back to servlet.
 - a handler-adapter executes/handles a handler because `handler` is of type `Object`
 - dispatcher-servlet first finds which handler-adapter can execute given handler, then once `preHandle()` interceptors are executed, executes the handler using handler-adapter.
+
+### important attributes of DispatcherServlet
+- `MultipartResolver` resolves requests containing some chunks of a huge file sent in multiple parts in separate requests.
+- `LocaleResolver` resolves the locality of the request so that timezone, language and characters interpretation can be done.
+- `List<HandlerMapping>` returns a `HandlerExecutionChain` after resolving the handler
+- `HandlerExecutionChain` maintains order of interceptor execution
+- `HandlerExecutionChain` contains methods to execute interceptors only, not for handler
+- handler is of `Object` type, it has no capabilities, nothing can be done on it to get a response
+- `HandlerAdapter` adapts the handler to a specific type so that request can be executed and response can be generated.
+- we go to all the adapters one by one and check which one can execute the handler using `getHandlerAdapter()`
+- once we find a `HandlerAdapter`, we pass handler to adapters `handle()` method
 
 ## Interceptor
 - it is an interface called HandlerInterceptor
@@ -101,3 +112,9 @@
 
 ### Note:
 - While dealing with Object serialization and deserialization of web request is an important aspect of web framework.
+
+## flow of Spring
+- Servlet-container (Tomcat) listens to a webSocket and receives a request from kernel (OS)
+- which then is forward to spring-mvc
+- spring-mvc class which accepts the request from servlet-container is `DispatcherServlet`
+- `DispatcherServlet` is responsible for dispatching request to the correct controller via request-mapping routes.
