@@ -52,7 +52,10 @@ public class SimpleController {
     }
 
     // http://localhost:8080/simple/result
-    @GetMapping("/result")
+    // `produces` indicate what kind/format of result we will be producing in response
+    // HTTPMessageConverter interface is used to convert response in desired format
+    // the dependency `jackson-dataformat-xml` would have added an implementation which is capable of converting Java object to XML
+    @RequestMapping(method = RequestMethod.GET, value = "result", produces = "application/xml") // lets experiment, produces = "application/json")
     public ExamResult getExamResult() {
         System.out.println("Received result request");
         return new ExamResult(70, 80, 90);
