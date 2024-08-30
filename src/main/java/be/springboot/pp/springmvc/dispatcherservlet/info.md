@@ -22,7 +22,7 @@ flowchart TD;
     L --> E
     K -- YES --> M[process request and generate response]
     M --> N{ModelAndView returned ?}
-    N -- NO --> O[Interceptors `postHandle` the request]
+    N -- NO --> O[Interceptors `postHandle` the response]
     O --> P((Success Response))
     N -- YES --> Q{ModelAndView has View ?}
     Q -- NO --> O
