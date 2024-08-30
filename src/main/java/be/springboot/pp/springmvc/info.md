@@ -56,10 +56,25 @@
 - this Dispatcher-servlet design pattern is called 'Front Controller'
 - Dispatcher-servlet => Interceptor => Controller => Interceptor => Dispatcher-servlet => Tomcat
 
+### code architecture of Dispatcher Servlet
+- it maintains a list of handler-mapping (controller methods mapped to a route)
+- maintains a list of handler-adapters
+- every method we write is internally converted to an object of `Method` by Java.
+- every `Method` written in `Controller` file is converted into an object of `HandlerMethod`
+- `HandlerMethod` is a class present in spring-mvc
+- `HandlerMethod` is a wrapper of `Method` object against which a route mapping is kept
+- every method annotated with `@RequestMapping`, once converted into `Method` object by JVM is then wrapped into `HandlerMethod` by Spring
+- In dispatcher-servlet world, the method once wrapped into `HandlerMethod` is called a `handler`
+- Dispatcher-servlet has a chain of handler-execution called `HandlerExecutionChain`, at the end of which the last handler is our method written in controller.
+- all other remaining links of chain are the `preHandle()/postHandle()` methods of interceptors registered.
+- as soon as a request is handed over to dispatcher-servlet, `preHandle()` of all interceptors are executed on it. Then controller method is executed by handler-adapter which gives a response. Then `postHandle()` of interceptors in reverse order of registry is executed. Finally, the response is handed back to servlet.
+- a handler-adapter executes/handles a handler because `handler` is of type `Object`
+- dispatcher-servlet first finds which handler-adapter can execute given handler, then once `preHandle()` interceptors are executed, executes the handler using handler-adapter.
+
 ## Interceptor
 - it is an interface called HandlerInterceptor
 - `preHandle()` is invoked before request is handed over to controller
-- `postHandler()` is invoked when Controller hands over response to Interceptor
+- `postHandle()` is invoked when Controller hands over response to Interceptor
 - there purpose is to take care of cross-cutting concerns
 - cross-cutting concerns: concerns not related to regular algorithms/business-logic
 - concerns related to logging request, measure API latency, adding missing header, processing header.
