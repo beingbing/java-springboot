@@ -112,6 +112,7 @@
 
 ### Note:
 - While dealing with Object serialization and deserialization of web request is an important aspect of web framework.
+- purpose of framework is to abstract out the mundane boiler-plate code
 
 ## flow of Spring
 - Servlet-container (Tomcat) listens to a webSocket and receives a request from kernel (OS)
