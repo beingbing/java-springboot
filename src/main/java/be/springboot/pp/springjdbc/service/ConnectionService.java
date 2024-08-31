@@ -27,13 +27,26 @@ public class ConnectionService {
         System.out.println("Establishing connection...");
         try (Connection con = DriverManager.getConnection(dbUrl, userName, password); Statement statement = con.createStatement()) {
             System.out.println("Connection established: " + con + " " + statement);
-            ResultSet rs = statement.executeQuery("SELECT * FROM products");
-            while (rs.next()) {
-                System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
-            }
-            rs.close();
+            printProductsTable(statement);
+
+            int isUpdated = statement.executeUpdate("update products set full_version = 2.8 where id = 200");
+            System.out.println("isUpdated: " + isUpdated);
+
+            printProductsTable(statement);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to establish connection", e);
         }
+    }
+
+    private void printProductsTable(Statement statement) throws SQLException {
+        ResultSet rs = statement.executeQuery("SELECT * FROM products");
+        printResultSet(rs);
+    }
+
+    private void printResultSet(ResultSet rs) throws SQLException {
+        while (rs.next()) {
+            System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
+        }
+        rs.close();
     }
 }
