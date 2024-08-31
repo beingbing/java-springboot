@@ -23,3 +23,4 @@
 - parsing: extracting all the link(hrefs) from that document.
 - library should be able to connect via HTTP to a website and download HTML/CSS.
 - we need to perform many tasks asynchronously
+- jsoup library will be ideal for our use-case.
