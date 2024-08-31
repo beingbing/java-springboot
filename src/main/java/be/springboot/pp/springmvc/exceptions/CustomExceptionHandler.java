@@ -14,8 +14,8 @@ import java.io.IOException;
 * Spring initializes it as a Bean, and during runtime exception-resolvers list is populated.
 * */
 
-@Order(0) // to give it preference in precedence order
-@Component
+//@Order(0) // to give it preference in precedence order
+//@Component // will see alternative to defining this handler
 public class CustomExceptionHandler implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
