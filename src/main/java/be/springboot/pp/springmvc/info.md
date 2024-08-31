@@ -115,8 +115,21 @@
 - purpose of framework is to abstract out the mundane boiler-plate code
 - when exception is thrown we need to translate it to an error code and return suitable response, `DispatcherServlet` has `HandlerExceptionResolver` for this purpose.
 
-## flow of Spring
+## Filter
+- very similar to spring-mvc `Interceptors` there is another component by the name `Filter` which is a part of TomCat.
+- conceptually `Interceptors` and `Filters` are same, although designed differently.
+- If you are gonna fail, then fail fast, why to fail slow.
+- proxy checks, caching, basic authentications all are applied on `Filters` extensively.
+- `Filter` is provided by TomCat as an interface.
+- every `Filter` once completes execution, invokes next `Filter`
+- once custom `Filter` are created they get added to filter chain automatically
+
+## Flow of Spring
 - Servlet-container (Tomcat) listens to a webSocket and receives a request from kernel (OS)
-- which then is forward to spring-mvc
+- request passes through `Filters` in TomCat and reaches servlet
+- TomCat servlet then forwards request to spring-mvc
 - spring-mvc class which accepts the request from servlet-container is `DispatcherServlet`
-- `DispatcherServlet` is responsible for dispatching request to the correct controller via request-mapping routes.
+- `DispatcherServlet` is responsible for dispatching request to the correct controller via request-mapping routes, but during that, request before reaching to a controller passes through `Interceptors`.
+- when controller generates response it passes again through interceptors in reverse order.
+- when response reaches `DispatcherServlet`, response is analyzed for any thrown exception to resolve it, or if it's a view then do suitable action on it.
+- once `DispatcherServlet` hands over response back to TomCat servlet which then is made to pass `Filters` again in reverse order back on its way to get handed over to OS.
