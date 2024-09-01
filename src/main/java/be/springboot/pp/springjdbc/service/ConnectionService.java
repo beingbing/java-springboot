@@ -49,4 +49,18 @@ public class ConnectionService {
         }
         rs.close();
     }
+
+    /*
+    * Caused by: java.sql.SQLNonTransientConnectionException:
+    * Connection exception, SQL-server rejected establishment of SQL-connection,  message from server: "Too many connections"
+    * */
+//    @PostConstruct
+    public void tooManyConnections() throws SQLException {
+        System.out.println("Too many connections...");
+        while (true) {
+            Connection con = DriverManager.getConnection(dbUrl, userName, password);
+            Statement statement = con.createStatement();
+            printProductsTable(statement);
+        }
+    }
 }

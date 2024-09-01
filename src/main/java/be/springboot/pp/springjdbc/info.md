@@ -13,3 +13,7 @@
 ## Interfaces
 - Driver: drives connection using `connect()` from application server to db server
 - DriverManager: establishes a connection with DB server using `getConnection()`. Creates object of vendor specific Drivers, and maintains a list of registered drivers.
+- ResultSet: functions like a Buffer, if result has too many rows, complete collection is maintained on DB server and a subset is populated in ResultSet.
+
+### Notes:
+- every query creates physical resource on DB server as well, Java application has garbage collection but DB do not, so close all connections.
