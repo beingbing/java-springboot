@@ -1,6 +1,8 @@
 package be.springboot.pp.springjdbc.service;
 
 import jakarta.annotation.PostConstruct;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class ConnectionService {
 
     @Value("${spring.datasource.password}")
     private String password;
+
+    private DataSource dataSource;
 
 //    @PostConstruct
     public void establishConnection() {
@@ -139,5 +143,88 @@ public class ConnectionService {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    private PoolProperties createPoolProperties(String dbUrl, String userName, String password) {
+        PoolProperties props = new PoolProperties();
+        props.setUrl(dbUrl);
+        props.setUsername(userName);
+        props.setPassword(password);
+        props.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        props.setJmxEnabled(true);
+        props.setTestWhileIdle(false);
+        props.setTestOnBorrow(true);
+        props.setValidationQuery("SELECT 1");
+        props.setTestOnReturn(false);
+        props.setValidationInterval(3000);
+        props.setTimeBetweenEvictionRunsMillis(3000);
+        props.setMaxActive(100);
+        props.setInitialSize(10); // imp
+        props.setMaxWait(1000);
+        props.setRemoveAbandonedTimeout(60);
+        props.setMinEvictableIdleTimeMillis(3000);
+        props.setMinIdle(10);
+        props.setLogAbandoned(true);
+        props.setRemoveAbandoned(true);
+        props.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
+        return props;
+    }
+
+    private DataSource createDataSource(String dbUrl, String userName, String password) {
+        PoolProperties props = createPoolProperties(dbUrl, userName, password);
+
+        // data-source is our connection pool
+        DataSource dataSource = new DataSource();
+        dataSource.setPoolProperties(props);
+        return dataSource;
+    }
+
+    public void runExample() {
+        long startTime = System.currentTimeMillis();
+
+        for (int i = 0; i < 10_000; i++) {
+//            executeQuery();
+            executeNoPoolQuery();
+        }
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    private void executeNoPoolQuery() {
+        try (Connection con = DriverManager.getConnection(dbUrl, userName, password);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM products")) {
+
+            printResultSet(rs);
+
+        } catch (SQLException e) {
+            System.err.println("Failed to execute query: " + e.getMessage());
+        }
+    }
+
+    private void executeQuery() {
+        try (Connection con = dataSource.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM products")) {
+
+            printResultSet(rs);
+
+        } catch (SQLException e) {
+            System.err.println("Failed to execute query: " + e.getMessage());
+        }
+    }
+
+
+    /*
+    * after running the example first with pool and then without pool, we found that,
+    * pool -    1533ms
+    * no pool - 6953ms
+    * this is the difference.
+    * */
+//    @PostConstruct
+    public void connectionPool() {
+//        this.dataSource = createDataSource(dbUrl, userName, password);
+        runExample();
     }
 }

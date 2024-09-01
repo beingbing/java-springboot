@@ -74,6 +74,13 @@
 			<version>9.0.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+		</dependency>
+
+<!--		adding for JDBC-->
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
