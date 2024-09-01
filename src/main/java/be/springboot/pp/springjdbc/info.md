@@ -25,6 +25,8 @@
 - updates are batched and done in bulk in intervals instead of sending every update as soon as it is made from application to DB.
 - making connection every time executing query is a time and resource consuming process so will try to maintain a connection pool, for that we will use TomCat JDBC.
 - connection-pool will work exactly like thread-pool conceptually.
+- internally connection pool is a Semaphore of connection objects. If threads pick same connection from connection pool, then there can be race condition. Semaphore makes sure it do not happen.
 
 ### exercise
 - practice using `ResultSet` `updateRow()`, `moveToInsertRow()`, `moveToCurrentRow()`, `insertRow()`
+- practice using `PreparedStatement()`
