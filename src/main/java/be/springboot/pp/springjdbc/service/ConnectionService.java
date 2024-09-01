@@ -91,7 +91,7 @@ public class ConnectionService {
         rs.close();
     }
 
-    @PostConstruct
+//    @PostConstruct
     private void commitTransactionExample() {
         System.out.println("commitTransactionExample...");
         try (Connection con = DriverManager.getConnection(dbUrl, userName, password);
@@ -104,6 +104,40 @@ public class ConnectionService {
             statement.execute("COMMIT"); // con.commit()
         } catch (SQLException e) {
             throw new RuntimeException("Failed to establish connection", e);
+        }
+    }
+
+    /*
+    * java.sql.SQLSyntaxErrorException:
+    * You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near
+    * 'UPDATE products SET full_version = 1.7 WHERE id < 200' at line 1
+    * */
+//    @PostConstruct
+    private void batchQueries() throws SQLException {
+        System.out.println("batchQueries...");
+        try (Connection con = DriverManager.getConnection(dbUrl, userName, password);
+             Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            System.out.println("Connection established: " + con + " " + statement);
+
+            boolean hasResult = statement.execute("SELECT * FROM products WHERE name = 'JBL'; UPDATE products SET full_version = 1.7 WHERE id < 200");
+
+            do {
+                if (hasResult) {
+                    try (ResultSet rs = statement.getResultSet()) {
+                        printResultSet(rs);
+                    }
+                } else {
+                    int updateCount = statement.getUpdateCount();
+                    if (updateCount != -1) {
+                        System.out.println(updateCount + " rows impacted");
+                    }
+                }
+                hasResult = statement.getMoreResults();
+            } while (hasResult || statement.getUpdateCount() != -1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }
