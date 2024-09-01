@@ -22,7 +22,7 @@ public class ConnectionService {
     @Value("${spring.datasource.password}")
     private String password;
 
-    @PostConstruct
+//    @PostConstruct
     public void establishConnection() {
         System.out.println("Establishing connection...");
         try (Connection con = DriverManager.getConnection(dbUrl, userName, password); Statement statement = con.createStatement()) {
@@ -62,5 +62,32 @@ public class ConnectionService {
             Statement statement = con.createStatement();
             printProductsTable(statement);
         }
+    }
+
+//    @PostConstruct
+    public void makeUpdateOnResultSet() {
+        System.out.println("makeUpdateOnResultSet...");
+        try (Connection con = DriverManager.getConnection(dbUrl, userName, password); Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            System.out.println("Connection established: " + con + " " + statement);
+
+            ResultSet rs = statement.executeQuery("SELECT * FROM products");
+            printAndUpdateResultSet(rs);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to establish connection", e);
+        }
+    }
+
+    // TODO: has a bug, gets stuck in an infinite loop
+    private void printAndUpdateResultSet(ResultSet rs) throws SQLException {
+        while (rs.next()) {
+            System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getFloat(4));
+            rs.moveToInsertRow();
+            rs.updateString(2, rs.getString(2) + " 2");
+            rs.updateString(3, rs.getString(3) + " with upgrades");
+            rs.updateFloat(4, 1.0f);
+            rs.insertRow();
+            rs.moveToCurrentRow();
+        }
+        rs.close();
     }
 }
