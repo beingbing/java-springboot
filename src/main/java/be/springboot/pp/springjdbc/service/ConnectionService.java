@@ -90,4 +90,20 @@ public class ConnectionService {
         }
         rs.close();
     }
+
+    @PostConstruct
+    private void commitTransactionExample() {
+        System.out.println("commitTransactionExample...");
+        try (Connection con = DriverManager.getConnection(dbUrl, userName, password);
+             Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            System.out.println("Connection established: " + con + " " + statement);
+
+            con.setAutoCommit(false);
+
+            statement.execute("UPDATE products SET full_version = 3.0 WHERE id = 200");
+            statement.execute("COMMIT"); // con.commit()
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to establish connection", e);
+        }
+    }
 }
