@@ -23,6 +23,14 @@ public class AccountManager {
     * em.close();
     *
     * we can use @PersistenceContext to manage the EntityManager
+    *
+    * Note:
+    * - an EntityManagerFactory creates a context to manage an Entity using EntityManager.
+    * By managing Entity we mean, translation of Entity to relational database.
+    * - an EntityManagerFactory is created against a Persistence-unit, and a Persistence-unit
+    * is defined against a DB connection.
+    * - so, all persistence related tasks after establishing a connection are managed by Persistence-unit,
+    * and that management is done using EntityManagerFactory.
     * */
     @PersistenceContext
     private EntityManager entityManager;
