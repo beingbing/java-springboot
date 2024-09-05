@@ -110,3 +110,13 @@ Both problem solutions have same design. This approach of creating `Likes/Bid` t
 
 ## Hibernate
 - allows you to map your classes to tables
+- creates query on your behalf to send via JDBC over to DB by filling in necessary specific values provided by you.
+- hibernate caches generic query strings as creating them everytime to use with JDBC is costly
+- other ORM precompute and cache some queries depending on information gather from your entity table translation.
+
+## JPQL (Java Persistence Query Language)
+- it's a part of JPA
+- Spring Data provides multiple ways to create and execute a query, and JPQL is one of these
+- Spring Data defines queries using the @Query annotation in Spring to execute both JPQL and native SQL queries.
+- JPQL is default approach to create and execute query
+- 

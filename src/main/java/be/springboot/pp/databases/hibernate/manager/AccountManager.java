@@ -72,12 +72,11 @@ public class AccountManager {
         System.out.println("AccountManager initialized");
 
         Account account = new Account();
-        account.setId(1L);
-        account.setName("Samar");
-        account.setCurrentBalance(6_57_857.0);
+        account.setName("Maheen");
+        account.setCurrentBalance(16_48_193.0);
         account.setTotalChargedAmount(0.3*account.getCurrentBalance());
         account.setStatus("ACTIVE");
-        account.setHoldAmount(35_000.0);
+        account.setHoldAmount(5_867.0);
 
         entityManager.persist(account);
     }
