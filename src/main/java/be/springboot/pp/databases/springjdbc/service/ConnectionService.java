@@ -1,4 +1,4 @@
-package be.springboot.pp.springjdbc.service;
+package be.springboot.pp.databases.springjdbc.service;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.tomcat.jdbc.pool.DataSource;
