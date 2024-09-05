@@ -7,10 +7,14 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+@Slf4j
 @Component
 public class AccountManager {
 
@@ -71,13 +75,20 @@ public class AccountManager {
     public void init() {
         System.out.println("AccountManager initialized");
 
-        Account account = new Account();
-        account.setName("Maheen");
-        account.setCurrentBalance(16_48_193.0);
-        account.setTotalChargedAmount(0.3*account.getCurrentBalance());
-        account.setStatus("ACTIVE");
-        account.setHoldAmount(5_867.0);
+        List<Account> accountList = entityManager.createQuery("select a from Account a", Account.class).getResultList();
+        log.info("accountList: {}", accountList);
 
-        entityManager.persist(account);
+        for (Account account : accountList) {
+            log.info("account: {}", account);
+            log.info("account.getCurrentBalance: {}", account.getCurrentBalance());
+            log.info("account.getTotalChargedAmount: {}", account.getTotalChargedAmount());
+            log.info("account.getHoldAmount: {}", account.getHoldAmount());
+            log.info("account.getStatus: {}", account.getStatus());
+            log.info("account.getName: {}", account.getName());
+            log.info("account.getId: {}", account.getId());
+            log.info("====================*****====================");
+        }
+
+        System.out.println("AccountManager completed");
     }
 }

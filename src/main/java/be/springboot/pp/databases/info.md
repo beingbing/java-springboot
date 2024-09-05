@@ -113,6 +113,7 @@ Both problem solutions have same design. This approach of creating `Likes/Bid` t
 - creates query on your behalf to send via JDBC over to DB by filling in necessary specific values provided by you.
 - hibernate caches generic query strings as creating them everytime to use with JDBC is costly
 - other ORM precompute and cache some queries depending on information gather from your entity table translation.
+- uses reflection for translation.
 
 ## JPQL (Java Persistence Query Language)
 - it's a part of JPA

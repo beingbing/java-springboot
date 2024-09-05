@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /*
 * As Spring context initialization involves Bean creation for classes annotated with @Component,
@@ -13,6 +14,7 @@ import lombok.Setter;
 * */
 @Getter
 @Setter
+@ToString
 @Entity // instructs hibernate to map it to a table
 @Table(name = "account") // to specify table name (if class name and table name are different)
 public class Account {
