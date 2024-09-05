@@ -118,7 +118,6 @@
 ## Filter
 - very similar to spring-mvc `Interceptors` there is another component by the name `Filter` which is a part of TomCat.
 - conceptually `Interceptors` and `Filters` are same, although designed differently.
-- If you are gonna fail, then fail fast, why to fail slow.
 - proxy checks, caching, basic authentications all are applied on `Filters` extensively.
 - `Filter` is provided by TomCat as an interface.
 - every `Filter` once completes execution, invokes next `Filter`

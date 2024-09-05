@@ -108,3 +108,5 @@ Both problem solutions have same design. This approach of creating `Likes/Bid` t
 - an object can be represented by multiple related table due to Normalization to reduce redundancy.
 - Objects have identity, meaning two objects can be distinct even if they contain the same data (identity is based on memory location or object references), whereas Rows in a table are considered identical if all their column values match, with identity often tied to primary keys.
 
+## Hibernate
+- allows you to map your classes to tables
