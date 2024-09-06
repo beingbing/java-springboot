@@ -32,6 +32,7 @@ public class MenuItem {
     private float rating;
     private String description;
 
+    @Column(updatable = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private Cuisine cuisine;
 

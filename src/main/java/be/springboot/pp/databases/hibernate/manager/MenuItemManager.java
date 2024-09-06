@@ -86,4 +86,24 @@ public class MenuItemManager {
 
         System.out.println("MenuItemManager: create: ended");
     }
+
+    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
+    public void update() {
+        System.out.println("MenuItemManager: update");
+
+        // update won't translate as column is set to immutable
+        MenuItem item = entityManager.find(MenuItem.class, 52);
+        item.setCuisine(Cuisine.INDIAN);
+        entityManager.persist(item);
+        System.out.println("item 1 is: " + item);
+
+        // PropertyValueException: not-null property references a null or transient value
+        // got above error because cuisine column is non-nullable
+        MenuItem item2 = new MenuItem();
+        entityManager.persist(item2);
+        System.out.println("item 2 is: " + item2);
+
+        System.out.println("MenuItemManager: update: ended");
+    }
 }

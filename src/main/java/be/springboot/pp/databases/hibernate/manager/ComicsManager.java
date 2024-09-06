@@ -15,7 +15,7 @@ public class ComicsManager {
     @PersistenceContext
     EntityManager entityManager;
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void create() {
         System.out.println("ComicsManager: create");
