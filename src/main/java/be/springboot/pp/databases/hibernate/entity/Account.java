@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,4 +29,14 @@ public class Account {
     private Double totalChargedAmount;
     private String status;
     private Double holdAmount;
+    private Double totalBalance;
+    // adding a new column will automatically have Hibernate run below query -
+    /*
+    * alter table account add column total_balance float(53)
+    * */
+
+    // Add version for optimistic locking
+    @Version
+    private int version;  // This will be used by Hibernate to detect conflicting updates
+    // This field will automatically increment whenever the entity is updated, allowing Hibernate to detect concurrent modifications.
 }
