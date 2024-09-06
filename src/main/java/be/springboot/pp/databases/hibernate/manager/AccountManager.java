@@ -171,7 +171,7 @@ public class AccountManager {
         System.out.println("context completed");
     }
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     private void moreJPA() {
         System.out.println("more jpa");
 

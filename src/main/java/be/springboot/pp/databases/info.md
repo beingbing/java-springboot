@@ -113,11 +113,22 @@ Both problem solutions have same design. This approach of creating `Likes/Bid` t
 - creates query on your behalf to send via JDBC over to DB by filling in necessary specific values provided by you.
 - hibernate caches generic query strings as creating them everytime to use with JDBC is costly
 - other ORM precompute and cache some queries depending on information gather from your entity table translation.
-- uses reflection for translation.
+- uses reflection for translation, using which value is directly update on a variable, no getters/setters are used.
+- But if we want Hibernate to use getters/setters while doing translation then set `@Id` and `@GeneratedValue` on `getId()` instead of setting them directly on `id`.
+- in short, if we annotate fields, reflection will be done on them and if we annotate getters/setters, reflection will be done on them instead.
+- if reflection is set on getters/setters then dirty-checks and real value injection into SQL query templates will also happen via them.
+- use `@Column(name = "column_name")` for informing Hibernate about mapping if field name and column names are different.
+- if you want Hibernate to do basic calculations like currency conversion, taking average, finding max/min on your behalf.
+  - Use `@ColumnTransformer()` and specify read/write transformations.
+  - Use `@Formula()` and specify transformation formula
 
 ## JPQL (Java Persistence Query Language)
 - it's a part of JPA
 - Spring Data provides multiple ways to create and execute a query, and JPQL is one of these
 - Spring Data defines queries using the @Query annotation in Spring to execute both JPQL and native SQL queries.
 - JPQL is default approach to create and execute query
-- 
+
+## Primary Key
+- Natural PK, denoted by id and simple to guess, example, User table has user_id. It has physical significance of giving a user a unique identity.
+- Composite PK: combination of columns is PK. When a combination is unique but no single column in itself is unique for each row.
+- Surrogate PK: like Natural PK, but lacks in physical significance. When you can not create a composite PK and Natural PK. example, Likes table id or Bid table id in above exercise.
