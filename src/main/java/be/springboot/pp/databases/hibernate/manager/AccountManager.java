@@ -88,7 +88,11 @@ public class AccountManager {
 //        entityManager.detach(account);      // MANAGED ===> DETACHED
 
         // modifying the detached entity
-        modifyAccount(account);
+        modifyAccount(account); // this modification would have been reflected after merge()
+        // if we were allowed to manage entity in persistence context
+        // similarly if you transition managed => removed and then removed => managed
+        // the entity which would have been deleted from table if left in removed will
+        // no longer be deleted.
 
         /*
         * jakarta.persistence.OptimisticLockException: Row was updated or deleted by another
@@ -165,5 +169,13 @@ public class AccountManager {
         }
 
         System.out.println("context completed");
+    }
+
+    @EventListener(ContextRefreshedEvent.class)
+    private void moreJPA() {
+        System.out.println("more jpa");
+
+        Account account = entityManager.find(Account.class, 352);
+        log.info("account - {}", account);
     }
 }
