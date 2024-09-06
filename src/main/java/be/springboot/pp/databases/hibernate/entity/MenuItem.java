@@ -1,7 +1,10 @@
 package be.springboot.pp.databases.hibernate.entity;
 
+import be.springboot.pp.databases.hibernate.enums.Cuisine;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -28,7 +31,9 @@ public class MenuItem {
     private String name;
     private float rating;
     private String description;
-    private String cuisine;
+
+    @Enumerated(EnumType.STRING)
+    private Cuisine cuisine;
 
     @Column(name = "price_in_dollars")
     @ColumnTransformer(read = "price_in_dollars * 80", write = "? / 80")
@@ -38,7 +43,7 @@ public class MenuItem {
     @Formula("(select avg(f.rating) from menu_items f)")
     private float avgRating;
 
-    public MenuItem(String name, String description, String cuisine, float rating, int priceInRupees) {
+    public MenuItem(String name, String description, Cuisine cuisine, float rating, int priceInRupees) {
         this.name = name;
         this.description = description;
         this.cuisine = cuisine;

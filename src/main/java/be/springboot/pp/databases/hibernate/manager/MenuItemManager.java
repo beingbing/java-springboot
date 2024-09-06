@@ -1,6 +1,7 @@
 package be.springboot.pp.databases.hibernate.manager;
 
 import be.springboot.pp.databases.hibernate.entity.MenuItem;
+import be.springboot.pp.databases.hibernate.enums.Cuisine;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -22,7 +23,7 @@ public class MenuItemManager {
         MenuItem rice = new MenuItem(
                 "Jeera Rice",
                 "Jeera rice or cumin rice is an Indian dish made from a rice and cumin seeds.",
-                "Indian",
+                Cuisine.INDIAN,
                 4.7f,
                 160);
         entityManager.persist(rice);
@@ -30,7 +31,7 @@ public class MenuItemManager {
         MenuItem dal = new MenuItem(
                 "dal tadka",
                 "Dal tadka is a popular Indian curry made with rice, lentils, and spices.",
-                "Indian",
+                Cuisine.INDIAN,
                 4.5f,
                 120);
         entityManager.persist(dal);
@@ -38,7 +39,7 @@ public class MenuItemManager {
         MenuItem salad = new MenuItem(
                 "Salad",
                 "Salad is a healthy food that is made from raw vegetables.",
-                "Indian",
+                Cuisine.INDIAN,
                 3.5f,
                 150);
         entityManager.persist(salad);
@@ -46,7 +47,7 @@ public class MenuItemManager {
         MenuItem papad = new MenuItem(
                 "Masala Papad",
                 "a crispy, flavorful, and popular Indian snack or appetizer made from urad dal or moong dal dough that's seasoned with spices and rolled out by hand",
-                "Indian",
+                Cuisine.INDIAN,
                 4.3f,
                 80);
         entityManager.persist(papad);
@@ -61,5 +62,28 @@ public class MenuItemManager {
         System.out.println(item);
 
         System.out.println("MenuItemManager: fetch: ended");
+    }
+
+//    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
+    public void create() {
+        System.out.println("MenuItemManager: create");
+        MenuItem friedRice = new MenuItem(
+                "Fried Rice",
+                "Fried rice is an Indian delicacy originated in Kolkata when chinese traders and travellers came via silk route and stayed in India",
+                Cuisine.CHINESE,
+                4.1f,
+                180);
+        entityManager.persist(friedRice);
+
+        MenuItem butterChicken = new MenuItem(
+                "Butter Chicken",
+                "chicken is a type of domesticated fowl, typically the species Gallus gallus domesticus",
+                Cuisine.MUGHAL,
+                4.0f,
+                360);
+        entityManager.persist(butterChicken);
+
+        System.out.println("MenuItemManager: create: ended");
     }
 }
