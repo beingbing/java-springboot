@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,10 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -39,6 +45,12 @@ public class MenuItem {
     @Column(name = "price_in_dollars")
     @ColumnTransformer(read = "price_in_dollars * 80", write = "? / 80")
     private int priceInRupees;
+
+    // when you want to track updated_at of an entry
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Generated(GenerationTime.ALWAYS)
+    private Date updatedAt;
 
 //    @Transient // no need for this, @Formula make the field as a class field only
     @Formula("(select avg(f.rating) from menu_items f)")
