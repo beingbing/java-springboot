@@ -55,7 +55,7 @@ public class MenuItemManager {
         System.out.println("MenuItem: context: ended");
     }
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     public void fetch() {
         System.out.println("MenuItemManager: fetch");
         MenuItem item = entityManager.find(MenuItem.class, 2);
