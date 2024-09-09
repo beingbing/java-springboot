@@ -15,8 +15,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import java.util.Date;
 import java.util.List;
@@ -86,9 +84,7 @@ public class Application {
     * orphanRemoval: if an application object is removed all associated payment object will be removed as well.
     *
     * */
-//    @NotFound(action = NotFoundAction.IGNORE)
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "application_id")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> paymentList;
 
     private Date replacementDate;

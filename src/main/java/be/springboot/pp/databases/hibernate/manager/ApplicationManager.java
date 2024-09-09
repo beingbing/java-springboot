@@ -26,34 +26,34 @@ public class ApplicationManager {
         // Persistence Context starts due to @Transactional
 
         Address address = new Address();
-        address.setAddress("122B Baker Street");
-        address.setCity("London");
-        address.setState("London");
-        address.setZipCode("11001");
-        address.setLongitude(-17.0060);
-        address.setLatitude(32.7128);
+        address.setAddress("94B Phase 5, Sector 63");
+        address.setCity("Noida");
+        address.setState("UP");
+        address.setZipCode("131001");
+        address.setLongitude(43.0060);
+        address.setLatitude(14.7128);
         System.out.println("Address: " + address);
 
         Payment payment = new Payment();
         payment.setPaymentMode("CC");
-        payment.setPaymentStatus("PAID");
+        payment.setPaymentStatus("FAILED");
         payment.setDiscountAmount(10.0);
         payment.setDiscountPercentage(null);
         payment.setOriginalAmount(100.0);
         payment.setPaidAmount(70.0);
         payment.setClaimedCouponAmount(20.0);
         payment.setSecurityDeposit(0.0);
-        payment.setClaimedCouponCode("ABC123");
-        payment.setPaymentBankReferenceNumber("4587");
+        payment.setClaimedCouponCode("WHYCASH");
+        payment.setPaymentBankReferenceNumber("6532");
         System.out.println("Payment: " + payment);
 
         // entityManager.persist(payment);
 
         Application application = new Application();
-        application.setName("Sherlock Holmes");
-        application.setStoreName("Private Investigation");
+        application.setName("Chacha Choudhary");
+        application.setStoreName("Property Broker");
         application.setStatus("DRAFT");
-        application.setMobile("1278903456");
+        application.setMobile("7657553329");
         application.setOrderDate(new Date());
         application.setAddress(address);
         application.setPaymentList(Collections.singletonList(payment));
