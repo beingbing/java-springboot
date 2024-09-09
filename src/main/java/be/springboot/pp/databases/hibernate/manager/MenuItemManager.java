@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class MenuItemManager {
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
 //    @EventListener(ContextRefreshedEvent.class)
     @Transactional
@@ -87,7 +87,7 @@ public class MenuItemManager {
         System.out.println("MenuItemManager: create: ended");
     }
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void update() {
         System.out.println("MenuItemManager: update");

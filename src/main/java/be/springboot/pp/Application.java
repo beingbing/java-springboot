@@ -9,6 +9,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 * TODO: Project Notes -
 * - If you are going to fail, then fail fast, why to fail slow.
 * - Spring's infrastructure, such as AOP (Aspect-Oriented Programming), for cross-cutting concerns. ??
+* - objectMapper.convertValue() This method is generally used to convert between objects, not for deserializing JSON strings.
 * */
 
 @SpringBootApplication
