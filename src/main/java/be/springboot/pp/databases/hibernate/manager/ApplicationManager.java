@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class ApplicationManager {
@@ -19,7 +20,7 @@ public class ApplicationManager {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void check() {
         System.out.println("ApplicationManager: context initialized");
@@ -61,5 +62,19 @@ public class ApplicationManager {
 
         entityManager.persist(application);
         System.out.println("ApplicationManager: context initialized: ended");
+    }
+
+    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
+    public void update() {
+        System.out.println("ApplicationManager: update");
+
+        List<Application> applicationList = entityManager.createQuery("Select a from Application a", Application.class).getResultList();
+
+        for (Application application : applicationList) {
+            System.out.println("Application: " + application);
+        }
+
+        System.out.println("ApplicationManager: update: ended");
     }
 }

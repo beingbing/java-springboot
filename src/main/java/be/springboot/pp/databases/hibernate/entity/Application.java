@@ -82,10 +82,16 @@ public class Application {
     * `all` represent all types of actions, hence we also have `insert`, `update`, etc, too.
     *
     * orphanRemoval: if an application object is removed all associated payment object will be removed as well.
-    *
     * */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+    // mappedBy key makes this relation bi-directional
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> paymentList;
+    /*
+    * difference between lazy and eager:
+    * eager: select query to application table will be made having a join to payments table
+    * lazy: only select query to application table without any join clause, payment table query
+    * will be made when payment object will be needed
+    * */
 
     private Date replacementDate;
 }

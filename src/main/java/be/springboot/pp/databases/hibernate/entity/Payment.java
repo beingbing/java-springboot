@@ -8,13 +8,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.springframework.util.ObjectUtils;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "payment")
 public class Payment {
@@ -46,4 +45,22 @@ public class Payment {
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "application_id")
     private Application application;
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id=" + id +
+                ", originalAmount=" + originalAmount +
+                ", paidAmount=" + paidAmount +
+                ", paymentMode='" + paymentMode + '\'' +
+                ", paymentStatus='" + paymentStatus + '\'' +
+                ", paymentBankReferenceNumber='" + paymentBankReferenceNumber + '\'' +
+                ", securityDeposit=" + securityDeposit +
+                ", discountAmount=" + discountAmount +
+                ", discountPercentage=" + discountPercentage +
+                ", claimedCouponCode='" + claimedCouponCode + '\'' +
+                ", claimedCouponAmount=" + claimedCouponAmount +
+                ", application=" + (ObjectUtils.isEmpty(application) ? null : application.getId()) +
+                '}';
+    }
 }
