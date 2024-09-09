@@ -1,6 +1,9 @@
 package be.springboot.pp.databases.hibernate.entity;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -48,9 +51,41 @@ public class Application {
 
     private String mobile;
 
+    /*
+    * Here, object of application encapsulates address within it hence life-cycle of address object is bound
+    * to application object. Therefore, if application object is removed then address object will be also removed.
+    *
+    * Here, @Embedded annotation is used to map address object to the application object hence address got bound
+    * but it is possible to remove wrapper object from memory and yet still keep encapsulated object alive using joins.
+    *
+    * This is what we did with paymentList field.
+    * */
     @Embedded
     private Address address;
 
+    /*
+    * If application table also had columns by name store_address, store_city, store_state, store_zip_code,
+    * store_latitude, store_longitude, then we can use @AttributeOverrides to map them to the class fields.
+    * `name` is class field name and `column` is table column name.
+    * */
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "address", column = @Column(name = "store_address")),
+//            @AttributeOverride(name = "city", column = @Column(name = "store_city")),
+//            @AttributeOverride(name = "state", column = @Column(name = "store_state")),
+//            @AttributeOverride(name = "zipCode", column = @Column(name = "store_zip_code")),
+//            @AttributeOverride(name = "latitude", column = @Column(name = "store_latitude")),
+//            @AttributeOverride(name = "longitude", column = @Column(name = "store_longitude"))
+//    })
+//    @Embedded
+//    private Address storeAddress;
+
+    /*
+    * cascade-all: ensures all payments in below listed gets stored/updated in payments table.
+    * `all` represent all types of actions, hence we also have `insert`, `update`, etc, too.
+    *
+    * orphanRemoval: if an application object is removed all associated payment object will be removed as well.
+    *
+    * */
 //    @NotFound(action = NotFoundAction.IGNORE)
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "application_id")
