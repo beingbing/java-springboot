@@ -3,6 +3,7 @@ package be.springboot.pp.databases.hibernate.entity;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /*
 * without @Embeddable we will get below error when we try to create Application object which contains Address object
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@ToString
 @Embeddable // this class is not an entity, but is a part of an entity
 public class Address {
     private String address;

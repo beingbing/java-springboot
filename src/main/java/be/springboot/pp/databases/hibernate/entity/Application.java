@@ -1,5 +1,6 @@
 package be.springboot.pp.databases.hibernate.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "application")
 public class Application {
@@ -48,8 +51,9 @@ public class Application {
     @Embedded
     private Address address;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id", referencedColumnName = "id", nullable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "application_id")
     private List<Payment> paymentList;
 
     private Date replacementDate;

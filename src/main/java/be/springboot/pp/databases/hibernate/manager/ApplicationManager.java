@@ -8,28 +8,31 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
 
+@Component
 public class ApplicationManager {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    // @EventListener(ContextRefreshedEvent.class)
+    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void check() {
         System.out.println("ApplicationManager: context initialized");
         // Persistence Context starts due to @Transactional
 
         Address address = new Address();
-        address.setAddress("123 Main Street");
-        address.setCity("New York");
-        address.setState("NY");
-        address.setZipCode("10001");
-        address.setLongitude(-74.0060);
-        address.setLatitude(40.7128);
+        address.setAddress("122B Baker Street");
+        address.setCity("London");
+        address.setState("London");
+        address.setZipCode("11001");
+        address.setLongitude(-17.0060);
+        address.setLatitude(32.7128);
+        System.out.println("Address: " + address);
 
         Payment payment = new Payment();
         payment.setPaymentMode("CC");
@@ -42,15 +45,19 @@ public class ApplicationManager {
         payment.setSecurityDeposit(0.0);
         payment.setClaimedCouponCode("ABC123");
         payment.setPaymentBankReferenceNumber("4587");
+        System.out.println("Payment: " + payment);
+
+        // entityManager.persist(payment);
 
         Application application = new Application();
-        application.setName("Joe Smith");
-        application.setStoreName("Smith store");
+        application.setName("Sherlock Holmes");
+        application.setStoreName("Private Investigation");
         application.setStatus("DRAFT");
-        application.setMobile("1234567890");
-        application.setOrderDate(new Date("2022-01-01"));
+        application.setMobile("1278903456");
+        application.setOrderDate(new Date());
         application.setAddress(address);
         application.setPaymentList(Collections.singletonList(payment));
+        System.out.println("Application: " + application);
 
         entityManager.persist(application);
         System.out.println("ApplicationManager: context initialized: ended");
