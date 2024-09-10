@@ -64,7 +64,7 @@ public class ApplicationManager {
         System.out.println("ApplicationManager: context initialized: ended");
     }
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void update() {
         System.out.println("ApplicationManager: update");
