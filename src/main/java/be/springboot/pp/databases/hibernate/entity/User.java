@@ -40,7 +40,7 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quote> quotesAuthored;
 
-    @ManyToMany(mappedBy = "appreciatorList", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "appreciatorList", fetch = FetchType.EAGER)
     private List<Quote> likedQuotes;
 
     public User(String name, String username, String email, String password) {

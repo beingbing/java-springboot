@@ -132,3 +132,19 @@ Both problem solutions have same design. This approach of creating `Likes/Bid` t
 - Natural PK, denoted by id and simple to guess, example, User table has user_id. It has physical significance of giving a user a unique identity.
 - Composite PK: combination of columns is PK. When a combination is unique but no single column in itself is unique for each row.
 - Surrogate PK: like Natural PK, but lacks in physical significance. When you can not create a composite PK and Natural PK. example, Likes table id or Bid table id in above exercise.
+
+## Spring Data JPA
+- wrapper of Hibernate
+- Spring Data is a library of Spring like spring-mvc which deals with data persistence
+- spring-data-jpa is a specific implementation of it using Hibernate which uses JPA repositories for data persistence
+- interface `JpaRespository` has two generics <T, ID> where T represents data-type of entity on which it will function and ID is data-type of PK
+- we create interfaces extending `JpaRepository` and declare our named-queries as function in it.
+- Spring writes implementation/definitions of your declared functions written in interfaces extended from `JpaRepository`
+- when extended interface is annotated by `@Repository`, Spring creates a Bean of them.
+- that Bean is called a proxy class whose name starts with `$`.
+- proxy is a concept of advanced reflection, which functions as a broker between two parties.
+- while creating a proxy class out of interface, implementation is written for declared functions by Spring dynamically.
+- Documentation of `JpaRepository` has conventions explained for formats to declare desired functions in extended interfaces.
+- query is abstractly written for you.
+- to write complicated queries which can not be declared as function names, we can write JPQL/SQL using `@Query()`
+- `Proxy` class is a part of reflection package, inside it we have `newProxyInstance()`. Spring-data calls it to create proxy instance of interfaces.
