@@ -1,8 +1,10 @@
 package be.springboot.pp.databases.hibernate.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Getter;
@@ -39,4 +41,7 @@ public class Account {
     @Version
     private int version;  // This will be used by Hibernate to detect conflicting updates
     // This field will automatically increment whenever the entity is updated, allowing Hibernate to detect concurrent modifications.
+
+    @OneToOne(mappedBy = "account")
+    private User user;
 }

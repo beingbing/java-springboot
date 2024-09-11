@@ -17,6 +17,11 @@ import java.util.Date;
 /*
 * An example of unidirectional one-to-one relationship.
 * A membership card links to a member, but the member does not directly store the membership details.
+*
+* Also, irrespective of whether unidirectional or bidirectional, only one FK is created in
+ * the table in one-to-one mapping.
+ *
+ * the difference is only in the awareness of entity.
 * */
 
 @Getter

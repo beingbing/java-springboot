@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,15 @@ public class User {
     private String password;
 
     private Date CreatedAt;
+
+    /*
+    * example of one to one bidirectional mapping between account and user
+    *
+    * Also, irrespective of whether unidirectional or bidirectional, only one FK is created in
+    * the table in one-to-one mapping.
+    * */
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Account account;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quote> quotesAuthored;
