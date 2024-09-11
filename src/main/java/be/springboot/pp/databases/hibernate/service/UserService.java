@@ -19,7 +19,7 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     public void init() {
         System.out.println("UserService: init");
         List<User> users =  userDao.findByPasswordLike("%pass");
