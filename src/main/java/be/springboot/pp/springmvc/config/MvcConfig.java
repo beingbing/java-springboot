@@ -1,5 +1,6 @@
 package be.springboot.pp.springmvc.config;
 
+import be.springboot.pp.authentication.interceptors.AuthInterceptor;
 import be.springboot.pp.springmvc.exceptions.CustomExceptionHandler;
 import be.springboot.pp.springmvc.interceptor.SecondInterceptor;
 import be.springboot.pp.springmvc.interceptor.SimpleInterceptor;
@@ -31,6 +32,9 @@ public class MvcConfig implements WebMvcConfigurer {
     @Autowired
     private SampleReturnTypeHandler sampleReturnTypeHandler;
 
+    @Autowired
+    private AuthInterceptor authInterceptor;
+
     /*
     * InterceptorRegistry is a bean already created by Spring, we can add our custom
     * interceptors in it so that Spring-MVC can use them as middleware as well.
@@ -41,6 +45,8 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(simpleInterceptor);
 
         registry.addInterceptor(secondInterceptor).excludePathPatterns("/simple/result");
+
+        registry.addInterceptor(authInterceptor).addPathPatterns("/auth/**");
     }
 
     @Override
