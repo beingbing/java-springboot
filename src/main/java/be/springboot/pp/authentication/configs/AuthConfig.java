@@ -31,14 +31,22 @@ public class AuthConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         List<UserDetails> userDetails = new ArrayList<>();
-        userDetails.add(new User("samar", "samar-taj", Collections.singletonList((GrantedAuthority)() -> "read")));
-        userDetails.add(User.withUsername("Maheen").password("maheen-samar").authorities("read", "write").build());
+//        userDetails.add(new User("samar", "samar-taj", Collections.singletonList((GrantedAuthority)() -> "read")));
+//        userDetails.add(User.withUsername("Maheen").password("maheen-samar").authorities("read", "write").build());
+//        userDetails.add(User.withUsername("rubab").password("rubab-samar").roles("ADMIN").build());
         JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource); // it will store user authentication details in DB
-        manager.createUser(userDetails.get(0));
-        manager.createUser(userDetails.get(1));
+//        manager.createUser(userDetails.get(0));
+//        manager.createUser(userDetails.get(1));
+//        manager.createUser(userDetails.getFirst());
         return manager;
 //        return new InMemoryUserDetailsManager();
     }
+    /*
+    * here, when we are integrating DB access in spring-security via JDBC, we have to create tables for users and authorities.
+    * but what if, those table names / column names are different from what spring-security expects to be ?
+    *
+    * In that case we need to provide insert queries using setCreateUserSql() on manager object created above.
+    * */
 
     /*
     * queries to create tables for JDBC manager to use -
@@ -63,12 +71,14 @@ public class AuthConfig {
     /*
     * After going through tomcat filters, request goes through security-filters from which it is handover to dispatcher servlet.
     * So, this is the place where we configure security filter chain.
+    *
+    * But these filters come into play only when request is authenticated by authentication-filter
     * */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, SampleAuthenticationProvider sampleAuthenticationProvider) throws Exception {
         return http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()) // instead of authenticated() if permitAll() is used then all requests will pass through
+                        .anyRequest().authenticated()) // instead of authenticated()/hasAnyAuthority("write", "read") if permitAll() is used then all requests will pass through
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(sampleAuthenticationProvider)
                 .build();
