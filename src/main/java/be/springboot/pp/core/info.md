@@ -1,161 +1,300 @@
-# Object Oriented Programming with Java
-4 pillar of OOPS are -
+# Object-Oriented Programming with Java
+Object-Oriented Programming (OOP) conceptualizes software design around data, or objects, rather
+than functions and logic as was done in Procedural Programming. The four foundational pillars of
+OOP are:
 - Encapsulation
-- Abstraction
 - Polymorphism
+- Abstraction
 - Inheritance
 
-## Class
-Books say it is a blueprint/skeleton for defining Objects, but practically , it is something where we bundle related data and algorithms together.
-When earlier engineers were working with procedural languages like C, they were writing everything in one file, and then realized particular section of code
-interacts only with a particular section of data, so they extracted those out and put in a separate file and called that file a Class.
-When Java was being created on OOP structure, this feature of putting related data and algorithms in a separate file and naming that entity as Class was central to it.
-There are 6 categories of class which can be defined in Java-
-- concrete Class
-- Interface
-- Enum
-- abstract Class
-- Annotation
-- Final Class
+These principles help in creating modular, reusable, and scalable code.
 
-## Constructor, Object and Pointer
-Constructor is used to create instance of a class.
-Instance: snapshot of a class, in technical terms, Object.
-When we invoke constructor and give values of required Class fields at that time inside RAM some memory is alloted and certain values are kept against those fields.
-Now we can say we have an object floating around in my system. But saying that it is floating doesn't make sense, where is it actually ?
-Whenever a new object is created a pointer referencing it is also created separately in different block of memory. Our systems have a particular type of memory
-called Heap memory present within RAM, all the objects we create are created inside Heap memory.
-Object referencing pointer is not created inside heap memory it is created in stack memory, and make to point at newly created object.
-If we want we can make it reference pointer point to any other object of same type as well.
-Using that pointer, objects fields and methods can be accessed using dot-operator.
-If constructor do not take any initialization arguments then all fields will be initailized with default values already decided by JRE when code will be executed.
-If we do not declare a constructor, in that situation too JRE uses default constructor created by JDK during class loading, that default constructor functions
-as a no-args constrcutor to help JRE to initialize fields with default values.
-It is possible to have multiple constructors in a single class called constructor overloading, but all of them need to have different signature.
+## Class: The Blueprint for Objects
+By bookish definition, it is a blueprint that defines the structure and behavior (data and algorithms)
+of objects. In practical terms, it groups related data and methods together. In earlier procedural
+programming languages like C complete logic used to be placed in a single file. As software complexity
+grew, developers realized that code dealing with specific data can be together separated into a single
+file as a single entity was more efficient, That entity was termed as `Class`. While creating Java on
+OOP structure, creating Class and deriving Object out of it was central to language development.
+In Java, there are six categories of classes:
+- **Concrete Class:** A class with full implementations.
+- **Interface:** Contains method signatures without implementations.
+- **Enum:** Defines a set of constants.
+- **Abstract Class:** A class that may contain both fully implemented methods and abstract methods (without implementation).
+- **Annotation:** Metadata for code elements like classes and methods.
+- **Final Class:** A class that cannot be subclassed and generated `Immutable Objects`.
 
-## access modifiers
-- public: can be accessed from anywhere
-- protected: can be accessed from same package/module
-- private: can be accessed in class only.
+## Constructors, Objects, and Pointers
+A constructor is used to create instance (snapshot of a class / Object) of a class. Object creation
+is done by allocating memory in the Heap and initializing the fields. Simultaneously a reference
+(pointer) to that object is created in the stack memory. The pointer refers to the object's memory
+location, allowing access to its fields and methods using the dot (.) operator.
+
+If a user-defined constructor does not take any arguments to initialize fields or leaves out a field
+initialization, then Java do the initialization by assigning default pre-defined values to fields.
+
+If a constructor is not defined in a class, Java provides a default no-args constructor that assigns
+default values to fields.
+
+Java supports multiple constructors, provided they have different signatures (i.e., different
+parameter lists).
+
+## Access Modifiers
+Access modifiers control the visibility of classes, fields, and methods.
+- **public:** Accessible from anywhere.
+- **protected:** Accessible within the same package and subclasses.
+- **private:** Accessible only within the same class.
 
 ## Encapsulation
-If we put an invalid value to a field of an object which logically/practically do not make any sense then it is called violation of data-integrity/data-constraint.
-Whosoever is writing a class, has to responsibly ensure that data integrity violation can not be done by others.
-We can prevent that by using access modifier, as name states, it modifies the access of a field/method.
-By default all fields are kept as public, meaning once object is created those fields can be accessed using '.' operator from anywhere.
-If this is to be prevented, we need to put private in front of field declaration. Once that's done, nobody will be able to access said fields outside the calss
-using dot-operator on object.
-but then how will others working on objects of our class in their class environment will be able to access our class fields.
-For that we can declare getters and setters.
-So, what we did here is , we made all fields private and made them accessible via public getters and setters. This is known as data hiding.
-We hid data from unintended or malicious changes. This entire setup which we created is known as 'Encapsulation'.
-It represents making data private and aloowing data access by public getters and setters.
-After doing that we can write rules for data integrity in setters to prevent out data fields from getting corrupted from a malicious change.
-The same data integrity rules can be setup during object initialization via constructor as well.
+Encapsulation ensures data integrity by restricting direct access to an object’s fields. Fields are
+marked private and accessed through public getters and setters. This concept is also known as data hiding.
+```java
+class Account {
+    private double balance;
 
-## final keyword
-final: can not be changed. While using ita value needs to be assigned at the time of declaration, and that value can not be changed, also it is not allowed to not
-give a value while using final keyword.
-There are two categories of data-types, primitive and references(user-defined). Making a field final means, value can not be changed for primitive,
-This is straightforward true, but for references, it means the object they are referencing will be the same object they will keep referencing during their
-entire lifecycle. The reference is fixed but the object fields can still be modified according to data-integrity rules using methods.
-As fields declared inside class referenced by referencing pointer are not assigned final keywrod hence modification of their values is permitted, only the reference
-of object created is locked in.
-But if we declare field variables to be final as well, then our class methods re prevented to make any changes to those fields during compile-time only and we will be
-forced to give values to those 'final' fields at the time of object creation via constructor or define their values inline during declaration.
-Hence, we can not have setters for our final fields, we are forced to initate final fields during object creation because we won't be able to do so after object is created.
-Extending functionality of final keyword to its ultimate form gave us a concept of Immutable objects.
-Immutable means something that can't be mutated, and mutation means cahnge, so in essence, Immutable objects mean an object which can't be modified or changed
-after it has been created. To create such an object we need to declare all fields of the class while declaring the blueprint to be recursively final, it means,
-if class contains a reference to an object of other class then fields of that class also needs to be declared with final.
-As an example of its use case, We use Immutable objects during concurrency, the shared objects are declared to be final s o that it do not hamper results of
-Threads running parallely by corrup data which got modified by som other Thread. Hence we do not allow modification to shared objects once they are created.
-that's how Immutable objects prevent race condition in essence.
+    // Getter
+    public double getBalance() {
+        return balance;
+    }
 
-## static keyword
-Normally when we create a class all fields can have different values for different objects because they create a unique characteristic of that object.
-Hence, a field is normally created at object level, to deal with object.
-But we also may require sometimes for all objects of a particualr class to share same entity. As every object will get a separate field to keep its value, but if a field
-is declaredstatiic, none ofthe objects created will get a separte field instead they all will share the same field, and that field will be kept
-at the level of class. So, to access that field instead of using dot-operator on object reference, we need to use dot-operator on class-name.
-Because if a field is at a class level hence we can access it without having to ever created any object of that class, vi-a-vis if objects of that
-class exist and instaead of using class-name we use object reference pointer to access static class, it will work as it would have
-worked with class-name access. If a static is made private, we can access it via a getter, but they will be static as well.
-Static fields are initatated when classes are loaded in-memory oafter code is compiled. Those loaded files are then read by JVM and load those blueprint of classes in JRE.
-At that time static fields are initaited.
-static+final is prominently used when we want global immutable values in our JRE. JVM keeps static fields and loaded classes in a memory called as 'meta-space'.
-If we declare a method to be static then only static fields or methods can be used in that method.
-This is because a static method can be invoked before any object is created, hence object specific fields or methods do not exist
-in JRE at that time. In short, in static context everything should be static.
+    // Setter with data integrity check
+    // Same check can be setup in constructor definition
+    public void setBalance(double balance) {
+        if (balance >= 0) {
+            this.balance = balance;
+        } else {
+            throw new IllegalArgumentException("Balance cannot be negative.");
+        }
+    }
+}
+```
+Here, encapsulation allows control over how fields are accessed and modified, protecting the data
+from invalid values.
+
+## Final Keyword
+The `final` keyword prevents modification after compulsory assignment during initialization or
+declaration.
+
+For primitive types, final prevents reassignment.
+For reference types, final means the reference cannot point to another object, but the object
+itself can still be modified.
+
+If you make a class's fields recursively final and prevent field modification, you create an
+immutable object. Usage, They are crucial in multithreading because they prevent race conditions
+(since they can't be changed once created).
+
+## Static Keyword
+The `static` keyword marks a field or method as belonging to the class rather than the instance. A
+static field or method is shared among all instances of the class. A static method can only access
+other static fields and methods.
+```java
+class Book {
+    static int totalBooks = 0; // Class-level field
+
+    public static void incrementBooks() {
+        totalBooks++;
+    }
+}
+```
+The static field `totalBooks` is shared among all Book instances. It is initialized when the class is
+loaded, not when an object is created.
+
+Combining `static` and `final` with `public` access modifier creates global immutable constants.
+
+## Interface
+An interface defines behavior by specifying method signatures. Classes that implement an interface
+at-least have features declared in the interface as they provide the actual method implementations.
+
+In higher versions of Java fields can be declared in interfaces as well. It cannot be instantiated.
+```java
+interface Animal {
+    void sound();
+}
+
+class Dog implements Animal {
+    public void sound() {
+        System.out.println("Bark");
+    }
+    
+    public void wagTail() {
+        System.out.println("wagging tail ...");
+    }
+}
+
+class Cat implements Animal {
+    public void sound() {
+        System.out.println("Meow");
+    }
+    
+    public void talk() {
+        System.out.println("purr.....");
+    }
+}
+```
+Here, `ani` is a polymorphic type object reference, and can point to any object that implements 
+`Animal` interface:
+```java
+Animal ani = new Dog();
+ani.sound();  // Output: Bark
+```
+This behavior is determined at runtime, allowing runtime polymorphism.
+
+## Type Casting
+A subclass object reference can be assigned to a parent class reference (upcasting). If needed, it
+can be downcasted to the subclass type:
+```java
+Animal animal = new Dog();   // Upcasting
+Dog dog = (Dog) animal;      // Downcasting
+```
+Before downcasting, it's good practice to check the object's type using the `instanceof` operator,
+otherwise, wrong downcasting is reported under ClassCastException at runtime.
 
 ## Polymorphism
-What we saw till now are concrete class and final class (Immutablr objects). Now we will talk about interfaces.
-Interface: contains signature of a method related to qualities and behaviour of that entity. Interfaces are effective in defining details around which
-extending classes will establish functionality. And classes will be forced to atleast have implementation of those specifications.
-Polymorphism literally means multiple forms, it means an object reference, which can point to objects of more than one type,
-subjected to the condition that all of those classes extends same interface, mean belonging to same entity. example,
-interface Animal can have an object reference pointing to object of concrete sub-class of Animal like Cat, Dog, etc.
-In this case Animal inteface object reference is polymorphic pointer introducing the essence of polymorphism.
-Polymorphism alllows you to write generic code which can be worked on all sub-classes  extending the said interface.
-Polymorphism supports open-close principle as generic code do not need to change if more sub-classes got added extending the same interface,
-hence keeping code open for extension but closed for modification. Internally Java finds out what is the exact implementation class of Polymorphic reference,
-using that all implementation are invoked.
-This identifcation of iplementation is done by Java in FRE during execution, hence, it is said that behavior is defined for such reference
-at runtie but behavior are declared, defined and implemented at compile time only. Here we need to keep in mind that subclass object reference are not
-polymorphic, they can only point to objects of their class-type, not even to objects pointed by their parent interface object refernce.
-If you want a sub-class object reference to point to an object refrerence by super-class object reference then you have to anually
-type-case that reference to that sub-class type.
-This type-casting process is evalutated at runtime hence, if you type-case wrong, you will know about it only at the runtime under class-cast-exception.
-We can add extra features to sub-classes as well apart from whatever we inherited from super-class, which will be specific to that sub-class only.
-but a polymorphic reference can only access fields/methods whic are declared in its definition, it can not access sub-class
-specific fearures, even though it is pointing to a sub-class object, and if you still want to access sub-class specific features then you need to type-case
-and access those fearures using dot-operator on sub-class specific object reference pointer.
-For that casting at runtime you first need to check if type-casing is possible that you can do using instanceOf operator which if conrms
-polymorhpic object reference is pointing to an object of desired sub-class type then you can type-cast to use sub-class specific features.
-But such checks introduces if-else ladder stemming out of sub-class usage and needs which do not leave code as generic anymore and foregos open-close
-principle, example -
+Polymorphism allows objects of different types to be treated as instances of a common supertype
+(e.g., an interface or abstract class). It enables you to write generic code implementable on all 
+current and future subclasses. It follows open-close principle as generic code does not need to 
+change if more subclasses got added extending the same interface.
+
+Downcasting and using `instanceof` operator obliterate polymorphism advantages and introduces if-else
+ladder, it also annihilates adherence to open-close principle as each new subclass addition will require
+a new if-else chain addition.
+```
 for (Animal a : animals)
-if (a instanceOf Dog)
-// do dog specific things
-if (a instanceOf Cat)
-// do cat specific things
+    if (a instanceOf Dog)
+        // do dog specific things
+    if (a instanceOf Cat)
+        // do cat specific things
+```
+if you see such code then understand it to be poorly low level designed.
 
-with these type of coding practice every new implementation of Animal interface will have required to redo this code snippet. So, if you see any code
-snippet needing to use instanceOf checks then understand it to be poorly low level designed.
+## Abstract Class
+An abstract class is a mix of fully implemented methods and methods that subclasses must implement.
+It can be thought as a variation of interface with more capabilities.
+It cannot be instantiated directly.
+```java
+abstract class Shape {
+    abstract void draw();  // Must be implemented by subclasses
+    void move() {          // Already implemented
+        System.out.println("Shape moves");
+    }
+}
+```
 
-## Interfaces
-In higher versions of Java we can declare fields in interfaces as well but there was a time when it was not possible. Se, we declare a class when we find
-both data and methods needs to exist in it and all of it can be inherited in other classes otherwise we implemented different interfaces in a required
-class. We should use inheritance of classes only if everything present in supre-class will be useful in sub-class as well, otherwise either go with
-Composition or use interfaces. In inheritance as well, polymorphism is supported, we can create a sub-class object and reference to it can be stored in
-supre-class object. Due to this we can say Inheritance of class is a specific type of polymorphism. Abstract class similarly is a specific type of
-interface where some methods are defined but others are left declared for sub-classes to override and implement.
-In inheritance, childs have access to parents fields/methods but viec verso is not true. Also child classes can override behavior of any parent
-class method. Hence, same method called from object reference of different child/parent object will have different behavior. This becomes super useful
-when parent class has default implementation. So now it is on child to either use that as it is or modify it.
-But there comes a third scenario whre child also needs to run code written in parent's default implementation but also add on to it some extra fuctionality,
-in that case we use super keword, we can do super.methodName() and var v = super.v in methdoName() method.
-There is one more use case of super keyword, which is constructor chaining or constructor initialization of parent class.
-We can do that by writing super(args...) in child constructor as first line of its implementation. There is a special case when child do not have any constructor
-in that case a default constructor is called and which in turn calls default constructor of parent and vis-a-vis if we create our own constructor then it is
-our responsibility to call parent constructor as well. As we talked tabstract class is a specific type of interface where we know implementation of some
-methods and we leave out other methods only declared for child inheriters to implement them by over-riding.
-An abstract class can inherit another abstract class and over-riding will not be inforced but as soon as a child class is found to be concrete then it will
-be forced to implement all method signatures where were declared but never defined.
-Abstract classes like interfaces can not be instanticated. To reiterate when all you need isto define behavior then go with interface
-as it can nlt contain a method with body, it can only declare contracts.
-But if you want to have some implementations along with declared but not defined behaviour go with abstract lass.
-Both of them are ways of doning polymorphism, but abstract class has features of both of a class and an interface, and both of abstract class and
-interfaces can't be initialzied.
+## Inheritance
+Inheritance allows a class to acquire properties and methods of another (abstract/concrete) class.
+It inherently also supports Polymorphism. Abstract class to abstract class inheritance do not enforce 
+method definition which were left only declared.
+
+It promotes code reuse, but it should only be used when there is a genuine "is-a" relationship between
+classes, meaning if it makes sense to have all the features of superclass in subclass. Otherwise, 
+opt for either Composition or interface implementation.
+
+Subclass has three choices when dealing with methods inherited from a superclass:
+- **Use the default behavior:** The subclass can use the inherited method as is.
+- **Override the method:** The subclass can redefine the method to provide its own behavior.
+- **Extend the behavior:** The subclass can use the super keyword to access the superclass's and
+add its own behavior.
+
+### Super keyword
+- If the subclass needs to retain the behavior of the superclass while also adding its own logic,
+it can call the superclass's method using the super keyword.
+```java
+class Animal {
+    public void makeSound() {
+        System.out.println("The animal makes a sound");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    public void makeSound() {
+        super.makeSound();  // Call the superclass's method
+        System.out.println("The dog barks as well");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        dog.makeSound();  
+        // Output: 
+        // The animal makes a sound
+        // The dog barks as well
+    }
+}
+```
+- `super` can be used in constructors to initialize fields or run the constructor of the superclass.
+```java
+class Animal {
+    String name;
+    
+    public Animal(String name) {
+        this.name = name;
+        System.out.println("Animal constructor called");
+    }
+}
+
+class Dog extends Animal {
+    public Dog(String name) {
+        super(name);  // Calls the superclass's constructor
+        System.out.println("Dog constructor called");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog("Buddy");
+        // Output:
+        // Animal constructor called
+        // Dog constructor called
+    }
+}
+```
+- a subclass can access field/method in the superclass that is hidden due to the subclass defining its own version.
+```java
+class Animal {
+    String name = "Generic Animal";
+}
+
+class Dog extends Animal {
+    String name = "Dog";
+    
+    public void printNames() {
+        System.out.println("Animal name: " + super.name);  // Access superclass field
+        System.out.println("Dog name: " + this.name);  // Access subclass field
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        dog.printNames();
+        // Output:
+        // Animal name: Generic Animal
+        // Dog name: Dog
+    }
+}
+```
 
 ## Abstraction
-Abstraction: hiding of details, when you don't want user to worry about implementation and just to be aware about the features and how to use it.
-All super-types ar abstraction, they hide sub-types and their implementation details.
-It is suggested that super-types must be at the front and easy to use and understand.
+Abstraction hides internal implementation details and exposes only necessary functionality. Abstract
+classes and interfaces are the tools used to achieve abstraction in Java.
 
-It is suggested to not go with inheritance in its absolute form which means, if you need fearures of a class, do not inherit it, instead declare a field of that class-type
-and use those features via that field object reference. This is called class Composition.
-And in general concencus, Composition is way more adopted and used then inheritance to the extent that inheritance rearely found in real-wrold production code.
-The fall of  inheritance is credit to some ot the militations like, difficulty in debugging. We need to drill down the inheritance heirarchy to look for
-the function causing problems.
-Compostion leads to the practice of dependency injection, where objects of dependent classes are created by parent class and injected into child.
+## Composition Over Inheritance
+In many real-world applications, composition (where objects contain other objects) is preferred over
+inheritance. Composition leads to better flexibility and maintainability.
+```java
+class Engine {
+    void start() {
+        System.out.println("Engine started");
+    }
+}
+
+class Car {
+    private Engine engine = new Engine();  // Composition
+    void start() {
+        engine.start();
+    }
+}
+```
+Composition introduced Dependency Injection.
