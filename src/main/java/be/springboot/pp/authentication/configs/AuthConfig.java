@@ -1,6 +1,9 @@
 package be.springboot.pp.authentication.configs;
 
+import be.springboot.pp.authentication.filters.RequestForwardingValidationFilter;
+import be.springboot.pp.authentication.filters.SuccessfulAuthTrackingFilter;
 import be.springboot.pp.authentication.providers.SampleAuthenticationProvider;
+import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -76,18 +80,27 @@ public class AuthConfig {
     * */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, SampleAuthenticationProvider sampleAuthenticationProvider) throws Exception {
-        return http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()) // instead of authenticated()/hasAnyAuthority("write", "read") if permitAll() is used then all requests will pass through
-                .httpBasic(Customizer.withDefaults())
-                .authenticationProvider(sampleAuthenticationProvider)
-                .build();
 //        return http
 //                .authorizeHttpRequests((authorize) -> authorize
-//                        .requestMatchers(HttpMethod.GET, "/simple").hasAuthority("read")
-//                        .requestMatchers(HttpMethod.POST, "/auth").permitAll())
+//                        .anyRequest().authenticated()) // instead of authenticated()/hasAnyAuthority("write", "read") if permitAll() is used then all requests will pass through
 //                .httpBasic(Customizer.withDefaults())
 //                .authenticationProvider(sampleAuthenticationProvider)
 //                .build();
+        SecurityFilterChain sfc = http
+                .addFilterBefore(new RequestForwardingValidationFilter(), BasicAuthenticationFilter.class) // this filter will be added before BasicAuthenticationFilter
+//                .addFilterAt(loginAuthFilter, BasicAuthenticationFilter.class)
+                .addFilterAfter(new SuccessfulAuthTrackingFilter(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(HttpMethod.GET, "/simple").hasAuthority("read")
+                        .requestMatchers(HttpMethod.POST, "/auth").permitAll())
+                .httpBasic(Customizer.withDefaults())
+                .authenticationProvider(sampleAuthenticationProvider)
+                .build();
+
+        for (Filter filter : sfc.getFilters()) {
+            System.out.println("filter: " + filter.getClass().getName());
+        }
+
+        return sfc;
     }
 }
