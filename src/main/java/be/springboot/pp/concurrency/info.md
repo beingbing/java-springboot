@@ -27,3 +27,16 @@ race conditions.
 # Threads
 
 ## callstack
+Its simple stack of function calls that are waiting for called function to complete and pop to continue execution.
+
+Whatever popping functions returns/throws is caught by calling function if they are in the same callstack.
+
+Every thread has their own callstack. They are private to a thread, they are not shared.
+
+If thread A starts thread B then If thread B throws an exception, then thread A won't be able to catch it.
+
+Similarly, if we initialize a thread to do some computation concurrently then we can not get hold of the result of its computation.
+To get hold of it we can let the thread store computation result in a global/shared variable which is accessible from my process thread.
+And once the thread terminates, we can read the value stored in that variable.
+
+
