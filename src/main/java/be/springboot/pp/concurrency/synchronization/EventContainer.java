@@ -1,4 +1,4 @@
-package be.springboot.pp.concurrency;
+package be.springboot.pp.concurrency.synchronization;
 
 import java.util.Arrays;
 import java.util.List;

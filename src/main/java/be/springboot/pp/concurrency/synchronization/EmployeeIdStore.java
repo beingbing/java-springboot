@@ -1,4 +1,4 @@
-package be.springboot.pp.concurrency;
+package be.springboot.pp.concurrency.synchronization;
 
 import java.util.HashMap;
 import java.util.Map;

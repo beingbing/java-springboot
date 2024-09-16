@@ -1,4 +1,4 @@
-package be.springboot.pp.concurrency;
+package be.springboot.pp.concurrency.synchronization;
 
 public class Compound {
 
