@@ -8,14 +8,19 @@ public class NumberStore {
         this.number = 0;
     }
 
-    public void increment() {
+    public synchronized void increment() {
+        // critical section
         /*
         * its 3-step process, which is not atomic -
         * - fetch current value
         * - update value
         * - replaces old/stale value with new/updated value
         * */
-        this.number++;
+        // as all threads were given same instance of this class, hence there is only one 'this' variable across threads.
+        // there is a short cut as well, to place 'synchronized' in definition itself.
+//        synchronized(this) { // every thread encountering this line will get hold of 'this' variable and make it unavailable for other threads
+            this.number++;
+//        }   // this variable will be unavailable for other threads until here.
     }
 
     public int getNumber() {
