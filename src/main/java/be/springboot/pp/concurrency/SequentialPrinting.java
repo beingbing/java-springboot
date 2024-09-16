@@ -36,16 +36,16 @@ public class SequentialPrinting {
     * */
     public static void main(String[] args) {
         System.out.println(Thread.currentThread().getName() + " started");
-        Thread t0 = new Thread(new Worker(0));
-        Thread t1 = new Thread(new Worker(1));
-        Thread t2 = new Thread(new Worker(2));
-        Thread t3 = new Thread(new Worker(3));
-        Thread t4 = new Thread(new Worker(4));
-        Thread t5 = new Thread(new Worker(5));
-        Thread t6 = new Thread(new Worker(6));
-        Thread t7 = new Thread(new Worker(7));
-        Thread t8 = new Thread(new Worker(8));
-        Thread t9 = new Thread(new Worker(9));
+        Thread t0 = new Thread(new SequenceWorker(0));
+        Thread t1 = new Thread(new SequenceWorker(1));
+        Thread t2 = new Thread(new SequenceWorker(2));
+        Thread t3 = new Thread(new SequenceWorker(3));
+        Thread t4 = new Thread(new SequenceWorker(4));
+        Thread t5 = new Thread(new SequenceWorker(5));
+        Thread t6 = new Thread(new SequenceWorker(6));
+        Thread t7 = new Thread(new SequenceWorker(7));
+        Thread t8 = new Thread(new SequenceWorker(8));
+        Thread t9 = new Thread(new SequenceWorker(9));
         t0.start();
         t1.start();
         t2.start();
@@ -60,10 +60,10 @@ public class SequentialPrinting {
     }
 }
 
-class Worker implements Runnable {
+class SequenceWorker implements Runnable {
     private final int val;
 
-    public Worker(int val) {
+    public SequenceWorker(int val) {
         this.val = val;
     }
 

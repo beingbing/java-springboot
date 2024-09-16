@@ -1,4 +1,4 @@
-package be.springboot.pp.concurrency.synchronization;
+package be.springboot.pp.concurrency;
 
 /*
 * as soon as t1.start() is invoked, we have 2 independent threads for running concurrently.

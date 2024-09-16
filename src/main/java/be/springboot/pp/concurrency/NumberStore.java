@@ -1,4 +1,4 @@
-package be.springboot.pp.concurrency.synchronization;
+package be.springboot.pp.concurrency;
 
 public class NumberStore {
 
@@ -43,7 +43,6 @@ public class NumberStore {
     /*
     * This is the benefit of synchronized over other locking mechanisms,
     * it comes with in-build memory visibility problem resolution as well.
-    * 
     * */
     public synchronized int getNumber() {
         return this.number;
