@@ -39,4 +39,7 @@ Similarly, if we initialize a thread to do some computation concurrently then we
 To get hold of it we can let the thread store computation result in a global/shared variable which is accessible from my process thread.
 And once the thread terminates, we can read the value stored in that variable.
 
-
+# pitfalls of concurrency to avoid
+- race condition: when shared resource is not thread-safe then in multi-thread environment non deterministic thread execution
+pattern may lead to unpredictable value of shared resource.
+- 
