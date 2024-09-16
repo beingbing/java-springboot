@@ -67,3 +67,8 @@ This means we are constraining to run complete process locked inside critical se
 So, the tiniest and most quickest to finish the critical section, the better it is for reaping benifits of concurrency, hence
 find a sub-critical-section of a critical section which ensures thread safety and is shortest to complete.
 In other words, keep the lock on the lowest level.
+
+### when will race condition won't occur
+- when there is no shared resource among running threads.
+- when shared data is read only by nature
+- when shared data is mutable but critical section is synchronized (client should not worry about synchronization)
