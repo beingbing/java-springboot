@@ -2,6 +2,23 @@ package be.springboot.pp.concurrency.synchronization;
 
 public class NumberStore {
 
+    /*
+    * Although we didn't discuss it while going through race-condition cases,
+    * but memory visibility issue can happen here as well.
+    *
+    * But as we mentioned, volatile is rarely used in production code, so
+    * what is being done if not this to remedy memory visibility problem ?
+    *
+    * Synchronization is our saviour here as well. When a writer thread acquires
+    * lock and make changes, it synchronized block makes sure that memory flush
+    * happen, hence if in consecutive turns later reader threads comes in then
+    * the value read will definitely be the correct and most recent value.
+    *
+    * This signifies that we can do away with volatile keyword if shared resource
+    * is locked in under synchronized keyword for both reading and writing operation
+    * as well.
+    * */
+//    private volatile int number;
     private int number;
 
     public NumberStore() {
@@ -23,7 +40,12 @@ public class NumberStore {
 //        }   // this variable will be unavailable for other threads until here.
     }
 
-    public int getNumber() {
+    /*
+    * This is the benefit of synchronized over other locking mechanisms,
+    * it comes with in-build memory visibility problem resolution as well.
+    * 
+    * */
+    public synchronized int getNumber() {
         return this.number;
     }
 }
