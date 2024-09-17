@@ -5,17 +5,25 @@ import java.util.List;
 
 public class ProducerConsumer {
 
+    public static int producerCount = 2;
+
     public static void main(String[] args) {
         MyQueue queue = new MyQueue(50);
         Thread producer1 = new Thread(new Producer(queue));
         Thread producer2 = new Thread(new Producer(queue));
         Thread consumer1 = new Thread(new Consumer(queue));
         Thread consumer2 = new Thread(new Consumer(queue));
+        Thread consumer3 = new Thread(new Consumer(queue));
+        Thread consumer4 = new Thread(new Consumer(queue));
+        Thread consumer5 = new Thread(new Consumer(queue));
 
         producer1.start();
         consumer1.start();
         producer2.start();
         consumer2.start();
+        consumer3.start();
+        consumer4.start();
+        consumer5.start();
     }
 }
 
@@ -100,6 +108,7 @@ class Consumer implements Runnable {
     private Integer popIfQueueHadElements() {
         synchronized(queue) {
             while (queue.isEmpty()) {
+                if (ProducerConsumer.producerCount == 0) return -1;
                 try {
                     queue.wait();
                 } catch (InterruptedException e) {
@@ -108,6 +117,7 @@ class Consumer implements Runnable {
             }
             Integer val = queue.pop();
             queue.notifyAll();
+            if (val == -1) ProducerConsumer.producerCount--;
             return val;
         }
     }
