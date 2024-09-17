@@ -75,18 +75,31 @@ class SequenceWorker implements Runnable {
     * */
     @Override
     public void run() {
-        while (compare()) {}
-        System.out.println(Thread.currentThread().getName() + " " + val);
+//        while (compare()) {}
         synchronized(lock) {
+            while (val > SequentialPrinting.cur) {
+                try {
+                    System.out.println(Thread.currentThread().getName() + " " + val + " will wait");
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println(Thread.currentThread().getName() + " " + val + " will be scheduled -------");
             SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
+            lock.notifyAll();
         }
+        // System.out.println(Thread.currentThread().getName() + " " + val);
+        // synchronized(lock) {
+        //     SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
+        // }
     }
 
-    private boolean compare() {
-        boolean ans = false;
-        synchronized(lock) {
-            ans = val > SequentialPrinting.cur;
-        }
-        return ans;
-    }
+    // private boolean compare() {
+    //     boolean ans = false;
+    //     synchronized(lock) {
+    //         ans = val > SequentialPrinting.cur;
+    //     }
+    //     return ans;
+    // }
 }
