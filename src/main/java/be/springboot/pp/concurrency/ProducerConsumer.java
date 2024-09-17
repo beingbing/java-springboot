@@ -7,11 +7,15 @@ public class ProducerConsumer {
 
     public static void main(String[] args) {
         MyQueue queue = new MyQueue(50);
-        Thread producer = new Thread(new Producer(queue));
-        Thread consumer = new Thread(new Consumer(queue));
+        Thread producer1 = new Thread(new Producer(queue));
+        Thread producer2 = new Thread(new Producer(queue));
+        Thread consumer1 = new Thread(new Consumer(queue));
+        Thread consumer2 = new Thread(new Consumer(queue));
 
-        producer.start();
-        consumer.start();
+        producer1.start();
+        consumer1.start();
+        producer2.start();
+        consumer2.start();
     }
 }
 
@@ -63,7 +67,7 @@ class Producer implements Runnable {
 
     private void pushIfQueueHadCapacity(Integer i) {
         synchronized(queue) {
-            if (queue.isFull()) {
+            while (queue.isFull()) {
                 try {
                     queue.wait();
                 } catch (InterruptedException e) {
@@ -95,7 +99,7 @@ class Consumer implements Runnable {
 
     private Integer popIfQueueHadElements() {
         synchronized(queue) {
-            if (queue.isEmpty()) {
+            while (queue.isEmpty()) {
                 try {
                     queue.wait();
                 } catch (InterruptedException e) {
