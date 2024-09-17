@@ -61,14 +61,27 @@ class Producer implements Runnable {
         this.queue = queue;
     }
 
+    private void pushIfQueueHadCapacity(Integer i) {
+        synchronized(queue) {
+            if (queue.isFull()) {
+                try {
+                    queue.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            queue.push(i);
+            System.out.println("Producer: pushed: " + i);
+            queue.notifyAll();
+        }
+    }
+
     @Override
     public void run() {
         for (int i = 0; i < 100; i++) {
-            queue.push(i);
-            System.out.println("Producer: pushed: " + i);
+            pushIfQueueHadCapacity(i);
         }
-        queue.push(-1);
-        System.out.println("Producer: pushed: -1");
+        pushIfQueueHadCapacity(-1);
     }
 }
 
@@ -80,10 +93,25 @@ class Consumer implements Runnable {
         this.queue = queue;
     }
 
+    private Integer popIfQueueHadElements() {
+        synchronized(queue) {
+            if (queue.isEmpty()) {
+                try {
+                    queue.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Integer val = queue.pop();
+            queue.notifyAll();
+            return val;
+        }
+    }
+
     @Override
     public void run() {
         while (true) {
-            Integer val = queue.pop();
+            Integer val = popIfQueueHadElements();
             System.out.println("Consumer: popped: " + val);
             if (val == -1)
                 break;
