@@ -3,7 +3,7 @@ package be.springboot.pp.concurrency;
 public class SequentialPrinting {
 
     // adding volatile keyword here
-    public static volatile int cur = 0;
+    public static int cur = 0;
 
     /*
     * The main program never completes, it keeps on running and do not
@@ -36,16 +36,17 @@ public class SequentialPrinting {
     * */
     public static void main(String[] args) {
         System.out.println(Thread.currentThread().getName() + " started");
-        Thread t0 = new Thread(new SequenceWorker(0));
-        Thread t1 = new Thread(new SequenceWorker(1));
-        Thread t2 = new Thread(new SequenceWorker(2));
-        Thread t3 = new Thread(new SequenceWorker(3));
-        Thread t4 = new Thread(new SequenceWorker(4));
-        Thread t5 = new Thread(new SequenceWorker(5));
-        Thread t6 = new Thread(new SequenceWorker(6));
-        Thread t7 = new Thread(new SequenceWorker(7));
-        Thread t8 = new Thread(new SequenceWorker(8));
-        Thread t9 = new Thread(new SequenceWorker(9));
+        Object lock = new Object();
+        Thread t0 = new Thread(new SequenceWorker(0, lock));
+        Thread t1 = new Thread(new SequenceWorker(1, lock));
+        Thread t2 = new Thread(new SequenceWorker(2, lock));
+        Thread t3 = new Thread(new SequenceWorker(3, lock));
+        Thread t4 = new Thread(new SequenceWorker(4, lock));
+        Thread t5 = new Thread(new SequenceWorker(5, lock));
+        Thread t6 = new Thread(new SequenceWorker(6, lock));
+        Thread t7 = new Thread(new SequenceWorker(7, lock));
+        Thread t8 = new Thread(new SequenceWorker(8, lock));
+        Thread t9 = new Thread(new SequenceWorker(9, lock));
         t0.start();
         t1.start();
         t2.start();
@@ -62,15 +63,30 @@ public class SequentialPrinting {
 
 class SequenceWorker implements Runnable {
     private final int val;
+    private final Object lock;
 
-    public SequenceWorker(int val) {
+    public SequenceWorker(int val, Object lock) {
         this.val = val;
+        this.lock = lock;
     }
 
+    /*
+    * skipping using volatile keyword and instead using 'synchronized' keyword
+    * */
     @Override
     public void run() {
-        while (val > SequentialPrinting.cur) {}
+        while (compare()) {}
         System.out.println(Thread.currentThread().getName() + " " + val);
-        SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
+        synchronized(lock) {
+            SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
+        }
+    }
+
+    private boolean compare() {
+        boolean ans = false;
+        synchronized(lock) {
+            ans = val > SequentialPrinting.cur;
+        }
+        return ans;
     }
 }
