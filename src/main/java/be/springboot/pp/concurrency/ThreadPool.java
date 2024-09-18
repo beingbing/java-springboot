@@ -216,11 +216,6 @@ class BookKeeper implements Runnable {
                     System.out.println("BookKeeper: new Thread at id: " + i + " is: " + t);
                 }
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
