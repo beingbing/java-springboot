@@ -39,12 +39,28 @@ class Server {
     public FutureTask<Integer> getPairCount(List<Integer> nums, int sum) {
         Callable<Integer> callable = new PairCounter(nums, sum);
         FutureTask<Integer> futureTask = new FutureTask<>(callable);
+
+        /*
+        * When we are working on a grand scale, then instead of spinning a thread manually and
+        * managing a thread for each request (can scale to 1000-10k per second), we can use
+        * ThreadPool. Launching a new Thread everytime will put system under load, as managing
+        * this many objects will cause performance issues. That's why systems imposes a limit on
+        * number of threads allowed to be created. Also, every Thread which is created, has an
+        * associated cost of creation. And in our setup, after every request, we are destroying
+        * thread object, which is a bad investment on the cost incurred in creating it. Hence,
+        * it is better to keep a fixed count of threads running to entertain incoming requests
+        * rather then creating and destroying a thread every time. ThreadPool interface handles
+        * Threads in bulk and keep thread count to a said level without limiting or restricting
+        * incoming requests. The maintained Threads are called Thread Pool. Incoming requests are
+        * then put in a request queue, from which a thread from Thread Pool will consume, as soon
+        * as it becomes available.
+        * */
         new Thread(futureTask).start();
         return futureTask;
     }
 }
 
-class Simulator {
+class MultiThreadingSimulator {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         Server server = new Server();
