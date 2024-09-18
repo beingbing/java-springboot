@@ -37,6 +37,7 @@ class Simulator {
                 intFutureTaskMap.put(i, res);
             }
         }
+        threadPool.shutdown();
 
         for (int i = 0; i < 20; i++) {
             System.out.println("Simulator: main: intFutureTaskMap: Req #" + i + ": " + intFutureTaskMap.get(i).get());
@@ -56,7 +57,7 @@ public class ThreadPool {
 
 //    private final Thread bookKeeper;
 
-//    private boolean isShutDownInitiated;
+    private boolean isShutDownInitiated;
 
 //    private int yetToTerminalCount;
 
@@ -69,14 +70,21 @@ public class ThreadPool {
             threads.add(thread);
         }
         for (Thread thread : threads) thread.start();
+        this.isShutDownInitiated = false;
     }
 
-    public FutureTask<Integer> submit(Callable<Integer> task) throws InterruptedException {
+    public synchronized FutureTask<Integer> submit(Callable<Integer> task) throws InterruptedException {
+        if (this.isShutDownInitiated) throw new InterruptedException("Thread pool is shut down");
         FutureTask<Integer> futureTask = new FutureTask<>(task);
         this.taskQueue.put(futureTask);
         return futureTask;
     }
 
+    public synchronized void shutdown() throws InterruptedException {
+        this.isShutDownInitiated = true;
+        for (int i = 0; i < poolCapacity; i++)
+            taskQueue.put(new ShutterDown());
+    }
 
 }
 
@@ -101,12 +109,15 @@ class WorkerThread implements Runnable {
                 System.out.println("WorkerThread: run: starts: " + id);
             } catch (InterruptedException e) {
                 System.out.println("WorkerThread: run: ex: " + e.getMessage());
-            }
-            if (task == null) {
-                System.out.println("WorkerThread: run: ends: " + id);
-                break;
+            } catch (RuntimeException e) {
+                System.out.println("WorkerThread: run: ex: " + e.getMessage());
+                if (e.getMessage().contains("Thread pool is shut down")) {
+                    System.out.println("WorkerThread: run: ends: " + id);
+                    break;
+                }
             }
         }
+        System.out.println("WorkerThread: id: " + id + " ends");
     }
 }
 
@@ -122,5 +133,12 @@ class DummyCallback implements Callable<Integer> {
     public Integer call() throws Exception {
         Thread.sleep(2000);
         return 786;
+    }
+}
+
+class ShutterDown implements Runnable {
+    @Override
+    public void run() {
+        throw new RuntimeException("Thread pool is shut down");
     }
 }
