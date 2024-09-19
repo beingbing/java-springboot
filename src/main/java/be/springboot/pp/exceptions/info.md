@@ -68,3 +68,20 @@ Java exceptions are categorized into three main types:
 #### 1. Checked Exceptions
 The compiler forces the programmer to handle them using try-catch blocks or declaring them using the throws keyword.
 
+## Exception Hierarchy
+```
+Throwable
+├── Error (unrecoverable)
+└── Exception (recoverable)
+    ├── RuntimeException (unchecked)
+    └── [Other Checked Exceptions]
+```
+- **Throwable:** The superclass of all errors and exceptions.
+- **Error:** Represents serious problems that applications should not attempt to handle.
+- **Exception:** The superclass of all checked exceptions.
+- **RuntimeException:** The superclass of all unchecked exceptions. Thrown by Java runtime due to code bugs.
+
+### Note:
+Our goal is to reduce runtime exceptions by turning potential runtime issues into checked exceptions.
+This makes it clear that if an exception is thrown, it's due to misuse, not a code error, and the 
+program can do nothing to handle the scenario encountered.
