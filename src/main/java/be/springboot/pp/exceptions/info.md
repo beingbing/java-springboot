@@ -42,11 +42,15 @@ making exception handling more robust and manageable.
 
 ## Handling Exception
 ### Try-Catch Block
-Caller method catches and handles the exception by itself.
+Caller method catches and handles the exception by itself. Do Catch-blocks chaining such that the
+`Exception` type higher up the inheritance hierarchy is written after the Catch-block for lower ones.
+If done opposite, lower-level `Exception` type Catch-block will become unreachable.
 ```
 try {
     // Code that might throw an exception
-} catch (ExceptionType e) {
+} catch (ExceptionType1 | ExceptionType2 e) {
+    // Handling the exception
+} catch (ExceptionType3 e) {
     // Handling the exception
 } finally {
     // Optional block, executed regardless of exception
