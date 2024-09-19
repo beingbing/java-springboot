@@ -6,10 +6,44 @@ object to represent an error or unexpected event that occurs during runtime. Whe
 you can either deal with the exception or make it the calling method's problem. To make it a caller's
 problem, use the `Throwable` class.
 
+## Significance
+Without exceptions, we'd relied on coming up with our own construct to manage failure scenarios. One
+such approach might be to use error codes. Example -
+
+- `errCode = 0` // (initial value)
+- Try to open the file:
+  - If the file opens, try to read:
+    - If reading fails: `errCode = 2`
+  - Then try to close:
+    - If closing fails: `errCode = (errCode == 0) ? 3 : errCode | 3`
+- If the file doesn’t open: `errCode = 1`
+
+This approach quickly becomes messy (spaghetti code). The business logic gets tightly coupled with
+error handling, reducing readability and clarity. With exceptions, business logic is separated from
+error handling:
+```
+try {
+    // open the file
+    // read the content
+    // close the file
+} catch (FileOpenException e) {
+    // handle file open error
+} catch (ReadException e) {
+    // handle file read error
+} catch (CloseException e) {
+    // handle file close error
+}
+```
+But when no handler is found in caller method and an exception occurs, normal execution stops. The
+exception traverses the call stack, looking for a handler. If no handler is found, methods get popped
+from the stack until `main()` is reached. If `main()` is popped, the JVM terminates the program and
+logs the error. This backtracking mechanism is enabled by the `throws` clause, provided by Java Exceptions,
+making exception handling more robust and manageable.
+
 ## Handling Exception
 ### Try-Catch Block
 Caller method catches and handles the exception by itself.
-```java
+```
 try {
     // Code that might throw an exception
 } catch (ExceptionType e) {
