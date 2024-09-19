@@ -154,3 +154,25 @@ propagate through callback stack.
 - If Exception A is thrown because Exception B got produced, then B is suppressed and A becomes
 primary Exception. Usually happens when exception is thrown in `finally` block. Its a dreaded
 situation which led to the creation of `try-with-resource` block.
+
+## Automatic Resource Management (try-with-resource)
+```
+try (BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+      var out = new FileOutputSteam("output.txt")) {
+    // Work with the resource
+} catch (IOException e) {
+    // Handle the exception
+}
+```
+- Introduced in Java 7, this ensures that resources are closed automatically when the try block exits.
+- When multiple resources are opened, they are closed in the reverse order.
+- try-with-resource don't need a follow-up `catch` or `finally` block
+- if a `finally` block is added, it will be run after implicit `finally` block written by compiler
+- classes implementing `AutoCloseable` interface can only be used.
+- each resource declaration should be separated by `;`
+- scope of `try` block ends at `}` before any user-defined `catch/finally` block starts.
+
+#### Note:
+- `Closable` throws `IOException` and extends `AutoClosable` which throws `Exception`
+- with `try-with-resource` block, If Exception A is thrown while closing resources when Exception B got
+thrown. Then B remains the reported Exception and A gets suppressed. Which is what we desire.
