@@ -40,41 +40,27 @@ from the stack until `main()` is reached. If `main()` is popped, the JVM termina
 logs the error. This backtracking mechanism is enabled by the `throws` clause, provided by Java Exceptions,
 making exception handling more robust and manageable.
 
-## Handling Exception
-### Try-Catch Block
-Caller method catches and handles the exception by itself. Do Catch-blocks chaining such that the
-`Exception` type higher up the inheritance hierarchy is written after the Catch-block for lower ones.
-If done opposite, lower-level `Exception` type Catch-block will become unreachable.
-```
-try {
-    // Code that might throw an exception
-} catch (ExceptionType1 | ExceptionType2 e) {
-    // Handling the exception
-} catch (ExceptionType3 e) {
-    // Handling the exception
-} finally {
-    // Optional block, executed regardless of exception
-}
-```
-### Throws Clause
-Declares that a method can throw an exception, leaving it to the caller to handle.
-```java
-public void readFile() throws IOException {
-    // Code that might throw IOException
-}
-```
-#### Note:
-- We can transform an exception into another type as well, by handling it in a try-catch block and
-throwing the caught exception by wrapping it in another exception.
-- `try` block can be followed by `finally` block as well. In this case, `finally` will be ran and
-exception will propagate callback stack.
-- If thrown exception does not have a `catch` handler then `finally` will run and exception will
-propagate through callback stack.
-
 ## Types of Exceptions
 Java exceptions are categorized into three main types:
-#### 1. Checked Exceptions
-The compiler forces the programmer to handle them using try-catch blocks or declaring them using the throws keyword.
+
+### 1. Checked Exceptions
+Exceptions that are checked at compile-time. Java prepares our happy path for scenarios which the
+compiler is aware might happen if something goes wrong at runtime. The compiler forces the programmer
+to handle them using try-catch blocks or declaring them using the `throws` keyword. All of them inherit
+the `Exception` class. They are used for recoverable errors, where the programmer is expected to
+handle the situation gracefully. Example - `IOException`, `SQLException`, `FileNotFoundException`, etc.
+
+### 2. Unchecked Exceptions
+Exceptions that cannot be expected at compile-time. These exceptions are usually due to programming
+errors, such as logical mistakes or improper use of an API that usually cannot be recovered gracefully
+from and indicate bugs in the code. All of them inherit the `RuntimeException` class. They are logical
+unexpected implementation pitfalls that are not fatal to business logic.
+Example - `NullPointerException`, `ArrayIndexOutOfBoundsException`, `IllegalArgumentException`, etc.
+
+### 3. Errors
+Errors are serious problems that a reasonable application should not try to catch. They are usually
+external to the application and indicate serious system-level issues. Errors are typically unrecoverable,
+and the JVM should handle them. Example - `OutOfMemoryError`, `StackOverflowError`, `VirtualMachineError`, etc.
 
 ## Exception Hierarchy
 ```
@@ -89,9 +75,9 @@ Throwable
 - **Exception:** The superclass of all checked exceptions.
 - **RuntimeException:** The superclass of all unchecked exceptions. Thrown by Java runtime due to code bugs.
 
-### Note:
+#### Note:
 Our goal is to reduce runtime exceptions by turning potential runtime issues into checked exceptions.
-This makes it clear that if an exception is thrown, it's due to misuse, not a code error, and the 
+This makes it clear that if an exception is thrown, it's due to misuse, not a code error, and the
 program can do nothing to handle the scenario encountered.
 
 ## Creating Custom Exceptions
@@ -121,8 +107,50 @@ public class InvalidUserRuntimeException extends RuntimeException {
     }
 }
 ```
-
-### Note:
-- If Exception A is thrown because Exception B got produced, then A is suppressed and B is primary Exception.
+#### Note:
 - `message` should be clear, concise and self-explanatory error message.
 - usually custom exceptions are created to be a checked exception.
+
+## Handling Exception
+### Try-Catch Block
+Caller method catches and handles the exception by itself. Do Catch-blocks chaining such that the
+`Exception` type higher up the inheritance hierarchy is written after the Catch-block for lower ones.
+If done opposite, lower-level `Exception` type Catch-block will become unreachable.
+```
+try {
+    // Code that might throw an exception
+} catch (ExceptionType1 | ExceptionType2 e) {
+    // Handling the exception
+} catch (ExceptionType3 e) {
+    // Handling the exception
+} finally {
+    // Optional block, executed regardless of exception
+}
+```
+### Throws Clause
+Declares that a method can throw an exception, leaving it to the caller to handle.
+```java
+public void readFile() throws IOException {
+    // Code that might throw IOException
+}
+```
+### Throw Keyword
+explicitly throws an exception for caller to handle
+```
+if (condition) {
+    throw new IllegalArgumentException("Invalid argument");
+}
+```
+#### Note:
+- We can transform an exception into another type as well, by handling it in a try-catch block and
+throwing the caught exception by wrapping it in another exception.
+- `try` block can be followed by `finally` block as well. In this case, `finally` will be ran and
+exception will propagate callback stack.
+- If thrown exception does not have a `catch` handler then `finally` will run and exception will
+propagate through callback stack.
+- Before closing a resource in `finally` always check whether that resource object is not-null.
+- Nested try-catch always originates out of the need to open multiple resources in succession.
+- **BAD:** `finally` throwing exception before opened resources could be closed.
+- If Exception A is thrown because Exception B got produced, then B is suppressed and A becomes
+primary Exception. Usually happens when exception is thrown in `finally` block. Its a dreaded
+situation which led to the creation of `try-with-resource` block.
