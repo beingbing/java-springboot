@@ -85,3 +85,36 @@ Throwable
 Our goal is to reduce runtime exceptions by turning potential runtime issues into checked exceptions.
 This makes it clear that if an exception is thrown, it's due to misuse, not a code error, and the 
 program can do nothing to handle the scenario encountered.
+
+## Creating Custom Exceptions
+- Checked
+```java
+public class InvalidUserException extends Exception {
+    public InvalidUserException() {}
+
+  public InvalidUserException(String message) {
+    super(message);
+  }
+
+  public InvalidUserException(Throwable exception) {
+    super(exception);
+  }
+
+  public InvalidUserException(String message, Throwable exception) {
+    super(message, exception);
+  }
+}
+```
+- Unchecked
+```java
+public class InvalidUserRuntimeException extends RuntimeException {
+    public InvalidUserRuntimeException(String message) {
+        super(message);
+    }
+}
+```
+
+### Note:
+- If Exception A is thrown because Exception B got produced, then A is suppressed and B is primary Exception.
+- `message` should be clear, concise and self-explanatory error message.
+- usually custom exceptions are created to be a checked exception.
