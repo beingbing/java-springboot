@@ -1,8 +1,8 @@
 # Exceptions
 
 ## Introduction
-An exception is an event that disrupts the normal flow of a program's execution. Java uses it as an
-object to represent an error or unexpected event that occurs during runtime. When you write a method,
+An exception is an event that disrupts the normal flow of a program's execution. Java uses Exception
+Object to represent an error or unexpected event that occurs during runtime. When you write a method,
 you can either deal with the exception or make it the calling method's problem. To make it a caller's
 problem, use the `Throwable` class.
 
@@ -76,9 +76,11 @@ Throwable
 - **RuntimeException:** The superclass of all unchecked exceptions. Thrown by Java runtime due to code bugs.
 
 #### Note:
-Our goal is to reduce runtime exceptions by turning potential runtime issues into checked exceptions.
-This makes it clear that if an exception is thrown, it's due to misuse, not a code error, and the
-program can do nothing to handle the scenario encountered.
+Java provides checked exceptions to handle potential failures during implementation. However, some
+failures may still occur after the process goes live. Our goal is to eliminate runtime exceptions
+by identifying and predicting all possible process failures or mishandling, and converting them
+into custom checked exceptions. Once runtime failures are eradicated, we can create a clear action
+plan to address any reported issues.
 
 ## Creating Custom Exceptions
 - Checked
@@ -113,9 +115,9 @@ public class InvalidUserRuntimeException extends RuntimeException {
 
 ## Handling Exception
 ### Try-Catch Block
-Caller method catches and handles the exception by itself. Do Catch-blocks chaining such that the
-`Exception` type higher up the inheritance hierarchy is written after the Catch-block for lower ones.
-If done opposite, lower-level `Exception` type Catch-block will become unreachable.
+Caller method catches and handles the exception by itself. Ensure catch blocks for exceptions are
+ordered from most specific to most general. If a catch block for a generic exception is placed
+before a more specific one, the catch blocks of specific exceptions will become unreachable.
 ```
 try {
     // Code that might throw an exception
@@ -144,8 +146,8 @@ if (condition) {
 #### Note:
 - We can transform an exception into another type as well, by handling it in a try-catch block and
 throwing the caught exception by wrapping it in another exception.
-- `try` block can be followed by `finally` block as well. In this case, `finally` will be ran and
-exception will propagate callback stack.
+- `try` block can be followed by `finally` block as well. In this case, `finally` will be run and
+then exception will propagate callback stack.
 - If thrown exception does not have a `catch` handler then `finally` will run and exception will
 propagate through callback stack.
 - Before closing a resource in `finally` always check whether that resource object is not-null.
