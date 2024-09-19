@@ -64,8 +64,12 @@ public void readFile() throws IOException {
 }
 ```
 #### Note:
-We can transform an exception into another type as well, by handling it in a try-catch block and throwing the
-caught exception by wrapping it in another exception.
+- We can transform an exception into another type as well, by handling it in a try-catch block and
+throwing the caught exception by wrapping it in another exception.
+- `try` block can be followed by `finally` block as well. In this case, `finally` will be ran and
+exception will propagate callback stack.
+- If thrown exception does not have a `catch` handler then `finally` will run and exception will
+propagate through callback stack.
 
 ## Types of Exceptions
 Java exceptions are categorized into three main types:
