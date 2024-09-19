@@ -176,3 +176,12 @@ try (BufferedReader br = new BufferedReader(new FileReader("file.txt"));
 - `Closable` throws `IOException` and extends `AutoClosable` which throws `Exception`
 - with `try-with-resource` block, If Exception A is thrown while closing resources when Exception B got
 thrown. Then B remains the reported Exception and A gets suppressed. Which is what we desire.
+
+## Best practices -
+- throw early, catch later.
+- In the method where you realize for the first-time that an error can happen. That's the method where you
+have maximum information about the error.
+- never swallow thrown exception.
+- If you can not update method signature for checked exception, pass it wrapping in RuntimeException.
+- printStackTrace() gracefully prints the exception trace and move on to the code after catch() block.
+- use StackTraceElement[] for customized stack printing instead of logging stack as it is.
