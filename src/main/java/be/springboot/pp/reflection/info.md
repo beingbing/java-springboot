@@ -25,9 +25,12 @@ JVM starts its life cycle by setting up critical components of JRE. The setup ha
 #### 6. Loading and Linking Application Classes
 After JVM initialization, the process of loading user-defined classes begins:
 ##### a) Application Class Loading
-- The JVM searches the application class path for `.class` files and loads the user-defined class that contains the `main()` method.
+- The JVM searches the application classpath for `.class` files and loads the user-defined class that contains the `main()` method.
+- Loading of a class means, loading its blueprint (structure and attributes) into memory.
 - Other classes are loaded **on-demand** when referenced during execution.
-- If a class is referenced in `main()` but not yet loaded, the `ClassLoader` locates the `.class` file, loads it into memory, and creates a `Class` class object to hold the metadata of the user-defined class.
+- If a class is referenced in `main()` but not yet loaded, the `ClassLoader` locates the `.class` file, loads it into memory, and creates a `Class` class instance to hold the metadata (like class name, fields list, methods present, their access levels etc.) of the user-defined class.
+- The `Class` class has private constructors, only JVM can create its objects.
+- In a way, the `.class` file is a stringified object of the `Class` class.
 ##### b) Class Linking
 Once a class is loaded, it goes through a linking process that includes the following steps:
 - **Verification**: The bytecode is checked for any invalid or malicious code.
@@ -74,3 +77,67 @@ When all non-daemon threads terminate, the JVM begins the **shutdown process**:
 - **Finalization**: Any `finalize()` methods (if used) are invoked.
 - **Daemon Threads Termination**: All remaining daemon threads are stopped.
 - **JVM Exit**: The JVM terminates after the program’s execution is complete.
+
+## Conceptualization of Reflection
+Building on the JVM's ability to load classes on demand as instances of metaclass (`Class` class) at runtime, Java introduced the Reflection API. This feature allows us to manipulate these metaclass instances and dynamically load more such instances of classes during runtime.
+### Key Components
+In Java, every user-defined class is associated by an instance of `java.lang.Class` at runtime. Using this `Class` instance, we can:
+- Inspect and manipulate user-defined class instances, fields, and methods at runtime.
+- Create new instances of classes at runtime, even if constructors are private.
+- Access and modify fields and methods, even if they are private.
+- Invoke methods dynamically, without knowing their names at compile time.
+
+## Usage
+### Accessing metaclass instance
+- **using `.getClass()` method:** The `Object` class is a parent of every object in the inheritance hierarchy, it has `.getClass()`, which will return a metaclass instance.
+```java
+MyClass obj = new MyClass();
+Class<?> cls = obj.getClass();
+```
+- **Using `.class` syntax:**
+```java
+Class<?> cls = MyClass.class;
+```
+- **Using `Class.forName()` method:**
+```java
+Class<?> cls = Class.forName("com.example.MyClass");
+```
+### Accessing fields of a class
+```java
+Field field = cls.getDeclaredField("fieldName");
+field.setAccessible(true); // Allows access to private fields
+field.set(obj, value); // Set the value of the field
+```
+### Accessing and invoking methods
+```java
+Method method = cls.getDeclaredMethod("methodName", parameterTypes);
+method.setAccessible(true);
+method.invoke(obj, args); // Invoke the method on the object
+```
+### Accessing constructors
+```java
+Constructor<?> constructor = cls.getConstructor(parameterTypes);
+Object obj = constructor.newInstance(args); // Create a new instance
+```
+
+## Commonly used Reflection Classes
+- `java.lang.Class`: Provides access to metadata about the class (methods, fields, constructors, etc.).
+- `java.lang.reflect.Method`: Represents a method, allowing you to inspect and invoke it.
+- `java.lang.reflect.Field`: Represents a field, allowing you to inspect and modify it.
+- `java.lang.reflect.Constructor`: Represents a constructor, allowing you to instantiate objects dynamically.
+- `java.lang.reflect.Modifier`: Provides utility methods to check field, method, or class modifiers (public, private, etc.).
+
+## Disadvantages
+- **Performance Overhead**: Reflection is slower compared to direct method calls because of the dynamic nature of the process.
+- **Security Restrictions**: Accessing private fields and methods can violate encapsulation, which might be restricted by the Java SecurityManager.
+- **Complexity**: Reflection code can be harder to read, debug, and maintain.
+
+## Real-world use-case
+- used for dependency injection
+- ORM mapping
+- JSON serialization
+- JSON deserialization
+- Dynamic mocking of objects during unit testing
+- used for creating debuggers, IDEs, profilers and other tools.
+- tremendously used alongside Annotations.
+- used in creating dynamic proxies for interfaces
