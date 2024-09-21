@@ -123,6 +123,10 @@ These key lifecycles phases can be grouped into three broad categories -
             <url>s3://maven-repo.bharatpe.in/release</url>
         </repository>
     </repositories>
+  
+   <dependencyManagement>
+     <!-- put transitive dependency to resolve dependency conflict forcefully -->
+   </dependencyManagement>
 
     <distributionManagement> <!-- used to manage distribution in the build process -->
         <repository>
@@ -182,6 +186,12 @@ denoted by <scope></scope> in pom.xml file, to be put in <dependency></dependenc
 - **test**: dependencies needed for testing but not for the final build.
 - **system**: similar to provided but you must explicitly provide the JAR file.
 
+## configuring multi-module project
+**Objective:** Put `common` module as a dependency in `feature` project.
+- create `common` project and write necessary code.
+- use `mvn install` to install package in local repository
+- include `common` project's groupId, artifactId and version in `feature` project under dependencies.
+
 ## Miscellaneous
 - **Profiles**: Maven profiles allow you to define different build configurations based on the environment (e.g., dev, test, production)
 - **Parent POM**: Useful for managing multiple Maven projects. You can define a parent POM that sets up common dependencies and plugins.
@@ -189,3 +199,7 @@ denoted by <scope></scope> in pom.xml file, to be put in <dependency></dependenc
 - **Maven Wrapper (mvnw)**: It allows you to ship your project with a Maven binary so developers don't need to install Maven manually.
 - **Transitive dependencies**: Maven automatically resolves dependencies of dependencies. If you depend on Library A, and Library A depends on Library B, Maven will automatically download Library B as well.
 
+## What can go wrong
+- direct dependencies depending on different versions of same transitive dependency. Termed as **Dependency conflict**. During DFS, project version at a lower depth will be considered. And if both are on same level, then the one found first will be considered.
+- Never make transitive dependencies as direct dependency until you actually need it, just to resolve conflicts. Otherwise it might conflict in your other direct dependencies which were using it internally.
+- 
