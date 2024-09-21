@@ -98,10 +98,12 @@ Class<?> cls = obj.getClass();
 ```java
 Class<?> cls = MyClass.class;
 ```
-- **Using `Class.forName()` method:**
+- **Using `Class.forName()` method:** To dynamically load a class which didn't get loaded at compile-time. Might give `ClassNotFoundException` if bytecode is not found in application classpath.
 ```java
 Class<?> cls = Class.forName("com.example.MyClass");
+Object obj = cls.getDeclaredConstructor().newInstance();
 ```
+Many libraries like device drivers, DB drivers, MySql drivers, Oracle drives, etc., happen this way. They are supplied to use as bytecode to be put in runtime application classpath.
 ### Accessing fields of a class
 ```java
 Field field = cls.getDeclaredField("fieldName");
@@ -110,9 +112,9 @@ field.set(obj, value); // Set the value of the field
 ```
 ### Accessing and invoking methods
 ```java
-Method method = cls.getDeclaredMethod("methodName", parameterTypes);
+Method method = cls.getDeclaredMethod("methodName", new Class[] {int.class, String.class});
 method.setAccessible(true);
-method.invoke(obj, args); // Invoke the method on the object
+method.invoke(obj, new Object[] {10, "abc"}); // Invoke the method on the object
 ```
 ### Accessing constructors
 ```java

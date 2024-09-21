@@ -2,6 +2,7 @@ package be.springboot.pp.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +64,9 @@ class Serializer {
             serializedData +=  fieldName;
             serializedData +=  "\":\"";
             Object val = field.get(object);
+            int modifiers = field.getModifiers();
+            System.out.println("modifiers: " + modifiers);
+            System.out.println("modifiers decoded: " + Modifier.toString(modifiers));
             if (val.getClass().equals(Integer.class) || val.getClass().equals(Double.class)) {
             // if (val.getClass().isPrimitive()) {
                 serializedData +=  val;
