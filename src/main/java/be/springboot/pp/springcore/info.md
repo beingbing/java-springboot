@@ -9,6 +9,32 @@ Spring Core abstracts the creation and management of objects (beans), providing 
 configuration and wiring components together. It enables developers to focus on business logic rather
 than on boilerplate code for object management.
 
+## Why Spring ?
+Without using `new` keyword, Spring gives you objects on which instances of your class depends. If
+you need to create instance of class `A` which depends on objects of class `B`, `C` and `D` then
+you normally does -
+```
+A a = new A(new B(), new C(), new D());
+```
+Spring does the exact thing for you but without using the `new` keyword. Because, if code delays
+`new` keyword or doesn't involve it then code is extensible and easy to test. Spring does this
+by Dependency Injection of objects which it maintains in IoC container. So, Spring gets rid of
+`new` keyword completely, and make your code ideal for extensible hence ideal for writing a
+microservice in it, just by using IoC containeer and DI.
+
+### Q. why to use IoC container, why can't a manager class does the same thing ?
+The responsibility of object creation should not be given to a managing class, because to make all
+types of objects and return them, class needs to take input of request to create those object.
+Hence, manager class will be taking input a type which will represent what type of object it need
+to make. So, every time we add a new class in our code base we need to modify manager-class to be
+able to make objects of newly created class as well, when requested. This is a bad design. Also,
+if anyone of those classes whose objects managing-class make do not compile then none of the code
+will work. Which is also a big drawback. So, every class should be given readymade objects to use.
+And none of them should be given responsibility of creating them. This is called inversion of
+control. No classes have control over creation of objects. Objects are created by a client and
+provided to them to work on. And this phenomenon of injecting required objects inside constructor of
+a class by caller/client is called Constructor based Dependency Injection.
+
 ## Inversion of Control (IoC)
 Its a design principle where the control of object creation, configuration and lifecycle management
 is handled by container/framework, rather than being managed within the application code. Spring
@@ -37,9 +63,13 @@ UserService userService = context.getBean(UserService.class);
 
 ## Dependency Injection
 A design pattern where an object's dependencies (other objects it needs to function) are injected
-into it by the framework (the IoC container), rather than being created within the class. Its types are -
+into it by the framework (the IoC container), rather than being created within the class.
+To Inject polymorphic type, if more than one objects are present, then spring can resolve the object
+by variable-name, or use `@Qualifier` to explicitly tell spring which polymorphic object needs to
+be injected. Its types are -
 - Constructor based: Dependencies are provided through the constructor. **Most recommended because
 it makes the object immutable and enforces dependency injection at the time of object creation.**
+by using `Optional<>` on constructor arguments we can make some dependencies optional as well.
 ```java
 public class MyService {
     private final MyRepository repository;
@@ -50,19 +80,20 @@ public class MyService {
     }
 }
 ```
-- setter-based: Dependencies are provided through setter methods.
+- setter-based: Dependencies are provided through setter methods (good for optional dependencies)
 ```java
 public class MyService {
     private MyRepository repository;
 
-    @Autowired
+    @Autowired(required = false)
     public void setRepository(MyRepository repository) {
         this.repository = repository;
     }
 }
 ```
 - field-based (via reflection) (not recommended due to reduced testability): Dependencies are directly
-injected into fields using @Autowired
+injected into fields using @Autowired. It creates hidden dependency, as client initializing object
+using contructor will not know about DI done using reflection.
 ```java
 public class MyService {
     @Autowired
@@ -100,7 +131,8 @@ public class MyService {
     private MyRepository repository;
 }
 ```
-- Java-based configuration
+- Java-based configuration (can also be used to create bean manually for a third party class which is not in classpath)
+(can also be used to create a variant of already existing bean with another name and some customization)
 ```java
 @Configuration
 public class AppConfig {
@@ -183,7 +215,7 @@ public class LoggingAspect {
 ```
 
 ## Key annotations in Spring
-- `@Component`: indicates a class is a Spring-managed bean.
+- `@Component("userDefinedName")`: indicates a class is a Spring-managed bean. (putting it on interface is useless as interface can't be instantiated)
 - `@Autowired`: for dependency injection into a class
 - `@Bean`: used to define a bean in Java-based configuration.
 - `@Configuration`: indicates that a class contains Spring bean definitions.
@@ -308,10 +340,10 @@ the `main()` method to launch the application.
 ## Main Application Class
 Every Spring Boot application starts with a main class annotated with `@SpringBootApplication`.
 This annotation enables:
-- **Auto-configuration:** Automatically configures Spring components by scanning the classpath and
-setting up beans and components automatically. For example, if it detects `H2`/`MySQL` dependencies,
-it sets up database connections automatically.
-- **Component scanning:** Scans for Spring components like @Component, @Service, @Repository, etc.
+- **Auto-configuration:** `@EnableAutoConfiguration` Automatically configures Spring components by
+scanning the classpath and setting up beans and components automatically. For example, if it detects
+`H2`/`MySQL` dependencies, it sets up database connections automatically.
+- **Component scanning:** `@ComponentScan` Scans for Spring components like @Component, @Service, @Repository, etc.
 - **Spring Boot configuration:** Simplifies setting up Spring Boot features.
 ```java
 @SpringBootApplication
