@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 /*
 * TODO: Project Notes -
 * - If you are going to fail, then fail fast, why to fail slow.
-* - Spring's infrastructure, such as AOP (Aspect-Oriented Programming), for cross-cutting concerns. ??
+* - Now you know AOP, learn to implement it as well.
 * - objectMapper.convertValue() This method is generally used to convert between objects, not for deserializing JSON strings.
 * */
 
@@ -20,15 +20,15 @@ public class Application {
 		System.out.println("Hello Samar !!");
 
 		// printing all beans
-		// for (String bean : ctx.getBeanDefinitionNames()) {
-//			System.out.println(bean);
+		 for (String bean : ctx.getBeanDefinitionNames()) {
+			System.out.println(bean);
 
 			// to know all the beans initialized by spring under `HandlerExceptionResolver`
 			// Object obj = ctx.getBean(bean);
 			// if (obj instanceof HandlerExceptionResolver) {
 			// 	System.out.println(((HandlerExceptionResolver) obj).getClass().getName());
 			// }
-		// }
+		 }
 	}
 
 }
