@@ -150,7 +150,7 @@ public class DevelopmentConfig {
 Spring Core provides a way to publish and listen to events using the `ApplicationEventPublisher`.
 It helps in creating loosely coupled components.
 - Publishing an event:
-```java
+```
 applicationEventPublisher.publishEvent(new MyCustomEvent(this));
 ```
 - Listening to an event:
@@ -193,17 +193,269 @@ public class LoggingAspect {
 - `@RestController`: a combination of `@Controller` and `@ResponseBody` for REST APIs
 - `@EnableAutoConfiguration`: Automatically configures Spring Boot applications based on the classpath.
 
-## Spring Boot
-It is a module of Spring that allows you to create stand-alone applications with embedded servers.
-It removes boilerplate configurations and uses `convention over configuration`.
-It simplifies Spring development by providing an opinionated setup, where you don't need to define everything from scratch. It enables -
-- **Auto-configuration:** Spring Boot automatically configures the application beans based on the dependencies on the classpath and other conditions
-- **Embedded Servers:** You can run your application with an embedded server (e.g., Tomcat, Jetty), eliminating the need for external deployment.
-- **Opinionated Defaults:** It provides sensible defaults for configurations, which developers can override when necessary.
-- **Starter Dependencies:** Instead of adding individual dependencies, Spring Boot provides "starter"
-dependencies (like, `spring-boot-starter-web`) that includes everything you need for a particular use
-case.
+# Spring Boot
+Spring Boot is a Spring framework module designed to simplify the development, configuration, and
+deployment of Java applications. It removes much of the complexity involved in traditional Spring
+setups by using `convention over configuration`. Offering opinionated, minimal, default setups that
+reduce the need for extensive manual configuration. This allows developers to quickly start projects
+while still leveraging the full power of the Spring ecosystem.
 
+## Key Features
+- **Auto-configuration:** automatically configures beans based on project dependencies, classpath
+and other conditions
+- **Embedded Servers:** runs application with embedded server (e.g., Tomcat, Jetty), eliminating the
+need for external deployment.
+- **Opinionated Defaults:** provides sensible default configurations that can be customized when needed
+- **Starter Dependencies:** Instead of adding individual dependencies, Spring Boot provides "starter"
+dependencies (like, `spring-boot-starter-web`) that bundles everything you need to get started for
+a particular use case.
+- **Spring Boot CLI:** Command-line tool to quickly run and test Spring applications.
+- **Production-ready Features:** Monitoring, metrics, health checks, and more via Spring Boot Actuator.
+
+## Why Spring Boot
+Spring Boot reduces boilerplate code and manual configuration typically required in Spring:
+- No need to manually set up application servers.
+- Eliminates the need for configuring XML files for beans and dependencies.
+- Automatically manages dependencies and third-party library integration.
+- Offers production-ready features with minimal effort, enabling quick prototyping and deployment.
+
+In summary, Spring Boot streamlines Spring development by auto-configuring components, embedding
+servers, and providing defaults, allowing developers to focus on business logic rather than dealing
+with configuration details.
+
+## Spring Boot Auto-Configuration
+One of the most powerful features of Spring Boot is its auto-configuration ability. Automatically
+configures many components, like databases, web servers, and security, Based on the dependencies in
+your project/classpath, Spring Boot automatically configures the necessary parts. If it detects
+certain libraries, it will auto configure beans related to those libraries. For example:
+- If you add spring-boot-starter-web, Spring Boot will configure:
+  - A DispatcherServlet for handling web requests.
+  - A Jackson ObjectMapper for JSON serialization/deserialization.
+  - An embedded Tomcat server to serve the application.
+    You can always override this auto-configuration by defining your own configurations.
+
+## Setting Up a Spring Boot Project
+The simplest way to create a Spring Boot project is by using Spring Initializr (https://start.spring.io/).
+Here, you can select the dependencies you want and download the pre-configured project. You can also
+create the project manually by setting up a pom.xml (for Maven) or build.gradle (for Gradle). Here’s
+a basic pom.xml for Maven:
+```xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.0.0</version>
+</parent>
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+</dependencies>
+```
+The key part here is the starter dependencies
+
+## Starter Dependencies
+Spring Boot simplifies dependency management by providing starter dependencies. These are pre-defined
+collections of dependencies that include everything you need for a specific feature. For example:
+- **spring-boot-starter-web**: Includes dependencies to build web applications, like Spring MVC,
+Jackson (for JSON), and an embedded Tomcat server.
+- **spring-boot-starter-data-jpa**: Includes dependencies for working with Spring Data JPA and
+Hibernate for database interactions.
+- **spring-boot-starter-security**: For adding security to your application with Spring Security.
+- **spring-boot-starter-test**: For unit testing and integration testing using JUnit, Mockito, and Spring Test.
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+You don’t have to worry about adding individual dependencies like Jackson, Spring MVC, or Tomcat
+manually. Spring Boot handles that for you.
+
+## Embedded Web Servers
+Spring Boot comes with embedded servers (Tomcat by default) which allow you to run your web
+applications without deploying them to an external server.
+
+If you want to switch to Jetty or Undertow, you just include the respective starter:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jetty</artifactId>
+</dependency>
+```
+
+## Spring Boot Project Structure
+A typical Spring Boot project looks like -
+```
+src/
+  main/
+    java/
+      com/example/demo/
+        DemoApplication.java   // Main class
+    resources/
+      application.properties   // External configuration file
+  test/
+    java/
+      com/example/demo/        // Unit tests and integration tests
+pom.xml                        // Maven file for managing dependencies
+```
+- `DemoApplication.java`: This is the main entry point for the Spring Boot application. It contains
+the `main()` method to launch the application.
+- `application.properties`: This file holds configuration properties (like database settings, server port, etc.).
+- `pom.xml`: A Maven file (if using Maven) that lists all project dependencies.
+
+## Main Application Class
+Every Spring Boot application starts with a main class annotated with `@SpringBootApplication`.
+This annotation enables:
+- **Auto-configuration:** Automatically configures Spring components by scanning the classpath and
+setting up beans and components automatically. For example, if it detects `H2`/`MySQL` dependencies,
+it sets up database connections automatically.
+- **Component scanning:** Scans for Spring components like @Component, @Service, @Repository, etc.
+- **Spring Boot configuration:** Simplifies setting up Spring Boot features.
+```java
+@SpringBootApplication
+public class MySpringBootApp {
+    public static void main(String[] args) {
+        SpringApplication.run(MySpringBootApp.class, args); // starts the Spring Boot Application
+    }
+}
+```
+When you run this class, Spring Boot starts your application and the embedded server (e.g., Tomcat).
+
+## Spring Boot Configuration
+Spring Boot allows you to configure application settings by externalizing configuration into a
+properties or YAML file. These properties can be set without modifying the application code.
+- application.properties:
+```properties
+server.port=8081
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+spring.datasource.username=root
+spring.datasource.password=pass
+```
+- application.yml:
+```yaml
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydb
+    username: root
+    password: pass
+```
+The application.properties or application.yml file is loaded automatically by Spring Boot and
+configures your application without requiring boilerplate code. Spring Boot allows you to override
+properties with environment variables or command-line arguments, making it highly customizable.
+
+## Spring Boot Profiles
+Spring Boot supports profiles to allow you to run different configurations for different environments
+(e.g., development, testing, production). You can define different `application.properties` or
+`application.yml` files like `application-dev.properties`, `application-prod.properties`.
+
+To activate a profile, you can use:
+- command-line arguments
+```shell
+java -jar myapp.jar --spring.profiles.active=prod
+```
+- In `application.properties`
+```properties
+spring.profiles.active=prod
+```
+
+## Spring Boot DevTools
+Spring Boot DevTools provides utilities to improve the development experience. This includes automatic
+restart when files change, live reloading, and configurations for speeding up the development process.
+To add DevTools:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+## Spring Boot Actuator
+Spring Boot Actuator provides production-ready features to help monitor and manage your application.
+It includes features like health checks, metrics, and auditing. To include Actuator:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+Some of the common Actuator endpoints are:
+- `/actuator/health`: Shows the health of the application.
+- `/actuator/metrics`: Shows various metrics like memory usage, HTTP request counts, etc.
+- `/actuator/info`: Displays arbitrary application information.
+- `/actuator/loggers`: allows you to view and change log levels dynamically.
+
+## Customizing Spring Boot
+Even though Spring Boot provides a lot of default configurations, you can still customize it by either:
+- Defining custom configurations in your `@Configuration` classes.
+- Overriding properties in `application.properties`.
+For example, to change the default server port:
+```properties
+server.port=8081
+```
+Or programmatically via SpringApplication:
+```java
+@SpringBootApplication
+public class MyApp {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(MyApp.class);
+        app.setDefaultProperties(Collections.singletonMap("server.port", "8081"));
+        app.run(args);
+    }
+}
+```
+
+## Testing in Spring Boot
+Spring Boot simplifies testing by including spring-boot-starter-test. This provides:
+- **JUnit 5**: For writing unit and integration tests.
+- **Spring Test**: To easily load the application context for testing.
+- **Mockito**: For creating mocks.
+  You can annotate your test classes with `@SpringBootTest` to load the full application context.
+```java
+@SpringBootTest
+class MyApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+}
+```
+For specific slices of the application, Spring Boot provides specialized annotations like:
+- `@WebMvcTest`: To test only the web layer.
+- `@DataJpaTest`: To test only the JPA layer.
+
+## Spring Boot Security
+Spring Boot also supports Spring Security, making it easy to add authentication and authorization
+to your application. Add the `spring-boot-starter-security` dependency:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+This will secure all endpoints by default, requiring authentication for every request.
+
+You can configure custom security rules by defining a `SecurityConfig` class and extending `WebSecurityConfigurerAdapter`:
+```java
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+            .antMatchers("/public").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .formLogin();
+    }
+}
+```
+
+# Other Spring Modules
 ## Spring MVC (Model-View-Controller)
 spring MVC is used to build web applications by separating the logic into three components - model,
 view and controller.
