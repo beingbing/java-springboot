@@ -162,6 +162,8 @@ automatic dependency injection. It offers several modes of autowiring:
 - **ByName:** Matches by the bean's name.
 - **Constructor:** Uses constructor injection.
 
+While creating beans, make sure that it is Directed Acyclic Graph (DAG), otherwise Spring won't be able to resolve cyclic dependencies and application will fail. Keep in mind that even if two entites exhibit one-to-one mapping during entity modelling, still it is not necessary to translate that relation during object Modelling. Example, Customer and Cart entites exhibit one-to-one mapping as entity, but it is not necessary that Customer object has a Cart object as well as Cart object has a Customer object. Avoid these situations.
+
 ## Spring Profiles
 Spring Profiles allow you to define different configurations for different environments (development,
 production, etc.). For example, you might want to use different data sources for development and
