@@ -24,6 +24,15 @@ public class ExternalConfigs {
     * classes but they are not annotated for bean creation. So how to create their beans ?
     *
     * Both of them have the same solution, which is @Configuration/@Bean classes.
+    *
+    * the name of the bean created by @Bean will be taken from the name of the method on
+    * which @Bean annotation is applied. If want, we can put @Qualifier to give a different
+    * name.
+    *
+    * This construct is widely used to create custom beans to solve Problem 2 and 3. As it
+    * has one more benifit of having creational responsibility, which makes us the ultimate
+    * client, who will create beans and instruct IoC container to use ofr injection. This
+    * way we can do a lot more customization on manually created beans.
     * */
 
     @Bean
