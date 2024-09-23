@@ -220,7 +220,7 @@ public class LoggingAspect {
 - `@Component("userDefinedName")`: indicates a class is a Spring-managed bean. (putting it on interface is useless as interface can't be instantiated)
 - `@Autowired`: for dependency injection into a class
 - `@Bean`: used to define a bean within a `@Configuration` class in Java-based configuration.
-- `@Configuration`: A specialization of `@Component` indicates that a class contains Spring bean definitions.
+- `@Configuration`: A specialization of `@Component` indicates that a class contains custom Spring bean definitions.
 - `@Service`: A specialization of `@Component` for service-layer beans.
 - `@Repository`: A specialization of `@Component` for data access objects (DAOs).
 - `@Controller`: A specialization of `@Component` indicating a class as a Spring MVC controller
