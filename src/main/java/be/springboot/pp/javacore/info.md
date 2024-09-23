@@ -303,25 +303,26 @@ Composition introduced Dependency Injection.
 Annotations in Java is a feature that provides a way to add metadata (extra information) to code that can be processed by the compiler or used at runtime without affecting the actual code.
 
 ## What Are Annotations?
-Annotations are special markers for metadata that provide additional information about a program but don't directly affect the code's execution. Annotations can be applied to classes, methods, variables, parameters, and packages to inform the compiler or runtime environment how to handle these elements.
+Annotations are special markers for metadata that provide additional information about a program but don't directly affect the code's execution. Annotations can be applied to classes/interfaces/enums, methods, fields, variables, parameters, and packages to inform the compiler or runtime environment (JVM) how to handle these elements. They do not change the behavior of the annotated code directly but allow tools to process the code differently.
 ```java
 @Override
 public String toString() {
     return "MyClass";
 }
 ```
-In this example, @Override tells the compiler that the method overrides a method in the superclass.
+In this example, `@Override` tells the compiler that `toString()` overrides a method in the superclass.
 
 ## Built-in Annotations in Java
 Java provides several built-in annotations that are commonly used:
 - `@Override`: Indicates that a method overrides a method in a superclass.
 - `@Deprecated`: Marks a method as deprecated, meaning it shouldn't be used because it might be removed in future versions.
 - `@SuppressWarnings`: Tells the compiler to ignore specific warnings (e.g., unchecked warnings).
+- `@SafeVarargs`: Indicates that the method does not perform unsafe operations on its varargs parameters.
 
 ## Meta-Annotations
 Meta-annotations are annotations that apply to other annotations. Java provides several important meta-annotations:
-- `@Target`: Specifies where the annotation can be applied (e.g., method, field, class).
-- `@Retention`: Defines how long the annotation information is kept (e.g., source, runtime).
+- `@Target`: Specifies where the annotation can be applied (allowed values - `TYPE`, `FIELD`, `METHOD`, `PARAMETER`, `CONSTRUCTOR`, `LOCAL_VARIABLE`, `ANNOTATION_TYPE`, `PACKAGE`, `TYPE_PARAMETER`, `TYPE_USE`).
+- `@Retention`: Defines how long the annotation information is kept (allowed values - `SOURCE`, `CLASS`, `RUNTIME`).
 - `@Documented`: Marks the annotation for inclusion in Javadoc.
 - `@Inherited`: Allows subclasses to inherit the annotation from the parent class.
 ```java
@@ -372,8 +373,8 @@ public class MyClass {
 
 ## Retention Policy
 The retention policy determines when the annotation is available:
-- **SOURCE:** Annotations are discarded by the compiler and not included in the compiled `.class` file. They are only useful during development (e.g., `@Override`).
-- **CLASS:** Annotations are stored in the `.class` file but not available at runtime.
+- **SOURCE:** Annotations are discarded by the compiler and not included in the compiled `.class` file. They are only useful during development (e.g., `@Override`, `@SuppressWarnings`).
+- **CLASS:** Annotations are stored in the `.class` file but not available at runtime (e.g. `@Deprecated`).
 - **RUNTIME:** Annotations are available at runtime, allowing them to be accessed using reflection. This is essential for frameworks like Spring.
 ```java
 @Retention(RetentionPolicy.RUNTIME)
