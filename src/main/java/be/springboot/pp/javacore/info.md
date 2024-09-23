@@ -298,3 +298,108 @@ class Car {
 }
 ```
 Composition introduced Dependency Injection.
+
+# Annotations
+Annotations in Java is a feature that provides a way to add metadata (extra information) to code that can be processed by the compiler or used at runtime without affecting the actual code.
+
+## What Are Annotations?
+Annotations are special markers for metadata that provide additional information about a program but don't directly affect the code's execution. Annotations can be applied to classes, methods, variables, parameters, and packages to inform the compiler or runtime environment how to handle these elements.
+```java
+@Override
+public String toString() {
+    return "MyClass";
+}
+```
+In this example, @Override tells the compiler that the method overrides a method in the superclass.
+
+## Built-in Annotations in Java
+Java provides several built-in annotations that are commonly used:
+- `@Override`: Indicates that a method overrides a method in a superclass.
+- `@Deprecated`: Marks a method as deprecated, meaning it shouldn't be used because it might be removed in future versions.
+- `@SuppressWarnings`: Tells the compiler to ignore specific warnings (e.g., unchecked warnings).
+
+## Meta-Annotations
+Meta-annotations are annotations that apply to other annotations. Java provides several important meta-annotations:
+- `@Target`: Specifies where the annotation can be applied (e.g., method, field, class).
+- `@Retention`: Defines how long the annotation information is kept (e.g., source, runtime).
+- `@Documented`: Marks the annotation for inclusion in Javadoc.
+- `@Inherited`: Allows subclasses to inherit the annotation from the parent class.
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyCustomAnnotation {
+    String value();
+}
+```
+
+## Creating Custom Annotations
+You can define your own annotations in Java by using the @interface keyword. Custom annotations can have elements (like properties) that act as parameters.
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    String name();
+    int value() default 1;
+}
+```
+- `@Target(ElementType.METHOD)` means this annotation can only be applied to methods.
+- `@Retention(RetentionPolicy.RUNTIME)` means the annotation will be available at runtime for reflection.
+You can apply this annotation to a method like -
+```java
+@MyAnnotation(name = "test", value = 5)
+public void myMethod() {
+    // Method implementation
+}
+```
+
+## Annotation Elements
+Annotation elements are similar to method declarations but act as parameters for the annotation. They can have:
+- **Default values:** If not provided, the default value is used.
+- **Restrictions:** Only primitive types, String, Class, enums, and annotations can be used as element types.
+```java
+public @interface CustomAnnotation {
+    String name();
+    int age() default 18; // default value
+}
+
+// usage
+@CustomAnnotation(name = "John")
+public class MyClass {
+    // Class code
+}
+// In this case, age will default to 18 unless specified.
+```
+
+## Retention Policy
+The retention policy determines when the annotation is available:
+- **SOURCE:** Annotations are discarded by the compiler and not included in the compiled `.class` file. They are only useful during development (e.g., `@Override`).
+- **CLASS:** Annotations are stored in the `.class` file but not available at runtime.
+- **RUNTIME:** Annotations are available at runtime, allowing them to be accessed using reflection. This is essential for frameworks like Spring.
+```java
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyRuntimeAnnotation {
+}
+```
+
+## Processing Annotations with Reflection
+Annotations with `@Retention(RetentionPolicy.RUNTIME)` can be accessed at runtime via Java Reflection. This is useful for frameworks like Spring, which use annotations to configure and manage beans dynamically.
+```java
+@MyAnnotation(name = "test", value = 5)
+public class MyClass {
+    public static void main(String[] args) throws Exception {
+        MyClass obj = new MyClass();
+        Method method = obj.getClass().getMethod("myMethod");
+
+        if (method.isAnnotationPresent(MyAnnotation.class)) {
+            MyAnnotation annotation = method.getAnnotation(MyAnnotation.class);
+            System.out.println("Name: " + annotation.name());
+            System.out.println("Value: " + annotation.value());
+        }
+    }
+
+    @MyAnnotation(name = "test", value = 5)
+    public void myMethod() {
+        // Some code
+    }
+}
+```
