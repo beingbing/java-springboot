@@ -16,7 +16,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 * - If you are going to fail, then fail fast, why to fail slow.
 * - Now you know AOP, learn to implement it as well.
 * - objectMapper.convertValue() This method is generally used to convert between objects, not for deserializing JSON strings.
-* - Front Controller Design Pattern
+* - Front Controller Design Pattern. example - DispatcherServlet
+* - Functional-interface and default methods
 * */
 
 // apart from application-local.properties, now test.properties will be considered as well

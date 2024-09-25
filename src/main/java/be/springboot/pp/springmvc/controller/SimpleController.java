@@ -9,30 +9,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /*
-* @Controller and @ResponseBody need to be used together for an HTTP response to an HTTP request,
-* or we can use @RestController.
-*
-* @Controller handed over request made on a particular path to process it and return a result.
-* Due to Spring-MVC, A controller looks out for a View, we need to explicitly
-* specify that we want an HTTP Response instead.
-*
 * For cases, where you add @Controller instead of @RestController look at `ViewReturningController`
 * to understand how Spring-MVC works.
 * */
 
-//@Controller (MVC controller)
-@RestController // (REST controller)
+@RestController
 @RequestMapping("/simple")
 public class SimpleController {
 
     @GetMapping
-//    @ResponseBody: signals to send response in HTTP response body
-//    otherwise response goes as an HTML template
     public String hello() {
         System.out.println("Received request");
         return "hello";
-//      @Controller will look for hello.html in resources folder by default
-//      @RestController/@ResponseBody will treat it as a result to directly include in HTTP response
     }
 
     // http://localhost:8080/simple/greet?name=samar&say=goodbye
@@ -52,9 +40,6 @@ public class SimpleController {
     }
 
     // http://localhost:8080/simple/result
-    // `produces` indicate what kind/format of result we will be producing in response
-    // HTTPMessageConverter interface is used to convert response in desired format
-    // the dependency `jackson-dataformat-xml` would have added an implementation which is capable of converting Java object to XML
     @RequestMapping(method = RequestMethod.GET, value = "result", produces = "application/xml") // lets experiment, produces = "application/json")
     public ExamResult getExamResult() {
         System.out.println("Received result request");
@@ -63,7 +48,6 @@ public class SimpleController {
 
 //    @NotGoodPractice:1
     // curl --location 'http://localhost:8080/simple/result/examine?physics=70&chemistry=65&maths=80'
-    // Spring binds parameters into ExamResult object by using its constructor
     @RequestMapping(method = RequestMethod.GET, value = "result/examine")
     public String examineResult(ExamResult examResult) {
         System.out.println("Received examine result request with " + examResult);

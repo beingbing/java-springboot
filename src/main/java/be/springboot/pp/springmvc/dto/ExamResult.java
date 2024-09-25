@@ -14,6 +14,11 @@ public class ExamResult {
         this.maths = maths;
     }
 
+    /*
+    * we need getters and setters because jackson need to access private fields
+    * for serialization and deserialization.
+    * */
+
     public int getTotal() {
         return total;
     }

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 /*
-* When Spring will create Bean, `addInterceptors()` will be called and
+* When Spring creates Bean, `addInterceptors()` will be called and
 * custom interceptors will be added in the registry.
 *
 * Interceptors are executed in the order they are added.
