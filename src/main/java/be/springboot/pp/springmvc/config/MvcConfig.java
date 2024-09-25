@@ -54,12 +54,6 @@ public class MvcConfig implements WebMvcConfigurer {
         handlers.add(sampleReturnTypeHandler);
     }
 
-    /*
-    * In previous example, we created a Bean of our exception-handler and have used `HandlerExceptionResolverComposite` which
-    * is a Bean. Spring will initialize our exception-handler as a Bean, and during runtime exception-resolvers list is populated.
-    *
-    * But here, we are creating our own exception-handler bean and adding it in the list of exception-resolvers.
-    * */
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
         resolvers.add(new CustomExceptionHandler());

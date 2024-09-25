@@ -9,13 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 
-/*
-* `HandlerExceptionResolverComposite` is composed of other resolvers and this one is responsible for resolving exceptions
-* Spring initializes it as a Bean, and during runtime exception-resolvers list is populated.
-* */
-
-//@Order(0) // to give it preference in precedence order
-//@Component // will see alternative to defining this handler
+@Component // alternative is to add it manually in the list of exception resolvers using `WebMvcConfigurer`
 public class CustomExceptionHandler implements HandlerExceptionResolver {
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {

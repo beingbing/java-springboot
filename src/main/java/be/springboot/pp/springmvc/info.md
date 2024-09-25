@@ -263,36 +263,114 @@ public class UrlConfig {
 ```
 
 ## Design Pattern: Front Controller
-### Note
-All code snippets in below section and its subsections are for explanation purposes. You will never write these classes in real-world. Spring MVC default configuration is satisfactory for every kind of application that may exist. Just use `@RestController` and other related annotations to use these features.
-
 The Front Controller pattern is used in Spring MVC to centralize request handling. It is composed of -
 - `HandlerExecutionChain`
 - `HandlerInterceptor`
 - `HandlerMethod`
 - `HandlerAdapter`
+- `HandlerExceptionResolver`
 ```java
 public class DispatcherServlet extends FrameworkServlet {
     @Override
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // Finds the handler (controller method) based on URL
-        HandlerExecutionChain mappedHandler = getHandler(request);
-        if (mappedHandler == null) {
-            this.noHandlerFound(request, response);
-            return;
+        Exception dispatchException = null;
+        ModelAndView processedResponse = null;
+        HandlerExecutionChain mappedHandler = null;
+        try {
+            // Finds the handler (controller method) based on URL
+            mappedHandler = getHandler(request);
+            if (mappedHandler == null) {
+                this.noHandlerFound(request, response);
+                return;
+            }
+  
+            // Executes preHandle() methods of all interceptors
+            // If any of them returns false, then request fails 
+            if (!mappedHandler.applyPreHandle(request, response)) return;
+  
+            // Executes the handler (controller)
+            HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+            processedResponse = ha.handle(request, response, mappedHandler.getHandler());
+  
+            // Executes postHandle() methods of interceptors
+            mappedHandler.applyPostHandle(request, response, processedResponse);
+        } catch (Exception ex) { // execution of controller method / interceptor threw an error. As postHandle() won't run now, so exception lead to interceptor.afterCompletion() invocation
+            dispatchException = ex;
+        } catch (Throwable er) { // an error occured, Spring is going down
+            dispatchException = new ServletException("Handler dispatch failed: " + er, er);
         }
-        
-        // Executes preHandle() methods of all interceptors
-        // If any of them returns false, then request fails 
-        if (!mappedHandler.applyPreHandle(request, response)) return;
-        
-        // Executes the handler (controller)
-        HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
-        ModelAndView processedResponse = ha.handle(request, response, mappedHandler.getHandler());
-
-        // Executes postHandle() methods of interceptors
-        mappedHandler.applyPostHandle(request, response, processedResponse);
+        processDispatchResult(request, response, mappedHandler, processedResponse, (Exception)dispatchException);
     }
+
+    private void processDispatchResult(HttpServletRequest request, HttpServletResponse response, @Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv, @Nullable Exception exception) throws Exception {
+        boolean errorView = false;
+        if (exception != null) {
+            Object handler = mappedHandler != null ? mappedHandler.getHandler() : null;
+            mv = this.processHandlerException(request, response, handler, exception);
+            errorView = mv != null;
+        }
+    
+        if (mv != null && !mv.wasCleared()) {
+            this.render(mv, request, response);
+            if (errorView) {
+                WebUtils.clearErrorRequestAttributes(request);
+            }
+        }
+    }
+
+    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) throws Exception {
+        request.removeAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
+
+        // Reset the response buffer safely
+        try {
+              response.resetBuffer();
+        } catch (IllegalStateException ignored) {
+              // Buffer was already committed, no need to handle
+        }
+
+        ModelAndView modelAndView = null;
+  
+        // Try resolving the exception with available exception resolvers
+        if (this.handlerExceptionResolvers != null) {
+            for (HandlerExceptionResolver resolver : handlerExceptionResolvers) {
+                modelAndView = resolver.resolveException(request, response, handler, ex); // proper response is already prepared here and ready to go back
+                if (modelAndView != null) { // it should not be null but empty for RestController
+                    break;                  // if found null, then CustomExceptionHandler won't be considered
+                }
+            }
+        }
+  
+        // Handle the case where a resolved ModelAndView is found, meaning an implementation of HandlerExceptionResolver is present
+        if (modelAndView != null) {
+            if (modelAndView.isEmpty()) {
+                request.setAttribute(EXCEPTION_ATTRIBUTE, ex);
+                return null; // Return null if no view is required (this will always be the case in @RestController
+            }
+    
+            // Set a default view name if none is set
+//            if (!modelAndView.hasView()) {
+//                String defaultViewName = getDefaultViewName(request);
+//                if (defaultViewName != null) {
+//                    modelAndView.setViewName(defaultViewName);
+//                }
+//            }
+    
+            // Log trace or debug level messages if enabled
+//            if (logger.isTraceEnabled()) {
+//                logger.trace("Using resolved error view: " + modelAndView, ex);
+//            } else if (logger.isDebugEnabled()) {
+//                logger.debug("Using resolved error view: " + modelAndView);
+//            }
+    
+            // Expose error attributes to the request
+            WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
+            return modelAndView;
+        }
+  
+        // If no resolution was found, rethrow the exception
+        throw ex;
+    }
+
 
     @Override
     protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
@@ -345,12 +423,15 @@ public class WebConfig implements WebMvcConfigurer {
 }
 ```
 
+#### Note
+All code snippets in below section and its subsections are for explanation purposes. You will never write these classes in real-world. Spring MVC default configuration is satisfactory for every kind of application that may exist. Just use `@RestController` and other related annotations to use these features.
+
 ### HandlerExecutionChain
 During creation of `ApplicationContext`, a list of `HandlerMapping` is built, which is a mapping of route against handler. Once the route of request is resolved, `handler` associated with it is fetch, from which complete `HandlerExecutionChain` is extracted. It is composed of -
 - The list of eligible interceptors (in order of declaration) that will be executed before (`preHandle()`) and after (`postHandle()`) the handler.
 - The `handler` (controller method) that will process the request.
 ```java
-@Component
+@Component // create a bean of your custom mapping and it will be included in handler mapping list prepared during creation of application-context
 public class CustomHandlerMapping implements HandlerMapping {
 
     @Override
@@ -383,14 +464,114 @@ class SecondHandler {
   }
 }
 ```
+### HandlerExceptionResolver
+`HandlerExceptionResolver` is a lower-level interface that allows customization of how exceptions thrown by a `handler` during execution are translated into an HTTP response. Implementing this interface and mapping specific exceptions to HTTP responses across controllers, enables better control over error reporting in a real-world applications.
+
+#### Overview
+By default, Spring MVC configures a composite resolver, `HandlerExceptionResolverComposite`, which is populated with several built-in resolvers. These default resolvers handle pre-defined exceptions. If you want to handle user-defined exceptions like this, you need to provide an implementation of `HandlerExceptionResolver` and register it in the `applicationContext`.
+
+#### Handling User-defined Exceptions
+- define a user-defined exception
+```java
+public class CustomException extends Exception {
+    private final String message;
+
+    public CustomException(String message) {
+        super(message);
+        this.message = message;
+    }
+}
+```
+- Write a `HandlerExceptionResolver` implementation for user-defined exception
+```java
+@Component // it already got registered
+public class CustomExceptionHandler implements HandlerExceptionResolver {
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        if (ex instanceof CustomException) {
+            try {
+                response.getWriter().write("{\"errorType\": \"" + ex.getClass().getSimpleName() + "\", \"message\": \"" + ex.getMessage() + "\"}");
+                response.setStatus(404);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return new ModelAndView();  // Returning an empty ModelAndView signifies handling completion
+        }
+        return null;  // Returning null passes control to other resolvers if CustomException isn't found
+    }
+}
+```
+- Registering the `HandlerExceptionResolver` implementation
+    - create it as a Spring bean using `@Component` (already done above)
+    - manually adding it to the list of resolvers using `WebMvcConfigurer`
+```java
+// @Component // alternative to creating a bean of it is adding an instance of this class manually to the list
+public class CustomExceptionHandler implements HandlerExceptionResolver {
+  // .
+  // .
+  // .
+}
+
+@Component
+public class MvcConfig implements WebMvcConfigurer {
+  @Override
+  public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+    resolvers.add(new CustomExceptionHandler());
+    for (HandlerExceptionResolver her : resolvers) // to see all the implementations which are present in the list
+      System.out.println("Exception resolvers: " + her.getClass().getName()); // you may only find default implementations like `HandlerExceptionResolverComposite` and `DefaultHandlerExceptionResolver`
+  }
+}
+```
+
+#### `HandlerExceptionResolverComposite`
+When the list of `HandlerExceptionResolver` instances was inspected, only a few beans like `HandlerExceptionResolverComposite` and `DefaultErrorAttributes` are present in the list. This is because `HandlerExceptionResolverComposite` is a composite class that manages multiple `HandlerExceptionResolver` instances internally. It delegates the actual resolution process to its list of resolvers, which may include custom or default resolvers.
+
+During application startup, Spring automatically registers several built-in resolvers inside the field list of `HandlerExceptionResolverComposite`, including:
+- `DefaultHandlerExceptionResolver`: Handles standard exceptions like `HttpRequestMethodNotSupportedException`, `HttpMediaTypeNotSupportedException`, etc.
+- `ResponseStatusExceptionResolver`: Resolves exceptions annotated with `@ResponseStatus`.
+- `ExceptionHandlerExceptionResolver`: Resolves exceptions using `@ExceptionHandler` methods in controllers.
+
+The `resolveException()` method in `HandlerExceptionResolverComposite` works similarly to the `processHandlerException()` method in DispatcherServlet, delegating the handling process to the appropriate `HandlerExceptionResolver`.
+
+#### Built-in Exception Handling by User-defined Exception Handler
+If a user-defined exception handler for a user-defined exception is not found, then a built-in exception handler present in `HandlerExceptionResolverComposite` will handle the user-defined exception. All built-in implementations either directly implement `HandlerExceptionResolver` or subclass of it `AbstractHandlerExceptionResolver`. Mostly, the implementation which is picked is `DefaultHandlerExceptionResolver`. This class contains a long if-else ladder, checking the type of the exception using the instanceof operator, and gracefully converting various built-in exceptions into HTTP error responses. For example, `HttpMessageNotReadableException` is handled out of the box by this resolver. In below example, we handle both user-defined exceptions and default exception like `HttpMessageNotReadableException` using our user-defined exception handler:
+```java
+class SecondHandler {
+
+  public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, CustomException {
+    if (request.getParameter("token") == null)
+      throw new HttpMessageNotReadableException("please provide a token");
+
+    response.getWriter().write("i am coming from SecondHandler");
+  }
+}
+
+@Order(0) // need to add it to ensures the custom handler has higher precedence than the default ones
+@Component
+public class CustomExceptionHandler implements HandlerExceptionResolver {
+  @Override
+  public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+//    if (ex instanceof CustomException) {
+      try {
+        response.getWriter().write("{\"errorType\": \"" + ex.getClass().getSimpleName() + "\", \"message\": \"" + ex.getMessage() + "\"}");
+        response.setStatus(404);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+//      }
+//      return new ModelAndView(); // if null is sent then this class won't be considered as a candidate to handle CustomException
+    }
+    return null;
+  }
+}
+```
 
 ### HandlerMethod
 In Java, when a method is loaded into memory, it's converted into an object of the `Method` class. In a Spring MVC controller, methods mapped with the `@RequestMapping` annotation are first converted into `Method` instances, then upcasted to be an instance of class `Object` and last, wrapped inside an instance of`HandlerMethod` class. This upcasted `Object` instance inside  `HandlerMethod` object is designated as the `handler` by the DispatcherServlet.
 
 ### HandlerAdapter
-Since the `handler` is cast to an `Object`, it lacks any specific functionality. To manage this, the `DispatcherServlet` maintains a list of `HandlerAdapter` instances, each specialized in handling a particular type of `handler`. The `DispatcherServlet` checks each `HandlerAdapter` by calling its `supports()` method to see if it can handle the given `handler` after downcasting. Once a suitable `HandlerAdapter` is found, it is kept ready. After successfully executing all `preHandle()` methods of the `HandlerInterceptor` instances in the `HandlerExecutionChain` for that `handler`, the `DispatcherServlet` calls the `handle()` method of the `HandlerAdapter`, which adapts the `handler` and triggers the appropriate logic to generate a response.
+Since the `handler` is cast to an `Object`, it lacks any specific functionality. To manage this, the `DispatcherServlet` maintains a list of `HandlerAdapter` instances, built during creation of `ApplicationContext`, each specialized in handling a particular type of `handler`. The `DispatcherServlet` checks each `HandlerAdapter` by calling its `supports()` method to see if it can handle the given `handler` after downcasting. Once a suitable `HandlerAdapter` is found, it is kept ready. After successfully executing all `preHandle()` methods of the `HandlerInterceptor` instances in the `HandlerExecutionChain` for that `handler`, the `DispatcherServlet` calls the `handle()` method of the `HandlerAdapter`, which adapts the `handler` and triggers the appropriate logic to generate a response.
 ```java
-@Component
+@Component // create a bean of it and it will be included in list of hadler-adapter prepared during creation of application-context
 public class CustomAdapter implements HandlerAdapter {
     @Override
     public boolean supports(Object handler) {
@@ -401,6 +582,26 @@ public class CustomAdapter implements HandlerAdapter {
     public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("CustomAdapter: handle " + request);
         ((CustomHandler)handler).handleRequest(request, response);
+        return null;
+    }
+
+    @Override
+    public long getLastModified(HttpServletRequest request, Object handler) {
+        return 0;
+    }
+}
+
+@Component
+public class SecondAdapter implements HandlerAdapter {
+    @Override
+    public boolean supports(Object handler) {
+        return handler instanceof SecondHandler;
+    }
+
+    @Override
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("SecondHandler: handle " + request);
+        ((SecondHandler)handler).handleRequest(request, response);
         return null;
     }
 
@@ -506,8 +707,11 @@ flowchart TD;
     J --> K{`HandlerAdapter` found ?}
     K -- NO --> L[Throw `ServletException`]
     L --> E
-    K -- YES --> M[process request and generate response]
-    M --> N{ModelAndView returned ?}
+    K -- YES --> M{request processed and response generated ?}
+    M -- NO --> U[Interceptor `afterCompletion` executed]
+    U --> V[Exception Resolver generate graceful failure response]
+    V --> E
+    M -- YES --> N{ModelAndView returned ?}
     N -- NO --> O[Interceptors `postHandle` the response]
     O --> P((Success Response))
     N -- YES --> Q{ModelAndView has View ?}
@@ -652,7 +856,6 @@ spring.thymeleaf.suffix=.html
 ### Note:
 - In DispatcherServlet default configuration, `MultipartResolver` resolves requests containing some chunks of a huge file sent in multiple parts in separate requests.
 - In DispatcherServlet default configuration,`LocaleResolver` resolves the locality of the request so that timezone, language and characters interpretation can be done.
-- when exception is thrown we need to translate it to an error code and return suitable response, `DispatcherServlet` has `HandlerExceptionResolver` for this purpose.
 
 ## Filter
 - very similar to spring-mvc `Interceptors` there is another component by the name `Filter` which is a part of TomCat.
