@@ -20,11 +20,6 @@ public class CustomAdapter implements HandlerAdapter {
         return null;
     }
 
-    /**
-     * @param request
-     * @param handler
-     * @deprecated
-     */
     @Override
     public long getLastModified(HttpServletRequest request, Object handler) {
         return 0;

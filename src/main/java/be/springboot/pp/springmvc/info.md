@@ -157,14 +157,30 @@ public String examineResult(ExamResult examResult) {
 }
 ```
 
+### Custom Controllers
+```java
+public class BadController implements Controller {
+
+    // http://localhost:8080/add?a=10&b=20
+    @Override
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int sum = Integer.parseInt(request.getParameter("a")) + Integer.parseInt(request.getParameter("b"));
+        response.getWriter().write("{ sum: " + sum + " } ");
+        return null;
+    }
+}
+```
+
+#### Note:
+Always go for annotations, never write a controller using interface like shown above. This is for explanation purposes.
+
 ## @RequestMapping
-It is a functional interface and has features like -
-- `path`/`value`: It maps HTTP request path to handler methods written in MVC controllers.
-- `method`: type of HTTP request method
+It is an annotation used to map HTTP requests to specific handler methods within a controller. It allows the configuration of various request-handling properties and has features like -
+- `path`/`value`: Maps the request URL to a specific method in the controller.
+- `method`: Specifies the type of HTTP request (e.g., GET, POST).
 - `produces`: response type produced while serialization
 - `consumes`: request body type that is consumed for deserialization
-- `headers`
-- `params`
+- `headers` and `params`: Allows filtering requests based on specific HTTP headers or parameters.
 ```java
 @Controller
 @RequestMapping("/api")
@@ -178,8 +194,32 @@ public class ApiController {
 }
 ```
 
+## Request Handling
+This process is primarily managed by two key classes:
+- `RequestMappingHandlerMapping`: It is responsible for identifying which `HandlerMethod` (controller method) should handle a specific request. It matches requests to methods based on URL patterns, HTTP methods, parameters, headers, and other attributes specified by the `@RequestMapping` annotation.
+- `RequestMappingHandlerAdapter`: Once a `HandlerMethod` is identified, it takes over. It is responsible for invocation and processing both the input and the output.
+
+### Role of `RequestMappingHandlerAdapter`
+The process includes:
+#### **Resolving method arguments** (using `HandlerMethodArgumentResolver`)
+- The `RequestMappingHandlerAdapter` maintains a list of implementations of the `HandlerMethodArgumentResolver` interface.
+- When a controller method is called, it often needs to accept various parameters from the HTTP request (such as query parameters, path variables, request bodies, session attributes, etc.).
+- The `RequestMappingHandlerAdapter` loops over each parameter of the `HandlerMethod` and consults the list of `HandlerMethodArgumentResolver` implementations to find one that can resolve the argument for each parameter.
+- Examples include `RequestParamMethodArgumentResolver` for handling query parameters (annotated with `@RequestParam`), `PathVariableMethodArgumentResolver` for path variables (annotated with `@PathVariable`), and `RequestBodyMethodArgumentResolver` for request bodies (annotated with `@RequestBody`).
+#### **Invoking the identified controller (`HandlerMethod`) method**
+#### **Handling the return value (using `HandlerMethodReturnValueHandler`)**
+- Once `HandlerMethod` invocation finishes and a response is returned. The `RequestMappingHandlerAdapter` processes the return value using implementations of the `HandlerMethodReturnValueHandler` interface.
+- The `RequestMappingHandlerAdapter` maintains a list of implementations of the `HandlerMethodReturnValueHandler` interface.
+- Example, the `ViewNameMethodReturnValueHandler` handles `String` return types, while `RequestResponseBodyMethodProcessor` handles objects returned as JSON or XML, and if a `ResponseEntity` is returned, it is processed by the `HttpEntityMethodProcessor`.
+#### **Composing and Dispatching the HTTP response**
+
+### Additional Components Involved:
+- **`HttpMessageConverter`**: Used in the serialization of request bodies (from JSON, XML, etc.) into objects, and response bodies from objects into JSON, XML, etc.
+- **`ModelAndView`**: Often used when the return value is a logical view name and model data needs to be passed to the view layer for rendering.
+- **`HandlerInterceptor`**: Intercepts the HTTP request before and after the handler method is executed.
+
 ## @RequestParam
-example on how to use it -
+With this, Spring will automatically bind params in HTTP request to method argument variables. Example on how to use it -
 ```java
 // http://localhost:8080/simple/greet?name=samar&say=goodbye
 @RequestMapping(method = RequestMethod.GET, value = "/greet")
@@ -204,8 +244,28 @@ public String greetWithPath(
 
 ## DispatcherServlet
 Servlet exists in TomCat, and it hands over received request to the DispatcherServlet. It is the Front Controller and starting point of a Spring MVC framework. After receiving request, DispatcherServlet routes it to the appropriate controller based on the `HandlerMapping` (controller methods mapped to a route). Inside DispatcherServlet, The request goes through chain of interceptors (in order of declaration) before reaching the controller and the response generated also travels back through all the interceptors (in reverse order of declaration) before being handed over to the servlet.
+```java
+@Configuration
+@EnableWebMvc // it will signal spring-mvc to review this class, as it will not go looking for custom beans
+public class UrlConfig {
+
+    // once spring-mvc receives the signal, it will review the class and when it finds a HandlerMapping
+    // then spring-mvc will inject this mapping in the list of HandlerMapping of DispatcherServlet
+    @Bean
+    public HandlerMapping createHandlerMapping() {
+        SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
+        Map<String, Controller> urlMap = new HashMap<>();
+        urlMap.put("/add", new BadController());
+        handlerMapping.setUrlMap(urlMap);
+        return handlerMapping;
+    }
+}
+```
 
 ## Design Pattern: Front Controller
+### Note
+All code snippets in below section and its subsections are for explanation purposes. You will never write these classes in real-world. Spring MVC default configuration is satisfactory for every kind of application that may exist. Just use `@RestController` and other related annotations to use these features.
+
 The Front Controller pattern is used in Spring MVC to centralize request handling. It is composed of -
 - `HandlerExecutionChain`
 - `HandlerInterceptor`
@@ -216,18 +276,56 @@ public class DispatcherServlet extends FrameworkServlet {
     @Override
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Finds the handler (controller method) based on URL
-        HandlerExecutionChain handler = getHandler(request);
+        HandlerExecutionChain mappedHandler = getHandler(request);
+        if (mappedHandler == null) {
+            this.noHandlerFound(request, response);
+            return;
+        }
         
-        // Executes preHandle() methods of interceptors
-        preHandle(request, response, handler);
+        // Executes preHandle() methods of all interceptors
+        // If any of them returns false, then request fails 
+        if (!mappedHandler.applyPreHandle(request, response)) return;
         
         // Executes the handler (controller)
-        HandlerAdapter ha = getHandlerAdapter(handler.getHandler());
-        ha.handle(request, response, handler.getHandler());
+        HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+        ModelAndView processedResponse = ha.handle(request, response, mappedHandler.getHandler());
 
         // Executes postHandle() methods of interceptors
-        postHandle(request, response, handler);
+        mappedHandler.applyPostHandle(request, response, processedResponse);
     }
+
+    @Override
+    protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        if (handlerMappings == null) {
+            return null;
+        }
+    
+        for (HandlerMapping handlerMapping : handlerMappings) {
+            HandlerExecutionChain handlerChain = handlerMapping.getHandler(request);
+            if (handlerChain != null) {
+                return handlerChain;
+            }
+        }
+    
+        return null;
+    }
+    
+    @Override
+    protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+        if (handlerAdapters == null) {
+            throw new ServletException("No adapter for handler [" + handler + "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
+        }
+  
+        for (HandlerAdapter adapter : handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
+            }
+        }
+  
+        throw new ServletException("No adapter for handler [" + handler + "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
+    }
+
+
 }
 
 @Configuration
@@ -251,12 +349,67 @@ public class WebConfig implements WebMvcConfigurer {
 During creation of `ApplicationContext`, a list of `HandlerMapping` is built, which is a mapping of route against handler. Once the route of request is resolved, `handler` associated with it is fetch, from which complete `HandlerExecutionChain` is extracted. It is composed of -
 - The list of eligible interceptors (in order of declaration) that will be executed before (`preHandle()`) and after (`postHandle()`) the handler.
 - The `handler` (controller method) that will process the request.
+```java
+@Component
+public class CustomHandlerMapping implements HandlerMapping {
+
+    @Override
+    public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        if (request.getRequestURI().contains("/custom")) {
+            if (request.getMethod().equals("GET")) {
+                return new HandlerExecutionChain(new SecondHandler());
+            }
+            return new HandlerExecutionChain(new CustomHandler());
+        }
+
+        return null;
+    }
+}
+
+class CustomHandler {
+
+  public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.getWriter().write("Hello from CustomHandler");
+  }
+}
+
+class SecondHandler {
+
+  public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, CustomException {
+    if (request.getParameter("token") == null)
+      throw new CustomException("please provide a token");
+
+    response.getWriter().write("i am coming from SecondHandler");
+  }
+}
+```
 
 ### HandlerMethod
 In Java, when a method is loaded into memory, it's converted into an object of the `Method` class. In a Spring MVC controller, methods mapped with the `@RequestMapping` annotation are first converted into `Method` instances, then upcasted to be an instance of class `Object` and last, wrapped inside an instance of`HandlerMethod` class. This upcasted `Object` instance inside  `HandlerMethod` object is designated as the `handler` by the DispatcherServlet.
 
 ### HandlerAdapter
 Since the `handler` is cast to an `Object`, it lacks any specific functionality. To manage this, the `DispatcherServlet` maintains a list of `HandlerAdapter` instances, each specialized in handling a particular type of `handler`. The `DispatcherServlet` checks each `HandlerAdapter` by calling its `supports()` method to see if it can handle the given `handler` after downcasting. Once a suitable `HandlerAdapter` is found, it is kept ready. After successfully executing all `preHandle()` methods of the `HandlerInterceptor` instances in the `HandlerExecutionChain` for that `handler`, the `DispatcherServlet` calls the `handle()` method of the `HandlerAdapter`, which adapts the `handler` and triggers the appropriate logic to generate a response.
+```java
+@Component
+public class CustomAdapter implements HandlerAdapter {
+    @Override
+    public boolean supports(Object handler) {
+        return handler instanceof CustomHandler;
+    }
+
+    @Override
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("CustomAdapter: handle " + request);
+        ((CustomHandler)handler).handleRequest(request, response);
+        return null;
+    }
+
+    @Override
+    public long getLastModified(HttpServletRequest request, Object handler) {
+        return 0;
+    }
+}
+```
 
 ### HandlerInterceptor
 Interceptors in Spring MVC allow cross-cutting concerns to be addressed. Concerns which are not a part of business logic, like logging the request, measuring API latency, adding missing header or processing headers. They allow you to intercept and process requests before they reach the controller or after the response is generated. They are created by implementing `HandlerInterceptor` interface, and registered using `WebMvcConfigurer`. It has three method declarations -
@@ -335,17 +488,134 @@ public class MvcConfig implements WebMvcConfigurer {
   - `Received result request`
   - `SimpleInterceptor: postHandle` org.apache.catalina.connector.RequestFacade@6cba67d9
 
+### Flow Chart
+```mermaid
+flowchart TD;
+    A((Incoming Request)) --> B[Determine `HandlerMethod` from `HandlerMapping`]
+    B --> S[Derive `MethodExecutionChain` from `HandlerMethod`]
+    S --> C{`HandlerExecutionChain` found ?}
+    C -- NO --> D[Send 404]
+    D --> E((Failure Response))
+    C -- YES --> F{...more... Interceptors available ?}
+    F --> |YES| G[Interceptor `preHandle` the request]
+    G --> H{request passed ?}
+    H -- YES --> F
+    H -- NO --> I[Send 400]
+    I --> E
+    F -- NO --> J[Determine `HandlerAdapter`]
+    J --> K{`HandlerAdapter` found ?}
+    K -- NO --> L[Throw `ServletException`]
+    L --> E
+    K -- YES --> M[process request and generate response]
+    M --> N{ModelAndView returned ?}
+    N -- NO --> O[Interceptors `postHandle` the response]
+    O --> P((Success Response))
+    N -- YES --> Q{ModelAndView has View ?}
+    Q -- NO --> O
+    Q -- YES --> R[RequestToViewNameTranslator to get template file name]
+    R --> T[set template in response]
+    T --> O
+```
+
 ## Views
 
-### View Rendering in Spring
-When a controller returns a view name (typically as a String), it's the job of the `ViewResolver` to resolve this logical view name into an actual view implementation, such as an HTML page, JSP, Thymeleaf template, or even a JSON/XML output. `HandlerMethodReturnValueHandler` is the interface responsible for handling return types of controller methods. One of its implementation `ViewNameMethodReturnValueHandler` is responsible for looking out for a view file if a controller returned type is a String. But if return type is not a `String` but a custom object then we need to define how to handle it by defining our own Custom Handler.
+### Return View For Rendering in @Controller
+When a controller returns a view name (typically as a `String`), it's the job of the `ViewResolver` to resolve this logical view name into an actual view implementation, such as an HTML page, JSP, Thymeleaf template, or even a JSON/XML output.
+
+Spring MVC uses the `HandlerMethodReturnValueHandler` interface to handle the return values of controller methods. One of its key implementations, `ViewNameMethodReturnValueHandler`, processes return values that are of type `String`, treating them as logical view names. It then resolves these view names to their corresponding view files (such as .jsp or .html), allowing Spring to render the view with the provided model data.
+
+If the return type is not a `String` but a custom object (such as a `Book` or `User`), then we need to write and configure one according to the requirement by implementing `HandlerMethodReturnValueHandler`. Example, assume we return object of below class in response of an `@Controller` annotated class -
+```java
+public class SampleReturnType {
+    private String message;
+
+    public SampleReturnType(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+```
 
 ### Usage of HandlerMethodReturnValueHandler
 `HandlerMethodReturnValueHandler` interface has two method declarations -
 - `boolean supportsReturnType(MethodParameter returnType)` is used to check if a return type is supported by an implementation. `MethodParameter` is used to get the return type of the `HandlerMethod`. It might be `String.class`, `Double.class`, etc.
 - if the above method returns `true`, then we have `handleReturnValue()` which is used to then handle the supported return type.
 
-### Custom Return Type Handlers
+### Custom Return Type Handlers for @Controller HandlerMethod return type
+```java
+public class SampleReturnTypeHandler implements HandlerMethodReturnValueHandler {
+
+    @Override
+    public boolean supportsReturnType(MethodParameter returnType) {
+        return SampleReturnType.class.isAssignableFrom(returnType.getParameterType());
+    }
+
+    @Override
+    public void handleReturnValue(Object returnValue, MethodParameter returnType, 
+                                  ModelAndViewContainer mavContainer, NativeWebRequest webRequest) 
+                                  throws Exception {
+        SampleReturnType sampleResponse = (SampleReturnType) returnValue;
+        // Custom handling logic (e.g., writing directly to HTTP response)
+        HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
+        response.getWriter().write(((SampleReturnType) returnValue).getMessage());
+        mavContainer.setRequestHandled(true);
+    }
+}
+
+@Component
+public class MvcConfig implements WebMvcConfigurer {
+
+  @Autowired
+  private SampleReturnTypeHandler sampleReturnTypeHandler;
+
+  @Override
+  public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {
+    handlers.add(sampleReturnTypeHandler);
+  }
+}
+```
+
+### Return Custom Objects in @RestController
+By default, when you return a custom object from a controller instead of a `ResponseEntity` instance, Spring MVC serializes it to the response body. This is typically done using the `@ResponseBody` annotation, or it's inferred when you're using `@RestController`, but you can't control the status code or headers.
+
+`RequestResponseBodyMethodProcessor` is the implementation of `HandlerMethodReturnValueHandler` which comes in action when a custom object is returned by controller annotated with `@ResponseBody` or when it's inferred inside `@RestController`.
+
+The custom object is serialized using a `HttpMessageConverter` (like `MappingJackson2HttpMessageConverter` for JSON) and sent as the response.
+
+### Return `ResponseEntity` in @RestController
+`ResponseEntity` is a special return type in Spring that gives you more fine-grained control and allows you to customize the entire HTTP response, including the status, headers, and body. If you do not explicitly set these fields, Spring provides sensible defaults. For example:
+- Status code defaults to 200 OK if not set explicitly.
+- Headers include default headers like `Content-Type: application/json` for JSON responses.
+- Body will be the serialized object.
+```java
+@GetMapping("/book")
+public ResponseEntity<Book> getBook() {
+    Book book = new Book("Spring in Action", "Samar Taj Shaikh");
+    
+    return ResponseEntity.status(HttpStatus.CREATED)  // Status set to 201 Created
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .body(book);  // The actual body (JSON)
+}
+```
+```shell
+HTTP/1.1 200 OK
+Custom-Header: CustomValue
+Content-Type: application/json
+
+{
+  "title": "Spring in Action",
+  "author": "Samar Taj Shaikh"
+}
+```
+
+`HttpEntityMethodProcessor` handles return values of type `ResponseEntity`. This class processes `ResponseEntity` and `HttpEntity`, allowing the controller to customize the HTTP status code, headers, and body of the response.
 
 #### Thymeleaf Configuration
 - add below lines as environment variables for `ViewResolver`
@@ -379,9 +649,9 @@ spring.thymeleaf.suffix=.html
 - put `.html` view files in it and `ViewNameMethodReturnValueHandler` will locate it.
 - now compile and start the project.
 
-### How Spring processes return types like ResponseEntity.
-
 ### Note:
+- In DispatcherServlet default configuration, `MultipartResolver` resolves requests containing some chunks of a huge file sent in multiple parts in separate requests.
+- In DispatcherServlet default configuration,`LocaleResolver` resolves the locality of the request so that timezone, language and characters interpretation can be done.
 - when exception is thrown we need to translate it to an error code and return suitable response, `DispatcherServlet` has `HandlerExceptionResolver` for this purpose.
 
 ## Filter
@@ -394,6 +664,7 @@ spring.thymeleaf.suffix=.html
 
 ## Summary: Flow of Spring MVC
 - Servlet-container (Tomcat) listens to a webSocket and receives a request from kernel (OS)
+- TomCat has servlets running inside it which handles incoming HTTP request
 - request passes through `Filters` in TomCat and reaches servlet
 - TomCat servlet then forwards request to spring-mvc
 - spring-mvc class which accepts the request from servlet-container is `DispatcherServlet`
