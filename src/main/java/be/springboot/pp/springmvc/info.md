@@ -98,6 +98,18 @@ A Servlet is defined by implementing the `javax.servlet.Servlet` interface, whic
 - `service()`: This method handles incoming requests and sends appropriate responses. It delegates the request to Spring MVC.
 - `destroy()`: Cleans up resources before the servlet is shut down.
 
+## `Filter`
+Filters are components in the Java Servlet API that can inspect/intercept and transform the content of a request before it reaches a servlet or after the servlet has generated a response. In a servlet container, filters are part of the request-response lifecycle and can be chained using a `FilterChain`. Conceptually, filters are similar to Spring MVC’s `HandlerInterceptor` but are designed differently. They are present at a lower level in the application stack, hence considered more powerful. Once implemented, they do execute on each request, they can't be made optional. Filters too are often used for cross-cutting concerns such as proxy checks, caching, logging, monitoring, basic authentication, transforming request/response, adding headers, compressing responses etc. Each filter can either pass the request to the next filter in the chain or stop further processing. In servlet containers like Tomcat, once filters are configured, they are automatically included in the filter chain and executed sequentially for each incoming request.
+
+### Filter Lifecycle
+A filter implements the `javax.servlet.Filter` interface, which includes:
+- `init()`: (Optional) Initializes the filter and sets up resources when it’s first created.
+- `doFilter()`: (Compulsory to implement) The core method where request processing happens. It can:
+  - Modify the request before it reaches the servlet.
+  - Modify the response before it is sent to the client.
+  - Pass the request to the next filter or servlet using `chain.doFilter(request, response)`.
+- `destroy()`: (Optional) Cleans up resources when the filter is removed from service.
+
 ## Traditional Deployment and its Challenges
 In pre-Spring framework days, developers would often generate a JAR file using Maven (`mvn install`) in `/target` folder and deploy it manually on a standalone server. This was common in pre-containerized environments, as containerization ensured that application and server share the same environment. However, this approach had several drawbacks:
 ### Compatibility issues:
@@ -464,6 +476,7 @@ class SecondHandler {
   }
 }
 ```
+
 ### HandlerExceptionResolver
 `HandlerExceptionResolver` is a lower-level interface that allows customization of how exceptions thrown by a `handler` during execution are translated into an HTTP response. Implementing this interface and mapping specific exceptions to HTTP responses across controllers, enables better control over error reporting in a real-world applications.
 
@@ -853,20 +866,13 @@ spring.thymeleaf.suffix=.html
 - put `.html` view files in it and `ViewNameMethodReturnValueHandler` will locate it.
 - now compile and start the project.
 
-### Note:
+# Miscellaneous
 - In DispatcherServlet default configuration, `MultipartResolver` resolves requests containing some chunks of a huge file sent in multiple parts in separate requests.
 - In DispatcherServlet default configuration,`LocaleResolver` resolves the locality of the request so that timezone, language and characters interpretation can be done.
+- If you are going to fail, then fail fast.
 
-## Filter
-- very similar to spring-mvc `Interceptors` there is another component by the name `Filter` which is a part of TomCat.
-- conceptually `Interceptors` and `Filters` are same, although designed differently.
-- proxy checks, caching, basic authentications all are applied on `Filters` extensively.
-- `Filter` is provided by TomCat as an interface.
-- every `Filter` once completes execution, invokes next `Filter`
-- once custom `Filter` are created they get added to filter chain automatically
-
-## Summary: Flow of Spring MVC
-- Servlet-container (Tomcat) listens to a webSocket and receives a request from kernel (OS)
+### Summary: Flow of Spring MVC
+- Servlet-container (Tomcat) listens to a port and receives a request from kernel (OS)
 - TomCat has servlets running inside it which handles incoming HTTP request
 - request passes through `Filters` in TomCat and reaches servlet
 - TomCat servlet then forwards request to spring-mvc
