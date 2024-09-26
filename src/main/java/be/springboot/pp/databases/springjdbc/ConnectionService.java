@@ -1,6 +1,5 @@
-package be.springboot.pp.databases.springjdbc.service;
+package be.springboot.pp.databases.springjdbc;
 
-import jakarta.annotation.PostConstruct;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+/*
+* A resultSet can be thought as a list of key value pairs. Where
+* list elements are the records and each key is the column name with value
+* being the column value.
+* */
 
 @Service
 public class ConnectionService {
@@ -28,7 +33,7 @@ public class ConnectionService {
 
 //    @PostConstruct
     public void establishConnection() {
-        System.out.println("Establishing connection...");
+        System.out.println("Establishing connection..."); // show how to add dependency in pom and properties changes
         try (Connection con = DriverManager.getConnection(dbUrl, userName, password); Statement statement = con.createStatement()) {
             System.out.println("Connection established: " + con + " " + statement);
             printProductsTable(statement);
@@ -48,7 +53,7 @@ public class ConnectionService {
     }
 
     private void printResultSet(ResultSet rs) throws SQLException {
-        while (rs.next()) {
+        while (rs.next()) { // moves the iterator to the next row
             System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
         }
         rs.close();
@@ -56,7 +61,7 @@ public class ConnectionService {
 
     /*
     * Caused by: java.sql.SQLNonTransientConnectionException:
-    * Connection exception, SQL-server rejected establishment of SQL-connection,  message from server: "Too many connections"
+    * Connection exception, SQL-server rejected establishment of SQL-connection,  message from server: "sorry, too many clients already"
     * */
 //    @PostConstruct
     public void tooManyConnections() throws SQLException {
@@ -82,6 +87,7 @@ public class ConnectionService {
     }
 
     // TODO: has a bug, gets stuck in an infinite loop
+    // inserting a new row based on existing row
     private void printAndUpdateResultSet(ResultSet rs) throws SQLException {
         while (rs.next()) {
             System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getFloat(4));
@@ -123,6 +129,7 @@ public class ConnectionService {
              Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             System.out.println("Connection established: " + con + " " + statement);
 
+            // executing multiple queries at once (batching queries)
             boolean hasResult = statement.execute("SELECT * FROM products WHERE name = 'JBL'; UPDATE products SET full_version = 1.7 WHERE id < 200");
 
             do {
@@ -170,6 +177,7 @@ public class ConnectionService {
         return props;
     }
 
+    // for DataSource add 'tomcat-jdbc'
     private DataSource createDataSource(String dbUrl, String userName, String password) {
         PoolProperties props = createPoolProperties(dbUrl, userName, password);
 
