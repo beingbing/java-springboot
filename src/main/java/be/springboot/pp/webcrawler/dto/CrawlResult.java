@@ -1,6 +1,6 @@
-package be.springboot.pp.exercise.dto;
+package be.springboot.pp.webcrawler.dto;
 
-import be.springboot.pp.exercise.enums.CrawlProcessStatus;
+import be.springboot.pp.webcrawler.enums.CrawlProcessStatus;
 
 import java.util.ArrayList;
 import java.util.List;

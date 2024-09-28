@@ -15,7 +15,7 @@ public interface UserDao extends JpaRepository<User, Long> {
     // JPQL
     /*
     * by using `@Query`, we instruct JPA to use query provided by us and implement
-    * remaining part of the function by itself.
+    * the remaining part of the function by itself.
     * */
 //    @Query("select m from User where m.id > :id")
 //    List<User> findUsersByIdGreaterThan(Long id);

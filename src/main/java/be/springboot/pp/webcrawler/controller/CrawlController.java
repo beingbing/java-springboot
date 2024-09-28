@@ -1,10 +1,10 @@
-package be.springboot.pp.exercise.controller;
+package be.springboot.pp.webcrawler.controller;
 
-import be.springboot.pp.exercise.dto.CrawlResult;
-import be.springboot.pp.exercise.dto.CrawlStarterRequest;
-import be.springboot.pp.exercise.dto.CrawlStarterResponse;
-import be.springboot.pp.exercise.dto.ResultsFetcherResponse;
-import be.springboot.pp.exercise.manager.CrawlManager;
+import be.springboot.pp.webcrawler.dto.CrawlResult;
+import be.springboot.pp.webcrawler.dto.CrawlStarterRequest;
+import be.springboot.pp.webcrawler.dto.CrawlStarterResponse;
+import be.springboot.pp.webcrawler.dto.ResultsFetcherResponse;
+import be.springboot.pp.webcrawler.manager.CrawlManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

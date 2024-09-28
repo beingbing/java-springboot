@@ -1,4 +1,4 @@
-package be.springboot.pp.exercise.dto;
+package be.springboot.pp.webcrawler.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

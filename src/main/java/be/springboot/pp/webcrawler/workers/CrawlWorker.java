@@ -1,7 +1,7 @@
-package be.springboot.pp.exercise.workers;
+package be.springboot.pp.webcrawler.workers;
 
-import be.springboot.pp.exercise.dto.CrawlResult;
-import be.springboot.pp.exercise.enums.CrawlProcessStatus;
+import be.springboot.pp.webcrawler.dto.CrawlResult;
+import be.springboot.pp.webcrawler.enums.CrawlProcessStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

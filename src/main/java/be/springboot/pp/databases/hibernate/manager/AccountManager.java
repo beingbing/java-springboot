@@ -130,7 +130,7 @@ public class AccountManager {
     public void context() {
         System.out.println("context initialized");
 
-        List<Account> accountList = entityManager.createQuery("select a from Account a", Account.class).getResultList();
+        List<Account> accountList = entityManager.createQuery("select a from Account a", Account.class).getResultList(); // this is JPQL. it convers resultset to list of the appropriate object
         log.info("accountList: {}", accountList);
 
         for (Account account : accountList) {
@@ -172,10 +172,27 @@ public class AccountManager {
     }
 
 //    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
     private void moreJPA() {
         System.out.println("more jpa");
 
-        Account account = entityManager.find(Account.class, 352);
-        log.info("account - {}", account);
+        Account account = entityManager.find(Account.class, 352); // JPQL, once loaded into object it will be in managed state.
+        // by mentioning the class, you hint hibernate for which table to search
+        // by mentioning the PK, you hint hibernate for which row to search
+
+        log.info("before detaching and making change, account - {}", account);
+        entityManager.detach(account); // in detached state
+        // now no changes will be tracked by persistence unit
+        account.setTotalBalance(100.0);
+        log.info("after detaching and making change, account - {}", account);
+        // now, when the transaction will be committed, no changes will get reflected.
+        // we normally detach and let changes happen in scenarios where we need to pass object to other functions
+        // whom we do not want to give authority to modify the state.
+
+        entityManager.merge(account); // now it is in managed state again
+        // now the changes will be reflected if any changes are made in the object
+
+        entityManager.remove(account); // will delete the row from DB when txn will be committed.
+        entityManager.persist(account); // it will revert delete action if txn was not committed.
     }
 }

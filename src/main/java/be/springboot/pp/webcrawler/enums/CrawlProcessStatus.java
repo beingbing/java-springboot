@@ -1,4 +1,4 @@
-package be.springboot.pp.exercise.enums;
+package be.springboot.pp.webcrawler.enums;
 
 public enum CrawlProcessStatus {
     FINISHED,

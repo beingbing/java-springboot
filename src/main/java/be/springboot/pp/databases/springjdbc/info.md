@@ -1,5 +1,25 @@
 # JDBC
-JDBC (Java Database Connectivity) is an API provided by Java to enable applications to interact with databases. It comes packaged with the JDK, hence, no need to install it separately. One of the primary goals of JDBC is to abstract away the complexity of making network calls from the application server to the database server, providing a common interface to interact with different database vendors.
+JDBC (Java Database Connectivity) is an API provided by Java to enable applications to interact with databases. It comes packaged with the JDK, hence, no need to install it separately. One of the primary goals of JDBC is to abstract away the complexity of making network calls from the application server to the database server, providing a common interface to interact with different database vendors. To add JDBC as dependency -
+```xml
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.0.0</version>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.tomcat</groupId>
+    <artifactId>tomcat-jdbc</artifactId>
+</dependency>
+```
+and to connect with databases -
+```properties
+# Database Configuration
+spring.datasource.url=jdbc:mysql://localhost:3306/practice?useSSL=false
+spring.datasource.username=root
+spring.datasource.password=bharatpenew
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
 
 ## How JDBC Works
 JDBC serves as a bridge between the application and the database. By using interfaces, JDBC provides a standard way to interact with any type of database. It provides common interfaces that all database vendors implement. This way, your application interacts with these standard interfaces, while the underlying database drivers take care of the specifics of communicating with the actual database server. When switching from one database vendor (e.g., MySQL, PostgreSQL, Oracle) to another, you only need to change the configuration (like the database URL, username, password, etc.). The core interaction logic with the database remains untouched.

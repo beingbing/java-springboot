@@ -1,8 +1,8 @@
-package be.springboot.pp.exercise.manager;
+package be.springboot.pp.webcrawler.manager;
 
-import be.springboot.pp.exercise.db.CrawlDB;
-import be.springboot.pp.exercise.dto.CrawlResult;
-import be.springboot.pp.exercise.workers.CrawlWorker;
+import be.springboot.pp.webcrawler.db.CrawlDB;
+import be.springboot.pp.webcrawler.dto.CrawlResult;
+import be.springboot.pp.webcrawler.workers.CrawlWorker;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;

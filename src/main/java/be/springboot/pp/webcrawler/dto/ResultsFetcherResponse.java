@@ -1,4 +1,4 @@
-package be.springboot.pp.exercise.dto;
+package be.springboot.pp.webcrawler.dto;
 
 public class ResultsFetcherResponse {
 

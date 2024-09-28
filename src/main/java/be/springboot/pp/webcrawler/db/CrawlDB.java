@@ -1,6 +1,6 @@
-package be.springboot.pp.exercise.db;
+package be.springboot.pp.webcrawler.db;
 
-import be.springboot.pp.exercise.dto.CrawlResult;
+import be.springboot.pp.webcrawler.dto.CrawlResult;
 
 import java.util.HashMap;
 import java.util.Map;
