@@ -77,7 +77,7 @@ class LoggingHandler implements InvocationHandler {
 @Service
 public class ProfilingService {
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     public void doProfiling() {
         // Create the original service
         Serve service = new ServiceImpl();

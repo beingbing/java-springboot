@@ -57,7 +57,7 @@ public class UserService {
         System.out.println("createUsers: create: ended");
     }
 
-    @EventListener(ContextRefreshedEvent.class)
+    // @EventListener(ContextRefreshedEvent.class)
     private void createAccount() {
         // fir kabhi
     }

@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
+@NoArgsConstructor
 @Table(name = "query_frequency")
 public class QueryFrequency {
 

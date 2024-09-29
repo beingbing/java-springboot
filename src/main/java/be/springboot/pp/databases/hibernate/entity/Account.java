@@ -1,6 +1,5 @@
 package be.springboot.pp.databases.hibernate.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
