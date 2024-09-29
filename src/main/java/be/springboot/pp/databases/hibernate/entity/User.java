@@ -44,7 +44,7 @@ public class User {
     * Also, irrespective of whether unidirectional or bidirectional, only one FK is created in
     * the table in one-to-one mapping.
     * */
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Account account;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)

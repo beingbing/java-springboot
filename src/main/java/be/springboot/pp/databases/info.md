@@ -431,3 +431,30 @@ This is how the `Proxy` class in Java dynamically intercepts method calls and al
 - it returns an Optional
 - because id might not exist
 - so intead of returning null, it returns an empty optional
+
+## ACID properties
+- database operation done together are said to be a part of a transaction.
+- for a transaction, it is important that either all the database operation succeed or none of them succeed. There is no middle way out.
+- this is a very important property for interacting with databases.
+- abbreviated using ACID properties
+- A: atomicity. a bunch of DB operation which needed to be together, should only be successfully happen together.
+- databases implement it by keeping auto-commit as false, and committing all related operations together. example, banking transaction.
+- use `@Transactional` annotation to make DB interaction of a complete method atomic.
+- C: 
+- I
+- D
+
+### @Transactional
+- it has different isolation levels
+- DEFAULT, READ_UNCOMMITED, READ_COMMITTED (default), REPEATABLE_READ, SERIALIZABLE
+- READ_COMMITTED: if T1 made changes to resource R1 but haven't committed it yet then T2 will not see the changes T1 made, T2 will still see the value of R1 which was latest committed. T2 will not see intermittent/uncommitted state of R1. Example, banks transaction
+- READ_UNCOMMITTED: allow T2 to see intermittent/uncommitted state of R1 as well. Example, stocks transaction.
+- SERIALIZABLE: highest level of isolation available. If T3 is changing R2 and R3 then both R2 and R3 will become unavailable to the whole system until T3 is done.
+- performance is heavily compromised in SERIALIZABLE
+- behavior of these flags depends on which vendor we are using. If they do not support a particular feature then we won't be able to avail it.
+- as we know a annotating it makes a transaction context created for a method.
+- so, it supports transaction context propagation as well.
+- meaning if a method annotated with it calls a method who is also annotated, then we can define on parent method whether by default let called method create a new transaction context or whether parent method wants to extend its transaction-context to the called method as well.
+- the difference it makes is, if we give T1 context to m1 and T2 context to m2 then if T2 completes and then m1 encounters a `Throwable` then only T1 will be rolled back, not T2.
+- the propagation also supports other states like isolation, explore them.
+- 

@@ -1,5 +1,6 @@
 package be.springboot.pp.databases.hibernate.manager;
 
+import be.springboot.pp.databases.hibernate.dao.AccountDao;
 import be.springboot.pp.databases.hibernate.entity.Account;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -8,10 +9,13 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -194,5 +198,60 @@ public class AccountManager {
 
         entityManager.remove(account); // will delete the row from DB when txn will be committed.
         entityManager.persist(account); // it will revert delete action if txn was not committed.
+    }
+
+    // ACID properties example --------------------+++++++++++++++++++++++++-------------------------
+    // example 1: poor and wrong way to execute a transaction
+    @Autowired
+    private AccountDao accountDao;
+
+    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
+    public void deductCharges() {
+        Account customer = accountDao.findById(11L).get();
+        log.info("AccountManager: deductCharges: customer: {}", customer);
+        Account evilBank = accountDao.findById(13L).get();
+        log.info("AccountManager: deductCharges: evilBank: {}", evilBank);
+
+        // subtract from customer and hold it
+        customer.setCurrentBalance(customer.getCurrentBalance() - 34.0);
+        customer.setHoldAmount(customer.getHoldAmount() + 34.0);
+        accountDao.save(customer);
+        log.info("AccountManager: deductCharges: after subtraction customer: {}", customer);
+
+        // if this throws an exception, the transaction will be left incomplete
+//        if (true)
+//            throw new RuntimeException("Something went wrong");
+        // but if we use @Transactional, this complete function execution will become atomic
+        // and either both the transactions will be comlete of first one will be rolled back if
+        // above exception is thrown.
+
+        /*
+        * But if i write some other function call and something else other than DB
+        * interaction is going on in that function, then will it get rolled back too ?
+        *
+        * for example, i was writing to a text file by reading from other resources, will
+        * that be undone too ?
+        *
+        * No, @Transactional only takes care of changes happen in DB resources.
+        * */
+        var thr = false;
+        try (FileWriter fileWriter = new FileWriter("/Users/samarshaikh/Documents/practice/java-springboot/example.txt")) {
+            fileWriter.write("hello samar whatcha doin' ?");
+            thr = true;
+        } catch (IOException e) {
+            log.info("AccountManager: deductCharges: exception: {}", e.getMessage());
+        }
+        // to rollback non DB resources changes, we need to manually write that strategy
+        // one way it to keep a try-catch block and revert all non DB changes
+
+        if (thr)
+            throw new RuntimeException("Something went wrong");
+
+        // add to evilBank and allow them to spend
+        evilBank.setCurrentBalance(evilBank.getCurrentBalance() + 34.0);
+        evilBank.setTotalBalance(evilBank.getTotalBalance() + 34.0);
+        accountDao.save(evilBank);
+        log.info("AccountManager: deductCharges: after addition evilBank: {}", evilBank);
     }
 }
