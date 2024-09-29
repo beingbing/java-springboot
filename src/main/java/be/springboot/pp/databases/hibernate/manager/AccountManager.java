@@ -205,7 +205,7 @@ public class AccountManager {
     @Autowired
     private AccountDao accountDao;
 
-    @EventListener(ContextRefreshedEvent.class)
+//    @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void deductCharges() {
         Account customer = accountDao.findById(11L).get();

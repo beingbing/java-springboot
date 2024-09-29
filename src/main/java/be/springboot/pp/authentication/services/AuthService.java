@@ -12,7 +12,7 @@ public class AuthService {
     @Autowired
     private JwtUtils jwtUtils;
 
-//    @EventListener(ContextRefreshedEvent.class)
+    @EventListener(ContextRefreshedEvent.class)
     public void context() {
         System.out.println("AuthService: context started");
 
