@@ -1,6 +1,8 @@
 package be.springboot.pp;
 
 import be.springboot.pp.ApplicationConfigs.JwtConfigs;
+import be.springboot.pp.searchtypeahead.entities.QueryFrequency;
+import be.springboot.pp.searchtypeahead.repositories.QueryFrequencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -10,6 +12,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /*
 * TODO: Project Notes -
@@ -38,6 +46,9 @@ public class Application implements ApplicationRunner {
 	@Autowired
 	private JwtConfigs jwtConfigs;
 
+	@Autowired
+	private QueryFrequencyRepository queryFrequencyRepository;
+
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 		System.out.println("Hello Samar !!");
@@ -59,5 +70,31 @@ public class Application implements ApplicationRunner {
 		System.out.println("Application: run: args: " + writer + " " + applicationName + " test value: " + testValue);
 		System.out.println("-=-==-=-=-=-=--==-==-=--=-=-=-=-=-_+_+_++_+_+_+_+_-=--==-=--=-=-=--=-=-=-=--=-=--=-==-");
 		System.out.println("JwtConfigs: secret: " + jwtConfigs.getSecret() + " expiration: " + jwtConfigs.getExpiration());
+//		populateQueryFrequencyTable();
+	}
+
+	private void populateQueryFrequencyTable() {
+		List<QueryFrequency> data = generateData();
+		for (QueryFrequency queryFrequency : data)
+			queryFrequencyRepository.save(queryFrequency);
+	}
+
+	private List<QueryFrequency> generateData() {
+		List<QueryFrequency> data = new ArrayList<>();
+		String alphabets = "samr";
+		Map<String, Integer> freqMap = new HashMap<>();
+		Random r = new Random();
+		for (int i = 0; i < 100000; i++) {
+			int length = r.nextInt(1, 7);
+			StringBuilder sb = new StringBuilder();
+			for (int j = 0; j < length; j++) {
+				sb.append(alphabets.charAt(r.nextInt(alphabets.length())));
+			}
+			freqMap.put(sb.toString(), freqMap.getOrDefault(sb.toString(), 0) + 1);
+		}
+
+		for (Map.Entry<String, Integer> entry : freqMap.entrySet())
+			data.add(new QueryFrequency(entry.getKey(), (long) entry.getValue()));
+		return data;
 	}
 }
