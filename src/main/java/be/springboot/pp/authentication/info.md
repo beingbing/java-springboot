@@ -70,6 +70,3 @@ to add dependencies JWT -
 - for `/logout` first check whether the token is valid, then, instruct FE to delete token from `localstorage`.
 - or for `/logout` first check whether the token is valid, then, generate a new token with almost no life and instruct FE to update the token, as soon as next replace will come, user will get redirected to `/login`.
 - so in case of `/logout`, server do not need to do anything, just validate current token and strategize on evicting the token from FE end.
-
-## Exercise 2 (major)
-- 
