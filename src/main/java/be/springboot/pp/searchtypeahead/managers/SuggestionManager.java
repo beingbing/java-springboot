@@ -36,7 +36,7 @@ public class SuggestionManager {
         return suggestions;
     }
 
-    public void updateQueryFrequency(String query) {
+    public synchronized void updateQueryFrequency(String query) {
         log.info("Updating query frequency for query: {}", query);
         QueryFrequency queryFrequency = queryFrequencyRepository.findByQuery(query);
         if (queryFrequency == null) {
