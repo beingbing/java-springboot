@@ -18,14 +18,19 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("AuthInterceptor: preHandle");
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader("token");
+        log.error("AuthInterceptor: token: {}", token);
 
         if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
 
+        String username = jwtUtils.getUsernameFromToken(token);
+        log.error("AuthInterceptor: username: {}", username);
+
         boolean result = jwtUtils.validateToken(token);
+        log.error("AuthInterceptor: result: {}", result);
 
         if (!result) {
             response.getWriter().write("Invalid token");

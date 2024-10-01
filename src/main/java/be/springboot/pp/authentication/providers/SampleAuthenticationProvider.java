@@ -1,6 +1,7 @@
 package be.springboot.pp.authentication.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class SampleAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
+    @Qualifier("inDbUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Autowired
@@ -24,19 +26,15 @@ public class SampleAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         System.out.println("SampleAuthenticationProvider: authenticate: " + authentication.getPrincipal() + " " + authentication.getCredentials());
 
-//        UserDetails userDetails = userDetailsService.loadUserByUsername((String) authentication.getPrincipal());
-//
-//        if (passwordEncoder.matches((String) authentication.getCredentials(), userDetails.getPassword())) {
-//            return new SampleAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-//        }
-
         String userName = authentication.getName();
         String password = null;
         UserDetails userDetails = null;
 
         try {
             userDetails = userDetailsService.loadUserByUsername(userName);
+//            userDetails = userDetailsService.loadUserByUsername((String) authentication.getPrincipal());
             password = (String) authentication.getCredentials(); // sent by client
+            // internalPwd = userDetails.getPassword(); // stored by us
 
             if (!passwordEncoder.matches(userDetails.getPassword(), password)) {
                 throw new AuthenticationCredentialsNotFoundException("Invalid credentials");

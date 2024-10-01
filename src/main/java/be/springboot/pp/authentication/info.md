@@ -111,6 +111,8 @@ add spring-boot-starter-security dependency to use spring-security -
 - only those calls will be allowed which are validated using the generated password under a default username `user`
 - the details you have to send in request headers under name `Authorization` after selecting `Basic Authroization` from the dropdown
 - it will send a base64 encrypted request of your user-name and password
+- once a user is authenticated, `Authenticate` object is set in spring-context for controller/interceptors to build authorization logic on the basis of authorities assigned to user.
+
 ## Architecture
 - The request is intercepted by authentication-filter interface (analogous to tomcat filters)
 - Authentication responsibility is delegated to authentication-manager interface
@@ -178,8 +180,8 @@ graph TD
 - `InMemoryUserDetailsManager` while creating a set of default creds also create other details for it, like authorities provided under `GrantedAuthority`
 - `NoOpPasswordEncoder` is the implementation of `PasswordEncoder` which is used by default with password validation along with `InMemoryUserDetailsManager`
 - similarly, we can create a bean of our own custom `UserDetailsService` and `PasswordEncoder` using `@Configuration/@Bean` annotations
-- but as soon as we create a custom bean of `UserDetailsService`, spring-security stops making default bean of `InMemoryUserDetailsManager`
-- but spring-security still keeps the architecture in place, so we need to create creds as well along with custom bean otherwise we won't be able to log in.
+- but as soon as we create a custom bean of `UserDetailsService`, spring-security stops making default bean of `UserDetailsService`, `PasswordEncoder` and `AuthenticationProvider` and then we need to define custom implementation for all three of them otherwise there will be no way for HTTP requests to get authenticated.
+- and spring-security still keeps the architecture in place, so we need to create creds as well along with custom bean otherwise we won't be able to log in.
 ```java
 @Bean
 public UserDetailsService inMemoryCustomUserDetailsService() {
@@ -213,6 +215,9 @@ public PasswordEncoder passwordEncoder() {
 - `supports()` takes as input a random clas type because there are different kinds of authentication that exist in real-world. Like, username + password, username + OTP, user + fingerPrint, etc.
 - Hence, to write a custom `AuthenticationProvider` we will first need to specify what kind of authentication we will be supporting via this method.
 - `authenticate(Authentication authentication)` which returns `Authentication`
+- it returns a new instance of `Authentication` object containing authorities which the user is entitled to.
+- hence, the authentication object consumed by authenticate() is different from the object it returns, and the difference is mostly because of presence of authority.
+- custom `AuthenticationProvider` implementation needs not be registered, as a bean of it will be created during `ApplicationContext` creation and will be added in the list of `AuthenticationProvider` 
 
 ### Authentication
 - `Authentication` instance contains all details against which a user got authenticated.
@@ -250,6 +255,7 @@ public PasswordEncoder passwordEncoder() {
 - but at the level of AF we can customize to create an instance of another type instead of this as well.
 
 ## AuthenticationManager
+- it maintains a list of `AuthenticationProvider` to iterate on
 - `AuthenticationManager` before calling `AuthenticationProvider` calls `supports()` of `AuthenticationProvider` to check which one out of the list of providers supports the current authentication. If all rejects then at the end a default provider is kept which handles the authentication.
 - if all providers fails the authentication, request is failed and return flow is initiated, in this scenario, request never reaches DispatcherServlet.
 - but if `authenticate()` returns null to manager, then it represents that the authentication operation is inconclusive, hence manager will still look for the provider in the list who can conclusively either return true or false.
@@ -258,3 +264,51 @@ public PasswordEncoder passwordEncoder() {
   - request --> servlet filter 1 --> servlet filter 2 --> ... --> servlet filter n --> authentication filter 1 --> 2 --> ... authentication filter n --> DispatcherServlet
   - if at any point before reaching the DispatcherServlet authentication fails then return journey starts with setting 401/403.
   - 401: authentication failure, 403: authorisation failure
+
+## SecurityFilterChain
+- We can custom which requests will go through which provider via `SecurityFilterChain`
+- as already establish, spring-security filter-chain has obvious advantages over servlet filter-chain is that we can make routes skip an authentication or implement some authentication only at a specific route through it.
+
+## SecurityContextHolder
+- spring-mvc can get hold of `Authentication` object kept in `SecurityContext` after successful authentication via `SecurityContextHolder` using static `getContext()`
+- using authority/role/credential details stored in `Authentication` object controllers/interceptors can decide on what a request is capable of executing
+- `getContext()` gives the controller `Authentication` only of that request which it is currently invoked upon.
+- But at a given time, due to multi-threading there will be multiple security-context object residing in the `SecurityContextHolder`, then how `SecurityContextHolder` decide which security-context was associated with which request ?
+- One of the way of doing that is, every Thread has a ThreadLocal. SecurityContextHolder uses `SecurityContextHolderStrategy` based on Strategy design pattern to define a holder-strategy for every request. `ThreadLocalSecurityContextHolderStrategy` is one of the implementation in which, as every request is assigned to a Thread, and Threads have unique id, hence security-context is saved against a thread id. Hence, we can decide which security-context was associated with the given request using ThreadLocal.
+
+## AuthenticationFilter
+- `AuthenticationFilter` is an implementation of servlet filter. It uses servlet filter under the hood.
+- `AuthenticationFilter` class extends `OncePerRequestFilter` abstract class which extends abstract class `GenericFilterBean`, which implements java (jakarta) `Filter`
+- `OncePerRequestFilter` defines `doFilter()` of `Filter`
+- while writing we learned to define filters and a chain already gets created, here, we will design complete filter-chain under the wrapper of security-filter-chain
+- `SecurityFilterChain` has `getFilters()` which returns list of all the filters.
+- `BasicAuthenticationFilter` is the major filter which works behind the scene for spring-security.
+- triggering point of all `AuthenticationManager` / `AuthenticationProvider` / .... is `BasicAuthenticationFilter`
+- `BasicAuthenticationFilter` extracts `Authentication` object from request
+- it is also responsible for setting `Authentication` object after authentication into `SecurityContext` and then in `SecurityContextHolder`
+- it denotes `Authentication` object extracted from request as authRequest and `Authentication` object created after successful authentication as authResponse
+- it calls `authenticate()` on `AuthenticationManager` send authRequest to it to get the authResponse
+```java
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    // .
+    // .
+    // .
+    if (this.authenticationIsRequired(username)) {
+        Authentication authResult = this.authenticationManager.authenticate(authRequest);
+        SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+        context.setAuthentication(authResult);
+        this.securityContextHolderStrategy.setContext(context);
+        // .
+        // .
+        // .
+    }
+    // .
+    // .
+    // .
+}
+```
+- to introduce our own custom implementation of `AuthenticationFilter` in `SecurityFilterChain` we have mainly 3 points
+  - add a filter before `BasicAuthenticationFilter` (before attempting authentication)
+  - add a filter at `BasicAuthenticationFilter`
+  - add a filter after `BasicAuthenticationFilter` (if authentication succeeded and a `SecurityContext` is set)
+- `shouldNotFilter()` can be defined for paths on which we do not wish current filter to get executed.

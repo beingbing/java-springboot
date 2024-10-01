@@ -11,7 +11,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.ArrayList;
@@ -68,14 +70,24 @@ public class Application implements ApplicationRunner {
 //				 System.out.println("the bean is: " + bean);
 //				 System.out.println("and the bean is: " + obj);
 //			 }
+//
+//			 if (obj instanceof AuthenticationProvider) {
+//				 System.out.println("the bean is: " + bean);
+//				 System.out.println("and the bean is: " + obj);
+//			 }
+//
+//			 if (obj instanceof PasswordEncoder) {
+//				 System.out.println("the bean is: " + bean);
+//				 System.out.println("and the bean is: " + obj);
+//			 }
 //		 }
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		System.out.println("Application: run: args: " + writer + " " + applicationName + " test value: " + testValue);
-		System.out.println("-=-==-=-=-=-=--==-==-=--=-=-=-=-=-_+_+_++_+_+_+_+_-=--==-=--=-=-=--=-=-=-=--=-=--=-==-");
-		System.out.println("JwtConfigs: secret: " + jwtConfigs.getSecret() + " expiration: " + jwtConfigs.getExpiration());
+//		System.out.println("Application: run: args: " + writer + " " + applicationName + " test value: " + testValue);
+//		System.out.println("-=-==-=-=-=-=--==-==-=--=-=-=-=-=-_+_+_++_+_+_+_+_-=--==-=--=-=-=--=-=-=-=--=-=--=-==-");
+//		System.out.println("JwtConfigs: secret: " + jwtConfigs.getSecret() + " expiration: " + jwtConfigs.getExpiration());
 //		populateQueryFrequencyTable();
 	}
 

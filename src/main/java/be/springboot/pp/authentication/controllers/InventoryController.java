@@ -11,19 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/inventory")
 public class InventoryController {
 
-    /*
-    * controllers can decide authority level of a request using security-context created by
-    * authentication-filter when request was successfully authenticated.
-    *
-    * But at a given time, due to multi-threading there will be multiple security-context object
-    * residing in the SecurityContextHolder, then how below code can decide which security-context
-    * was associated with the given request ?
-    *
-    * Answer to this is, every Thread has a ThreadLocal. SecurityContextHolder uses Strategy design
-    * pattern to define a holder-strategy for every request, as every request is assigned to a Thread.
-    * and Threads have unique id, hence security-context is saved against a thread id.
-    * Hence, we can decide which security-context was associated with the given request.
-    * */
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list() {
         SecurityContext context = SecurityContextHolder.getContext();
