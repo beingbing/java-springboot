@@ -114,12 +114,22 @@ add spring-boot-starter-security dependency to use spring-security -
 ## Architecture
 - The request is intercepted by authentication-filter interface (analogous to tomcat filters)
 - Authentication responsibility is delegated to authentication-manager interface
-- The authentication-manager uses the authentication-provider which implements authentication logic.
+- The authentication-manager is a thin layer devoid of any authentication logic and uses the authentication-provider which implements authentication logic.
 - The authentication-provider finds the user with a user-details-service and validates the password using a password-encoder
-- the result of authentication is returned to the authentication-filter
+- it contains all the information about user
+- it contains userName, password, list of authorities, list of roles, etc.
+- the responsibility of password-encoder is just of encoding and password matching logic hence validating the token
 - authentication-provider propagates result back to AM, which sends it back to AF
+- the result of authentication is returned to the authentication-filter
 - AF stores details about the authenticated entity into security-context
 - security-filter chain gets executed after TomCat filters or custom filters that we wrote
+- the new flow after introducing spring-security is -
+  - request --> goes through TomCat -> Filter1 --> Filter2 ... -> Filter n -> our custom servlet filter-chain -> `DefaultSecurityFilterChain` -> DispatcherServlet
+- so, spring-security sits at the level of TomCat filters, by creating its own filter-chain which runs after all TomCat filters ran.
+- if that is through, then request is handed over to spring-mvc
+- the advantage we have in spring-security over TomCat filter is, the only drawback we had with servlet filters is got resolved.
+- as we know there was no way to customize servlet filter to run on requests which came over a specific path, they used to run over every request.
+- spring-security filter-chain can be customized to be invoked only on specific routes.
 ```mermaid
 graph TB
     A[Client Request] -->|HTTP Request| B[Authentication Filter]
@@ -188,22 +198,63 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 - Now, use your custom creds, they will work.
-- the new flow after introducing spring-security is - 
-  - request --> goes through TomCat -> Filter1 --> Filter2 ... -> Filter n -> our custom servlet filter-chain -> `DefaultSecurityFilterChain` -> DispatcherServlet
-- so, spring-security sits at the level of TomCat filters, by creating its own filter-chain which runs after all TomCat filters ran.
-- if that is through, then request is handed over to spring-mvc
-- the advantage we have in spring-security over TomCat filter is, the only drawback we had with servlet filters is got resolved.
-- as we know there was no way to customize servlet filter to run on requests which came over a specific path, they used to run over every request.
-- spring-security filter-chain can be customized to be invoked only no specific routes.
 
-## HW
-write custom `AuthenticationProvider`
+## UserDetailsService
+- interface contains only `loadUserByUsername()` which doesn't seem enough to provide us all the features that should be allowed to be performed on a users meta information.
+- As it do not contain any user update capabilities like creating a new user, updating an existing user, deleting a user, changing password or any other kind of operation on user. It only gives us an existing user object, so that behavior must be passed on to it and already present in parent.
+- When we checked, `UserDetailsService` has a child interface `UserDetailsManager` which holds all the features related to write/update.
+- This is an example of Interface Segregation Principle as write related features are in user-details-manager and read related are in user-details-service.
+- So, if directly implementing `UserDetailsService`, instead i implements `UserDetailsManger` then i will be having more features.
+- `InMemoryUserDetailsManager` also extends `UserDetailsManager`
 
 ## AuthenticationProvider
-- it has a method `authenticate(Authentication authentication)` which returns `Authentication`
+- if we do not write a custom `AuthenticationProvider` then a default will be used.
+- it has two methods declared, `supports(Class<?> authentication)` and `authenticate()`
+- `supports()` takes as input a random clas type because there are different kinds of authentication that exist in real-world. Like, username + password, username + OTP, user + fingerPrint, etc.
+- Hence, to write a custom `AuthenticationProvider` we will first need to specify what kind of authentication we will be supporting via this method.
+- `authenticate(Authentication authentication)` which returns `Authentication`
+
+### Authentication
 - `Authentication` instance contains all details against which a user got authenticated.
 - it contains, creds details, authorities, principal, isAuthenticated, and other details.
 - `UsernamePasswordAuthenticationToken` is the implementation of `Authentication` used by default with `InMemoryUserDetailsManager` and `NoOpPasswordEncoder`
 - hence, we can infer that `Authentication` is an interface implementing token properties
 - so, `authenticate()` implementation takes in the token that came in request, validates/verifies it, and generates a token corresponding to it for internal use.
 - if internal-token says to `AuthenticationFilter` that everything is good, then spring-security filter-chain is passed on otherwise request is failed.
+- it extends `Principal` interface.
+- `Principal` interface do not come packaged with spring-security it is a part of core Java Security package.
+- `Principal` can be used to represent any entity, such as an individual, a corporation, and a login id, etc.
+- here, `Principal` represents the secured creds that a user have.
+- when a user is conceptualized, it is thought of having some attributes, those attributes are said to be user's principals that are bound to it.
+- The only behavior spring-security uses out of it is `getName()`. But keep a complete `Principal` object as part of `Authentication`
+- `Principal` represents security attributes of a user that's contained in `Authentication` object.
+- but `Authentication` only deals with security attribute, hence `Principal` can be thought of as a representation of a user whose identity is its name.
+- the getter `Object getPrincipal` returns you the principal field value, which is of type `Object`.
+- principal type is kept as `Object` because what if the authentication implementation we are using keeps userImage + voiceAudio as the authentication properties. In this case Principal will simply contain a ByteArray representing Image.
+- `Authentication` also has a getter for collection of authorities that a user can have.
+- each element of collection extends `GrantedAuthority`
+- `GrantedAuthority` is capable of keeping only a single `String` field representing the authority constant which a user gives clearance of.
+- authority can be thought of as a permission. Example, read permission, create permission, update permission, delete permission, etc.
+- one of its implementation is `SimpleGrantedAuthority`, which keeps an extra key as `role`.
+- `Authentication`, similar to `Principal`, also has a getter which returns an `Object` and named `getCredentials()`
+- Because of the same reason as `Principal`, credential is also of type `Object`. For example, it can contain an audio file recording of voice as well.
+- the third `Object` field, `detials` is kept for holding extra details which implementer wants authentication layer to keep in internal-token
+- `isAuthenticated` flag is true if the authentication process is complete, if it is false then it shows authentication process is still undergoing.
+
+#### Example - `UsernamePasswordAuthenticationToken`
+- it keeps username as `Principal` object of type `Object`
+- and password as credentials, also of type `Object`
+- by default, it do not sets authorities list and set authenticated as false if a user fails authentication.
+- on the contrary, it by defaults sets an authorities list along with setting authenticated as true if a user succeeds in authentication.
+- when `AuthenticationFilter` encounters a username/password in request, it builds an instance of `UsernamePasswordAuthenticationToken` and pass it down to `AuthenticationManager`
+- but at the level of AF we can customize to create an instance of another type instead of this as well.
+
+## AuthenticationManager
+- `AuthenticationManager` before calling `AuthenticationProvider` calls `supports()` of `AuthenticationProvider` to check which one out of the list of providers supports the current authentication. If all rejects then at the end a default provider is kept which handles the authentication.
+- if all providers fails the authentication, request is failed and return flow is initiated, in this scenario, request never reaches DispatcherServlet.
+- but if `authenticate()` returns null to manager, then it represents that the authentication operation is inconclusive, hence manager will still look for the provider in the list who can conclusively either return true or false.
+- so, either provider gives false from supports or null from authenticate(), both represents the same thing to manager.
+- so going back to the request flow -
+  - request --> servlet filter 1 --> servlet filter 2 --> ... --> servlet filter n --> authentication filter 1 --> 2 --> ... authentication filter n --> DispatcherServlet
+  - if at any point before reaching the DispatcherServlet authentication fails then return journey starts with setting 401/403.
+  - 401: authentication failure, 403: authorisation failure
