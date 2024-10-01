@@ -33,6 +33,20 @@ public class AuthConfig {
     private DataSource dataSource;
 
     @Bean
+    public UserDetailsService inMemoryCustomUserDetailsService() {
+        List<UserDetails> userDetails = new ArrayList<>(); // it will store user authentication details in RAM
+        userDetails.add(User.withUsername("samar").password("samar-taj").authorities("read").build());
+        userDetails.add(User.withUsername("Maheen").password("maheen-samar").authorities("read", "write").build());
+        userDetails.add(User.withUsername("rubab").password("rubab-samar").roles("ADMIN").build());
+        return new InMemoryUserDetailsManager(userDetails);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Bean
     public UserDetailsService userDetailsService() {
         List<UserDetails> userDetails = new ArrayList<>();
 //        userDetails.add(new User("samar", "samar-taj", Collections.singletonList((GrantedAuthority)() -> "read")));
@@ -66,11 +80,6 @@ public class AuthConfig {
     *   CONSTRAINT fk_authorities_users FOREIGN KEY (username) REFERENCES users(username)
     * );
     * */
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
 
     /*
     * After going through tomcat filters, request goes through security-filters from which it is handover to dispatcher servlet.

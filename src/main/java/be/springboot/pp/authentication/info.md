@@ -70,3 +70,140 @@ to add dependencies JWT -
 - for `/logout` first check whether the token is valid, then, instruct FE to delete token from `localstorage`.
 - or for `/logout` first check whether the token is valid, then, generate a new token with almost no life and instruct FE to update the token, as soon as next replace will come, user will get redirected to `/login`.
 - so in case of `/logout`, server do not need to do anything, just validate current token and strategize on evicting the token from FE end.
+
+# security vulnerabilities
+## denial of service (DoS attack)
+- happens on server
+- server is bombarded with too many requests
+- solution: rate limiting on requests received from a particular IP.
+- but attacker may change IP as well, hence companies have ML algos to limit these type of cases
+## CSRF
+- happens on browser
+- Cross Site Request Forgery
+- A user sent you link of a script, you clicks and it opens in browser.
+- It has JS code to transfer fund from your account, it only needs your token
+- which it takes from your `localstorage` and then will make the call.
+- solution 1/2: banks keep token expiry time very small
+- solution 2/2: two-factor authentication for payment.
+- HW: find how it is prevented
+## CORS
+- happens on browser
+- Cross Origin Resource Sharing
+- browsers are designed to prevent it.
+- before browser makes a request, it tries to get valid origins list from servers from which server wants to entertain requests.
+- because servers can refuse to entertain requests from unknown source/origin
+- once browser gets the list of valid origins from server, it checks if current website is present in that list or not.
+- If present, then API call will be made, otherwise not
+- scammers can still do CORS via proxy. unauthorized FE --> calls an unauthorized BE --> BE makes the call. As browser checks origin in the list but servers doesn't.
+
+# Spring Security
+add spring-boot-starter-security dependency to use spring-security -
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>3.3.3</version>
+</dependency>
+```
+- as soon as the dependency is included in project structure
+- spring-security will implement a password based authentication and prevent all api calls and start throwing `401 Unauthorized`
+- only those calls will be allowed which are validated using the generated password under a default username `user`
+- the details you have to send in request headers under name `Authorization` after selecting `Basic Authroization` from the dropdown
+- it will send a base64 encrypted request of your user-name and password
+## Architecture
+- The request is intercepted by authentication-filter interface (analogous to tomcat filters)
+- Authentication responsibility is delegated to authentication-manager interface
+- The authentication-manager uses the authentication-provider which implements authentication logic.
+- The authentication-provider finds the user with a user-details-service and validates the password using a password-encoder
+- the result of authentication is returned to the authentication-filter
+- authentication-provider propagates result back to AM, which sends it back to AF
+- AF stores details about the authenticated entity into security-context
+- security-filter chain gets executed after TomCat filters or custom filters that we wrote
+```mermaid
+graph TB
+    A[Client Request] -->|HTTP Request| B[Authentication Filter]
+    B <--> C[Authentication Manager]
+    C <--> D[Authentication Provider]
+    B --> E[Security Context]
+    D -.-> F[User Details Service]
+    D -.-> G[Password Encoder]
+```
+```mermaid
+graph TD
+    A[Client Request] -->|HTTP Request| B[Spring Security Filter Chain]
+    B --> C[SecurityContextPersistenceFilter]
+    C --> D[UsernamePasswordAuthenticationFilter]
+    D --> E[AuthenticationManager]
+    E -->|Delegates| F[AuthenticationProvider]
+    F --> G[UserDetailsService]
+    G --> H[UserDetails]
+    
+    D -->|Authenticated| I[SecurityContextHolder]
+    I -->|Holds| J[SecurityContext]
+    
+    E -->|Authenticated| K[AccessDecisionManager]
+    K --> L[Security Metadata Source]
+    
+    K -->|Grants Access| M[Controller/Resource]
+
+    A -.->|Denied| N[AccessDeniedHandler]
+    N -.-> A[Client Request]
+    
+    M -->|Response| A[Client Request]
+    
+    B -.-> O[LogoutFilter]
+    O -.-> A[Client Request]
+```
+## Write custom `UserDetailsService` and `PasswordEncoder`
+- `InMemoryUserDetailsManager` is one of the five `UserDetailsService` implementation which is used by default
+- `UserDetailsService` interface has only one method defined - `loadUserByUsername(String username)`
+- `InMemoryUserDetailsManager` keeps all the detail in RAM
+- `InMemoryUserDetailsManager` keeps a map of userName:userDetails
+- it has multiple constructors, one of them takes a `Collection` of users and puts all of them in map.
+- the details it keeps is of type `MutableUser` which implements `MutableUserDetails` and has `password` as one of the components of details
+- `InMemoryUserDetailsManager` has many methods related to username and password
+- `InMemoryUserDetailsManager` implementation of `loadUserByUsername(String username)` is simple, it gets the user from map, if not found throws an error.
+- loadUserByUserName("user") will give all the details of creds made by spring-security by default for you.
+- `InMemoryUserDetailsManager` while creating a set of default creds also create other details for it, like authorities provided under `GrantedAuthority`
+- `NoOpPasswordEncoder` is the implementation of `PasswordEncoder` which is used by default with password validation along with `InMemoryUserDetailsManager`
+- similarly, we can create a bean of our own custom `UserDetailsService` and `PasswordEncoder` using `@Configuration/@Bean` annotations
+- but as soon as we create a custom bean of `UserDetailsService`, spring-security stops making default bean of `InMemoryUserDetailsManager`
+- but spring-security still keeps the architecture in place, so we need to create creds as well along with custom bean otherwise we won't be able to log in.
+```java
+@Bean
+public UserDetailsService inMemoryCustomUserDetailsService() {
+    List<UserDetails> userDetails = new ArrayList<>(); // it will store user authentication details in RAM
+    userDetails.add(User.withUsername("samar").password("samar-taj").authorities("read").build());
+    userDetails.add(User.withUsername("Maheen").password("maheen-samar").authorities("read", "write").build());
+    userDetails.add(User.withUsername("rubab").password("rubab-samar").roles("ADMIN").build());
+    return new InMemoryUserDetailsManager(userDetails);
+}
+```
+- but this alone won't work, we need an implementation of `PasswordEncoder` as well.
+```java
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return NoOpPasswordEncoder.getInstance();
+}
+```
+- Now, use your custom creds, they will work.
+- the new flow after introducing spring-security is - 
+  - request --> goes through TomCat -> Filter1 --> Filter2 ... -> Filter n -> our custom servlet filter-chain -> `DefaultSecurityFilterChain` -> DispatcherServlet
+- so, spring-security sits at the level of TomCat filters, by creating its own filter-chain which runs after all TomCat filters ran.
+- if that is through, then request is handed over to spring-mvc
+- the advantage we have in spring-security over TomCat filter is, the only drawback we had with servlet filters is got resolved.
+- as we know there was no way to customize servlet filter to run on requests which came over a specific path, they used to run over every request.
+- spring-security filter-chain can be customized to be invoked only no specific routes.
+
+## HW
+write custom `AuthenticationProvider`
+
+## AuthenticationProvider
+- it has a method `authenticate(Authentication authentication)` which returns `Authentication`
+- `Authentication` instance contains all details against which a user got authenticated.
+- it contains, creds details, authorities, principal, isAuthenticated, and other details.
+- `UsernamePasswordAuthenticationToken` is the implementation of `Authentication` used by default with `InMemoryUserDetailsManager` and `NoOpPasswordEncoder`
+- hence, we can infer that `Authentication` is an interface implementing token properties
+- so, `authenticate()` implementation takes in the token that came in request, validates/verifies it, and generates a token corresponding to it for internal use.
+- if internal-token says to `AuthenticationFilter` that everything is good, then spring-security filter-chain is passed on otherwise request is failed.

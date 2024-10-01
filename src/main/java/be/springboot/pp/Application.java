@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.ArrayList;
@@ -62,6 +63,11 @@ public class Application implements ApplicationRunner {
 			// if (obj instanceof HandlerExceptionResolver) {
 			// 	System.out.println(((HandlerExceptionResolver) obj).getClass().getName());
 			// }
+
+//			 if (obj instanceof UserDetailsService) {
+//				 System.out.println("the bean is: " + bean);
+//				 System.out.println("and the bean is: " + obj);
+//			 }
 //		 }
 	}
 
