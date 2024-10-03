@@ -1,74 +1,103 @@
 # Concurrency
+## Explanation
+Imagine you're working from home and have some office tasks pending, but you also feel hungry. You decide to cook food, so you place the ingredients in a pressure cooker and set it on the stove. While the cooker is doing its job, you return to your office work. The cooker operates independently, and you're able to focus on your tasks.
 
-## definition
+Suddenly, the cooker whistles, reminding you that the cooking needs attention. You temporarily pause your office work, tend to the cooker, stabilize everything (e.g., turn off the stove), also placing some food in the oven, and then return to your office tasks. You continue working while the food remains in the oven, perhaps with a timer set to remind you when it's done.
 
-## example
+This entire process demonstrates how you, as a single person, are able to perform two tasks concurrently — working and cooking. Both tasks are independent and don't rely on each other, so they can be handled simultaneously without waiting for one to complete before starting the other.
 
-## multitasking
+This concept reflects how we design systems to execute tasks concurrently, ensuring no idle time. In computing, when tasks are independent (i.e., one task does not depend on the completion of the other), we can schedule them to run concurrently, allowing better utilization of time and resources. However, if tasks were dependent on one another, they would need to be executed sequentially (one after the other), as the second task could not begin until the first was finished.
 
-## benefits
+In computing systems, this type of multitasking is managed by the underlying architecture of the machine, such as operating systems and programming techniques that allow concurrent execution. By structuring and organizing tasks correctly, machines can handle multiple independent tasks without unnecessary delays, improving overall efficiency.
 
-## drawback scenarios
+## Concurrency VS Parallelism
+In earlier days, machines could only perform instructions serially, meaning tasks were executed one after another without skipping any. The idea of "jumping" to another task while the current task was still unfinished wasn’t possible. Modern machines, however, allow for skipping over tasks that are dependent on a task which got context switched without getting finished, enabling the processor to switch to an independent task in the meantime. Let’s look at two scenarios to understand the difference between concurrency and parallelism.
 
-## programming implementation of concurrency concepts
-most frequent used construct to implement concurrency is called `Thread(s)`. When we create a new Thread, it contains a logic, which can be made to run
-concurrently. 
-Even our non-concurrent programs, which we wrote until now had a Thread called 'main thread'. It contains logic which is contained in main().
-We can create a new Thread and kickstart it in our ongoing threads and execution of those newly created threads will be done concurrently.
-Inside every Thread declaration we need to pass an object whose type should be `Runnable`.
+### Parallelism
+Imagine you're using a machine with two cores. One core is handling your web browsing task, while the other core is performing some calculations. In this scenario, both tasks are being executed simultaneously because each core is dedicated to a specific task. This is called parallelism. Both tasks run in parallel on separate cores.
 
-Runnable interface just has a single method `public abstract void run()`, it just executes the logic written while providing definition.
+### Concurrency
+Now imagine you're using a single-core processor. The processor sends a request to load a webpage over the internet and, while waiting for the response, it switches to perform some calculations. When the browser receives the response, the operating system switches the processor’s attention back to loading the webpage. This is concurrency, where the single processor time-slices between tasks, performing parts of each one at different times, giving the illusion that tasks are running simultaneously.
 
-Thread is the most basic way in which we can write our concurrent program.
+## Time Slicing
+In concurrency, when multiple tasks are ready to be executed, the processor assigns a specific amount of time to each task (e.g., 2 seconds to task A, then switches to task B for 3 seconds, and so on). This cycle repeats, and although none of the tasks might finish during their allotted time, they all make progress concurrently. This time-slicing approach allows a single processor to handle multiple tasks, appearing as though they're being processed simultaneously.
 
-When we create a thread, it has its own set of local variables. but threads to have shared variables as well, which raises disputes and give birth to
-race conditions.
+## Definitions
+- **Concurrency:** Managing multiple tasks by working on them one at a time but switching between them in a way that they all make progress concurrently. This typically happens on a single core.
+- **Parallelism:** Running multiple tasks literally at the same time on different cores or processors, allowing for true simultaneous execution.
+- **Multitasking:** The act of switching between different types of tasks, which can be achieved through either concurrency or parallelism.
+
+## Benefits of Concurrency
+- **Increased Responsiveness:** Multiple tasks progress in a time-sliced manner, making the system more responsive, as no task is left idle for too long.
+- **Reduced Runtime:** Tasks can be completed more quickly if they’re managed concurrently, reducing overall system latency.
+- **Fault Tolerance and Resilience:** By breaking down processes into independent threads, failures in one thread won’t affect others, making the system more resilient.
+- **Concurrency and Parallelism Together:** If a machine has multiple cores, tasks can be run concurrently (via time slicing) and in parallel (on different cores) for even greater performance.
+
+## Drawbacks and Considerations
+- **Concurrency ≠ Better Performance:** Simply making code concurrent doesn’t always result in better performance. Not all code can be made concurrent, especially if parts are dependent on the completion of other parts.
+- **Independent Task Breakdown:** For concurrency to be effective, tasks must be independent. If a process can’t be broken into smaller independent tasks, concurrency will not provide any benefit.
+- **CPU-Intensive Tasks:** In a single-core environment, if a task is purely CPU-bound (i.e., it only requires processor time without waiting for external input), breaking it into smaller concurrent tasks may actually slow it down due to the overhead of context switching. In such cases, processing the task sequentially might be faster.
+- **Shared Resources:** Not all tasks are suitable for concurrent execution, especially if they rely on shared resources that cannot be safely accessed by multiple threads simultaneously.
+
+### Conclusion
+- Concurrency is beneficial when tasks by nature can be broken down into independent units and when tasks involve external dependencies (like waiting for I/O operations).
+- For CPU-bound tasks, concurrency might not provide any advantage and can even degrade performance, especially on single-core processors.
+- Even with multiple cores, we need to figure out optimal number of threads that can run program in minimal time.
+
+## Danger Zones in Concurrent Programming
+When writing concurrent programs, you must watch out for these common issues:
+- **Race Conditions:** Occurs when multiple threads try to update the same shared resource simultaneously without proper synchronization, leading to unpredictable results.
+- **Memory Visibility Problems:** Changes made by one thread might not be immediately visible to other threads, leading to inconsistent data access.
+- **Deadlocks:** Avoid situations where two or more threads are waiting indefinitely for each other to release locks.
+
+### Race Condition Prevention
+- when there is no shared resource among running threads.
+- when shared data is read only by nature (Immutable)
+- when shared data is mutable but critical section is synchronized (client should not worry about synchronization)
 
 # Threads
+## Programming Implementation of Concurrency Concepts
+One of the most commonly used constructs for implementing concurrency in Java is called Threads. A thread allows a portion of a program's logic to run concurrently with other parts of the program.
+
+Even in non-concurrent Java programs, there is always a main thread called the "main thread", which executes the code inside the main() method. To introduce concurrency, we can create new threads, kickstart them, and have them run concurrently alongside the main thread or other existing threads.
+
+### Threads and the Runnable Interface
+When we create a new thread, it requires an object that implements the Runnable interface. The Runnable interface has only one method - `public abstract void run();`
+
+The run() method contains the logic that the thread will execute when it is started. Once a thread is created and started, the logic inside its run() method is executed concurrently with the program's other threads.
+
+### Local and Shared Variables
+Each thread has its own set of local variables, but there may also be shared variables that multiple threads access. Shared variables can lead to race conditions if not properly managed, since multiple threads might try to modify them simultaneously, leading to unpredictable results.
 
 ## callstack
-Its simple stack of function calls that are waiting for called function to complete and pop to continue execution.
+Each thread has its own call stack, which is a structure that tracks function calls and their return values. The call stack is private to each thread, meaning one thread’s stack cannot be accessed or modified by another thread. For example, if thread A starts thread B, and thread B throws an exception, thread A will not be able to catch that exception because each thread operates within its own call stack.
 
-Whatever popping functions returns/throws is caught by calling function if they are in the same callstack.
-
-Every thread has their own callstack. They are private to a thread, they are not shared.
-
-If thread A starts thread B then If thread B throws an exception, then thread A won't be able to catch it.
-
-Similarly, if we initialize a thread to do some computation concurrently then we can not get hold of the result of its computation.
-To get hold of it we can let the thread store computation result in a global/shared variable which is accessible from my process thread.
-And once the thread terminates, we can read the value stored in that variable.
-
-# pitfalls of concurrency to avoid
-- race condition: when shared resource is not thread-safe then in multi-thread environment, a non-deterministic thread execution
-pattern may lead to the unpredictable value of shared resource.
+Similarly, if thread B performs a computation, thread A cannot directly access the result of that computation unless the result is stored in a shared variable that both threads can access. After thread B completes its execution, thread A can retrieve the result from this shared variable.
 
 ## critical section
-Section of code which can indulge in race condition. To avoid race condition, guard critical sections and prevent them from indulging
-in race condition.
-To do that, we need to make critical sections to be atomic, either all of them will happen, or none of them will happen.
-For achieving that we have concept of Locking.
+A critical section is a part of the code where shared resources are accessed and where race conditions are likely to occur. To prevent race conditions, we must ensure that critical sections are thread-safe, meaning that only one thread can execute the critical section at a time.
 
-## Lock
-If a thread before entering inside a critical section acquires the lock then until it leaves the critical section and releases that
-lock, no other thread can enter inside it.
-In other words, lock ensures that only one thread goes through critical section and until it is completely through with the section,
-no other thread can start execution of that section of code.
-This term, "acqire the lock", mean get hold of a variable and make it unavailable for other threads, and Java has a construct
-which help us in doing exactly that, which is "synchronize".
+# Lock
+## Locking and Synchronization
+One way to ensure thread safety in critical sections is by using a lock object. A thread must acquire a lock before entering the critical section and release it after leaving. While one thread holds the lock object, no other thread can enter the critical section. In Java, the `synchronized` keyword is used to implement this locking mechanism on any object. It ensures that only one thread can access a block of code or an object at a time.
 
-### what if race condition happens in acquiring lock?
-Theoretically, this concern is understandable but practically it won't happen. You can assume that synchronized-blocks are designed
-by Java creators such that this scenario will not occur. Because going into detail of this is not of much use to us.
+## Identifying the Critical Section
+When a code section is kept under lock, it becomes a sequential process and can never be concurrent. Hence, when designing concurrent programs, it’s essential to decide on a critical section, which is as small and as easy to go through as possible. This way, the program can maximize the benefits of concurrency by minimizing the time threads spend waiting for a lock. Locking too large a section of code can lead to reduced concurrency on the locked section and degraded performance due to other threads waiting longer for acquiring lock.
 
-### how to identify the correct placement of lock
-When you put a code section under lock, it will become a sequential process rather than being concurrent.
-This means we are constraining to run complete process locked inside critical section to be executed in one attempt.
-So, the tiniest and most quickest to finish the critical section, the better it is for reaping benifits of concurrency, hence
-find a sub-critical-section of a critical section which ensures thread safety and is shortest to complete.
-In other words, keep the lock on the lowest level.
+## Synchronized Blocks and Atomicity
+When a section of code is marked as synchronized, Java ensures that the operations inside that block are atomic. This means the entire block is executed as an uninterruptible unit, preventing race conditions. Java's synchronized mechanism guarantees that no race conditions will occur when acquiring a lock for the critical section.
 
-### when will race condition won't occur
-- when there is no shared resource among running threads.
-- when shared data is read only by nature
-- when shared data is mutable but critical section is synchronized (client should not worry about synchronization)
+# Executor Framework
+Instead of managing threads directly, Java provides the Executor framework to simplify concurrent programming. The Executor interface provides a method execute() that accepts a Runnable task and executes it.
+
+## ExecutorService
+The ExecutorService interface extends Executor and provides additional lifecycle management features, some of them are:
+- `shutdown()`: Gracefully shuts down the executor, allowing previously submitted tasks to complete.
+- `shutdownNow()`: Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
+- `isTerminated(`): Checks if all tasks have completed after a shutdown.
+
+The ExecutorService also allows for more advanced execution models, such as:
+- **Sequential Execution:** Tasks are executed one after another.
+- **Thread Pool:** A pool of threads is maintained, and tasks are assigned to the next available thread.
+- **New Thread:** A new thread is created for each task.
+The ExecutorService replaces the need for manually creating and managing thread pools, providing a more robust and manageable approach to concurrency.

@@ -2,7 +2,7 @@ package be.springboot.pp.concurrency;
 
 import java.util.Arrays;
 import java.util.List;
-
+// 6
 class MainEvent {
 
     public static void main(String[] args) {

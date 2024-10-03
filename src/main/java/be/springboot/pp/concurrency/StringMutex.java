@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 18
 /*
 * When you use a String type object as a Monitor, then remember that Java keep a string pool, in which
 * if a string is created once and multiple variables have that string as value, then instead of each

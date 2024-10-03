@@ -1,8 +1,15 @@
 package be.springboot.pp.concurrency;
+// 7, 10, 14
 
+/*
+* Problem statement: Write a concurrent program in which all threads will be
+* assigned a unique number. Print the numbers in sequence.
+* */
 public class SequentialPrinting {
 
     // adding volatile keyword here
+//    public static volatile int cur = 0;
+    // skipping volatile keyword by using synchronized keyword
     public static int cur = 0;
 
     /*
@@ -75,7 +82,25 @@ class SequenceWorker implements Runnable {
     * */
     @Override
     public void run() {
+        // ------- 1
+//        while (val > SequentialPrinting.cur) {}
+//        System.out.println(Thread.currentThread().getName() + " " + val + " will be scheduled -------");
+//        SequentialPrinting.cur++;
+        // ------- 2
+//        synchronized(lock) { // thread acquires the lock and then gets stuck in an infinite loop
+//            while (val > SequentialPrinting.cur) {} // except '1' any next thread will get stuck in while-loop
+//        }
+        // System.out.println(Thread.currentThread().getName() + " " + val);
+        // synchronized(lock) {
+        //     SequentialPrinting.cur++; // it is thread-safe because all threads except '1' will get stuck in while-loop
+        // }
+        // ------- 3 (works - correct approach)
 //        while (compare()) {}
+        // System.out.println(Thread.currentThread().getName() + " " + val);
+        // synchronized(lock) {
+        //     SequentialPrinting.cur++;
+        // }
+        // ------- 4 (improved approach to remedy busy-waiting)
         synchronized(lock) {
             while (val > SequentialPrinting.cur) {
                 try {
@@ -86,13 +111,9 @@ class SequenceWorker implements Runnable {
                 }
             }
             System.out.println(Thread.currentThread().getName() + " " + val + " will be scheduled -------");
-            SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
+            SequentialPrinting.cur++;
             lock.notifyAll();
         }
-        // System.out.println(Thread.currentThread().getName() + " " + val);
-        // synchronized(lock) {
-        //     SequentialPrinting.cur++; // it is thread-safe because all threads except one will get stuck in while-loop
-        // }
     }
 
     // private boolean compare() {

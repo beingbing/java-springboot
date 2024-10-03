@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 16
 public class SpecialSequence {
 
     /* Problem statement:

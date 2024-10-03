@@ -2,7 +2,7 @@ package be.springboot.pp.concurrency;
 
 import java.util.HashMap;
 import java.util.Map;
-
+// 5
 /*
 * A class is a singleton class if it ensures that in runtime environment
 * only one instance of that class will exist.
@@ -27,7 +27,7 @@ public class EmployeeIdStore {
 
     // instance creation needs to be thread-safe to be able to
     // have singleton feature implemented correctly
-    // TODO
+    // TODO: synchronize
     public static EmployeeIdStore getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new EmployeeIdStore();

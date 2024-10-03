@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-
+// 20
 class Simulator {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
@@ -57,7 +57,9 @@ public class ThreadPool {
 
     private final List<Thread> threads;
 
+    // why blocking-queue ?
     private final BlockingQueue<Runnable> taskQueue;
+    // client will be submitting a task whose property is that it will contain a method which needs to be run hence we kept task to be of type Runnable/Callable
 
     private final Set<Integer> deadThreadIdList;
 
@@ -70,6 +72,7 @@ public class ThreadPool {
     public ThreadPool(int numThreads, int tasksPerThread) {
         this.poolCapacity = numThreads;
         this.taskQueue = new ArrayBlockingQueue<>(tasksPerThread);
+
         this.threads = new ArrayList<>();
         this.deadThreadIdList = new HashSet<>();
         for (int i = 0; i < numThreads; i++) {

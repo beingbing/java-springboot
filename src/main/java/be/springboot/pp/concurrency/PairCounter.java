@@ -8,7 +8,9 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+// 19
 
+// it takes a list of integers and a sum value and returns count of pairs in the list that add up to the sum
 public class PairCounter implements Callable<Integer> {
 
     private final List<Integer> nums;
@@ -34,7 +36,7 @@ public class PairCounter implements Callable<Integer> {
     }
 }
 
-class Server {
+class AsyncServer {
 
     public FutureTask<Integer> getPairCount(List<Integer> nums, int sum) {
         Callable<Integer> callable = new PairCounter(nums, sum);
@@ -63,7 +65,7 @@ class Server {
 class MultiThreadingSimulator {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        Server server = new Server();
+        AsyncServer asyncServer = new AsyncServer();
         Random random = new Random();
         Map<Integer, FutureTask<Integer>> intFutureTaskMap = new HashMap<>();
 
@@ -76,16 +78,16 @@ class MultiThreadingSimulator {
                 nums.add(random.nextInt(100, 200));
             int sum = random.nextInt(200, 400);
 
-            FutureTask<Integer> futureTask = server.getPairCount(nums, sum);
-            System.out.println("Simulator: main: futureTask: " + futureTask);
+            FutureTask<Integer> futureTask = asyncServer.getPairCount(nums, sum);
+            System.out.println("MultiThreadingSimulator: main: futureTask: " + futureTask);
             intFutureTaskMap.put(i, futureTask);
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("Simulator: main: time: " + (end - start));
+        System.out.println("MultiThreadingSimulator: main: time: " + (end - start));
 
         for (int i = 0; i < 5; i++) {
-            System.out.println("Simulator: main: intFutureTaskMap: Req #" + i + ": " + intFutureTaskMap.get(i).get());
+            System.out.println("MultiThreadingSimulator: main: intFutureTaskMap: Req #" + i + ": " + intFutureTaskMap.get(i).get());
         }
     }
 }

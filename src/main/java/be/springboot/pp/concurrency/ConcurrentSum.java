@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
+// 2
 /*
 * This program was written to teach you how multiple threads can execute concurrently
 * and access shared resources.
@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ConcurrentSum {
 
+    // public static long sum = 0; // will give wrong answer for concurrent sum
+    // this is because of contention in accessing sum variable.
     public static AtomicLong sum = new AtomicLong(0);
 
     public static AtomicInteger cnt = new AtomicInteger(0);
@@ -88,6 +90,8 @@ class Worker implements Runnable {
         long s = 0;
         for (int i = l; i <= r; i++) {
             s += nums.get(i);
+//            ConcurrentSum.sum.addAndGet(nums.get(i)); // if we do this instead of above line then
+            // concurrent sum will have worse performance as compared to sequential sum because of contention.
         }
 //        System.out.println("Worker: run: s: " + s + " " + Thread.currentThread().getName());
         long sum = ConcurrentSum.sum.addAndGet(s);

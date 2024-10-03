@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 15
 class FizzBuzzMaker {
 
     /* Problem:
@@ -12,7 +12,7 @@ class FizzBuzzMaker {
     *
     * After printing numbers in sorted manner also print their bucket.
     * */
-    public static final int n = 15;
+    public static final int n = 25;
 
 //    public static volatile int i = 1; // adding volatile didn't fix it
     public static int i = 1;

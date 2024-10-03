@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 12
 class SampleWaiter implements Runnable {
 
     private final Object monitor;

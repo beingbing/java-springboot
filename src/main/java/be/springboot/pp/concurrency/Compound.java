@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 4
 public class Compound {
 
     private int number;

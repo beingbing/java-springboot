@@ -1,5 +1,5 @@
 package be.springboot.pp.concurrency;
-
+// 9
 public class InstructionReordering {
 
     public static void main(String[] args) {

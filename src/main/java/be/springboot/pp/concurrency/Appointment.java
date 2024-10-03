@@ -4,7 +4,12 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+// 11, 13
 
+/*
+* Problem statement: schedule appointment of a customer according to the number displayed on the screen.
+* the catch here is every customer will be an independent thread.
+* */
 class Customer implements Runnable {
 
     private final int appointmentId;
@@ -18,38 +23,52 @@ class Customer implements Runnable {
 
     @Override
     public void run() {
+        // ---------- 1
+//        while (!tickingBoard.isMyTurn(appointmentId)) { // problem of busy waiting
+//            System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " waiting");
+//        }
+//        System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " entered ++++++");
+
+        // ---------- 2
         /*
         * This while loop is doing busy waiting which should not be done, ideally, Threads should wait
         * before again analyzing the condition. It is consuming CPU cycles and yet doing nothing.
-        *
-        * Instead, the evaluation should only be done by threads when they are made aware of the appointment-id
-        * getting changes, so that they can review whether it is their turn or not. Hence, ticking board needs
-        * to signal all threads to check whether it is their turn or not. And until that is done, threads should
-        * wait, do not keep checking.
-        *
-        * So, for first apart, where Thread does not busy-waiting, it should wait quietly so that no CPU cycles are
+        * So, where Thread does not busy-waiting, it should wait quietly so that no CPU cycles are
         * consumed, we can make thread go to sleep.
         * */
 //        while (!tickingBoard.isMyTurn(appointmentId)) {
 //            System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " waiting");
 //            try {
 //                Thread.sleep(1000); // to remedy busy waiting
+//                // but what if the thread which went to sleep is still sleeping and it is its turn now?
+//                // until thread whose turn is there doesn't wakes up, all thread will keep on waking and going to sleep relentlessly
+//                // this is not a good design. As time elapsed in switching the appointment number may not
+//                // always be equal to the sleep duration of thread whose turn is next.
+//                // alternatively, if chaning of appointment number takes more time than sleep duration of thread
+//                // then a thread might come back to enquire again and again, and we will fallback to case 1 of busy-waiting.
 //            } catch (InterruptedException e) {
 //                throw new RuntimeException(e);
 //            }
-//
-//            System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " entered ++++++");
 //        }
+//        System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " entered ++++++");
+
+        // ---------- 3
+        /*
+         * Instead, the evaluation should only be done by threads when they are made aware of the appointment-id
+         * getting changes, so that they can review whether it is their turn or not. Hence, ticking board needs
+         * to signal all threads to check whether it is their turn or not. And until that is done, threads should
+         * wait, do not keep checking.
+        * */
         synchronized(tickingBoard) {
             while (!tickingBoard.isMyTurn(appointmentId)) {
                 System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " waiting");
                 try {
-                    tickingBoard.wait(1000); // to remedy busy waiting
+                    tickingBoard.wait(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " entered ++++++");
             }
+            System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " entered ++++++");
             tickingBoard.notifyAll();
         }
     }
@@ -66,7 +85,11 @@ class TickingBoard {
         this.cur = 0;
     }
 
-    public boolean isMyTurn(int appointmentId) {
+    // it is synchronized otherwise if while loop was to be synchronized the thread would acquire look and go to infinite loop
+    // also it might happen that one thread reads cur to be n, goes context switched and other threads updates to n+1
+    // this way when first thread again came in context will execute over stale value.
+//    public synchronized boolean isMyTurn(int appointmentId) {
+    public boolean isMyTurn(int appointmentId) { // as we have synchronized its parent process hence we can remove it from here
         if (cur == appointments.size()) throw new RuntimeException("all appointments are over");
         if (appointments.get(cur) != appointmentId) return false;
         cur++;
@@ -76,7 +99,7 @@ class TickingBoard {
 
 /*
 * For the second part, where whenever the value is changed on a ticking board, this event of change in value is
-* propagated to all waiting threads. So that they can check, if it is still not, their turn can go to sleep.
+* propagated to all waiting threads. So that they can check, if it is still not their turn can go to sleep.
 *
 * This can be achieved by using a Monitor. Monitor is an instrument to which all threads can subscribe to and go to
 * sleep, anytime a signal comes to the Monitor, it interrupts all sleeping threads to wake up and check
