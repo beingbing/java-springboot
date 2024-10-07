@@ -39,6 +39,8 @@ default values to fields.
 Java supports multiple constructors, provided they have different signatures (i.e., different
 parameter lists).
 
+Always prefer a constructor over instance initializer, as it makes reading code complicated.
+
 ## Access Modifiers
 Access modifiers control the visibility of classes, fields, and methods.
 - **public:** Accessible from anywhere.
@@ -84,9 +86,7 @@ immutable object. Usage, They are crucial in multithreading because they prevent
 (since they can't be changed once created).
 
 ## Static Keyword
-The `static` keyword marks a field or method as belonging to the class rather than the instance. A
-static field or method is shared among all instances of the class. A static method can only access
-other static fields and methods.
+The `static` keyword marks a field or method as belonging to the class rather than the instance. A static field or method is shared among all instances of the class. A static method can only access other static fields and methods. A static method can be called on an instance variable even if it is not pointing to any object (it's set to `null`)
 ```java
 class Book {
     static int totalBooks = 0; // Class-level field
