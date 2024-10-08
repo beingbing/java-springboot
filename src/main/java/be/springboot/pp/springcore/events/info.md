@@ -1,5 +1,5 @@
 # Events
-Events in Spring Boot provide a way for different components within an application to communicate asynchronously without tight coupling. Events are particularly useful when you want to decouple components and notify one part of the system about certain changes or actions that occur elsewhere. In Spring Boot, events follow the publish-subscribe pattern, events are handled using the `ApplicationEventPublisher` and `@EventListener` annotations. This package contains a simple example illustrating how to publish and handle events in a Spring Boot application.
+Events in Spring Boot provide a way for different components within an application to communicate asynchronously without tight coupling. Events are particularly useful when you want to decouple components and notify one part of the system about certain changes or actions that occur elsewhere. In Spring Boot, events follow the publish-subscribe pattern, events are handled using the `ApplicationEventPublisher` and `@EventListener` annotations.
 
 ### Note:
 `ApplicationContext` extends `ApplicationEventPublisher` hence, whenever SpringBoot emits an event associated with lifecycle, the source is `ApplicationContext`.
