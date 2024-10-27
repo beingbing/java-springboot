@@ -35,8 +35,9 @@ public class S007_cf_154b {
         return false;
     }
 
-    private static boolean conflictFound(int x, BufferedWriter bw) throws IOException {
-        while (x > 1) {
+    private static boolean conflictFound(int collider, BufferedWriter bw) throws IOException {
+        int x = collider;
+        while (x != 1) {
             int prime = spf[x];
             if (hasConflict(prime, bw)) return true;
             while (x % prime == 0) x /= prime;
@@ -45,10 +46,9 @@ public class S007_cf_154b {
     }
 
     private static void createMapping(int collider, BufferedWriter bw) throws IOException {
+        if (conflictFound(collider, bw)) return;
+
         int x = collider;
-
-        if (conflictFound(x, bw)) return;
-
         while (x != 1) {
             int prime = spf[x];
             primeProducerMap.put(prime, collider);
