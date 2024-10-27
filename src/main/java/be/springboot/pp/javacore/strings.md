@@ -157,7 +157,7 @@ both sb and str are referencing to the same string object.
 ## Insertion
 insert at given index and returns reference of current `StringBuilder`
 ```
-public StringBuilder insert(int index, String str); // it too has multiple signatures
+public StringBuilder insert(int index, String str); // it has many signatures for all data types
 
 StringBuilder sb = new StringBuilder("animals");
 sb.insert(7, '-');

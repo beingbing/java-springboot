@@ -122,17 +122,12 @@ import java.util.Stack;
 
 public class InfixToPostfix {
     public static int precedence(char operator) {
-        switch (operator) {
-            case '+':
-            case '-':
-                return 1;
-            case '*':
-            case '/':
-                return 2;
-            case '^':
-                return 3;
-        }
-        return -1;
+        return switch (operator) {
+            case '+', '-' -> 1;
+            case '*', '/' -> 2;
+            case '^' -> 3;
+            default -> -1;
+        };
     }
 
     public static String infixToPostfix(String expression) {
@@ -142,7 +137,7 @@ public class InfixToPostfix {
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             
-            // If character is an operand, add it to the result
+            // If a character is an operand, add it to the result
             if (Character.isLetterOrDigit(c)) {
                 result.append(c);
             } 
@@ -186,12 +181,12 @@ Backtracking algorithms often use stacks to remember decision points when explor
 
 ## Summary of Key Points
 
-| Data Structure       | Description                                          | Key Methods                      |
-|----------------------|------------------------------------------------------|-----------------------------------|
-| **ArrayDeque (as Stack)** | Resizable array-backed, faster for stack operations | `push()`, `pop()`, `peek()`       |
-| **LinkedList (as Stack)** | Implements `Deque`, can be used for stack operations | `push()`, `pop()`, `peek()`       |
-| **Legacy `Stack` class**  | Extends `Vector`, synchronized, not recommended    | `push()`, `pop()`, `peek()`, `empty()` |
-| **Applications**         | Expression evaluation, backtracking                | -                                 |
+| Data Structure            | Description                                          | Key Methods                            |
+|---------------------------|------------------------------------------------------|----------------------------------------|
+| **ArrayDeque (as Stack)** | Resizable array-backed, faster for stack operations  | `push()`, `pop()`, `peek()`            |
+| **LinkedList (as Stack)** | Implements `Deque`, can be used for stack operations | `push()`, `pop()`, `peek()`            |
+| **Legacy `Stack` class**  | Extends `Vector`, synchronized, not recommended      | `push()`, `pop()`, `peek()`, `empty()` |
+| **Applications**          | Expression evaluation, backtracking                  | -                                      |
 
 ## Conclusion
 - **Modern Java stacks** should be implemented using **`ArrayDeque`** or **`LinkedList`**, avoiding the legacy `Stack` class.

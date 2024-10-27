@@ -19,12 +19,7 @@ The **`Set` interface** in Java represents a collection that contains no duplica
 
 ## Implementations of `Set`
 ### HashSet
-`HashSet` is one of the most commonly used implementations of the `Set` interface. It is backed by a hash table and provides constant time (`O(1)`) performance for basic operations like `add()`, `remove()`, and `contains()`.
-
-#### Key Features of `HashSet`
-- Elements are **not ordered**.
-- Allows **one `null`** element.
-- It is **not synchronized**, meaning it is not thread-safe unless externally synchronized.
+`HashSet` is a widely used `Set` implementation backed by a hash table that does not maintain any element order. Offering O(1) performance for basic operations like `add()`, `remove()`, and `contains()`. It allows at most one null element and is not thread-safe unless externally synchronized.
 
 #### Example
 ```java
@@ -140,12 +135,12 @@ public class EnumSetExample {
 
 ## Comparison of `Set` Implementations
 
-| **Implementation**  | **Ordering**           | **Null Handling** | **Performance**                  | **Use Case**                           |
-|---------------------|------------------------|-------------------|----------------------------------|----------------------------------------|
-| **HashSet**          | No ordering            | Allows one `null` | `O(1)` for `add()`, `remove()`, `contains()` | Best for fast, unordered collection of unique elements |
-| **LinkedHashSet**    | Insertion order        | Allows one `null` | Slightly slower than `HashSet` due to linked list overhead | Use when insertion order is important |
-| **TreeSet**          | Sorted (natural or custom) | No `null` allowed | `O(log n)` for `add()`, `remove()`, `contains()` | Use when sorted order is required |
-| **EnumSet**          | Natural enum order     | No `null` allowed | Extremely fast, space-efficient | Best for enum-based sets |
+| **Implementation** | **Ordering**               | **Null Handling** | **Performance**                                            | **Use Case**                                           |
+|--------------------|----------------------------|-------------------|------------------------------------------------------------|--------------------------------------------------------|
+| **HashSet**        | No ordering                | Allows one `null` | `O(1)` for `add()`, `remove()`, `contains()`               | Best for fast, unordered collection of unique elements |
+| **LinkedHashSet**  | Insertion order            | Allows one `null` | Slightly slower than `HashSet` due to linked list overhead | Use when insertion order is important                  |
+| **TreeSet**        | Sorted (natural or custom) | No `null` allowed | `O(log n)` for `add()`, `remove()`, `contains()`           | Use when sorted order is required                      |
+| **EnumSet**        | Natural enum order         | No `null` allowed | Extremely fast, space-efficient                            | Best for enum-based sets                               |
 
 ## Applications of `Set`
 

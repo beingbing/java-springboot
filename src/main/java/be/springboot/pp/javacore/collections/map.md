@@ -1,31 +1,8 @@
-### Map-based Data Structures in Java
+# Map-based Data Structures in Java
 
-Map-based data structures in Java store **key-value pairs**, where each key is associated with exactly one value. Java’s `Map` interface provides the framework for such collections, enabling fast lookups, inserts, and updates based on keys. Unlike `Set` or `List`, a `Map` allows keys and values, and keys must be unique.
+The `Map` interface is part of the `java.util` package but does not extend the `Collection` interface as it has a distinct structure compared to sets or lists. It represents a collection of key-value pairs, where each key is unique and maps to exactly one value. Its primary purpose is to efficiently retrieve values based on their associated keys. It provides fast lookups, inserts, and updates based on keys. Depending on the implementation, null keys and values may or may not be allowed (e.g., `HashMap` allows one null key, while `TreeMap` does not).
 
-#### Overview of the `Map` Interface
-#### Implementations of `Map`:
-- **HashMap**
-- **LinkedHashMap**
-- **TreeMap**
-- **EnumMap**
-- **WeakHashMap**
-- **IdentityHashMap**
-#### Comparison of `Map` Implementations
-#### Key Features of `Map` Operations
-#### Applications of `Map` (Caching, Lookup tables)
-
----
-
-### 1. Overview of the `Map` Interface
-
-The **`Map` interface** in Java, part of the `java.util` package, represents a collection of key-value pairs, where each key is unique, and each key maps to exactly one value. The primary purpose of a `Map` is to facilitate fast lookups and retrievals based on keys.
-
-#### Key Features:
-- Keys are **unique**, and a single key can map to only one value.
-- **Values** can be duplicated.
-- **Null keys and values** are allowed, depending on the implementation (e.g., `HashMap` allows one `null` key, while `TreeMap` does not allow `null` keys).
-
-**Common Methods in the `Map` Interface**:
+## Common Methods
 - **`put(K key, V value)`**: Associates the specified value with the specified key.
 - **`get(Object key)`**: Returns the value associated with the specified key.
 - **`remove(Object key)`**: Removes the key-value pair for the specified key.
@@ -35,11 +12,9 @@ The **`Map` interface** in Java, part of the `java.util` package, represents a c
 - **`isEmpty()`**: Checks if the map is empty.
 - **`clear()`**: Removes all key-value pairs from the map.
 
----
+## Implementations of `Map`
 
-### 2. Implementations of `Map`
-
-#### a. **HashMap**
+### **HashMap**
 
 `HashMap` is the most commonly used `Map` implementation. It is backed by a **hash table**, which ensures constant-time (`O(1)`) performance for the basic operations: `put()`, `get()`, `remove()`, and `containsKey()`.
 

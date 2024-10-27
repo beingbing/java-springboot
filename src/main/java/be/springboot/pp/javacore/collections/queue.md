@@ -1,44 +1,44 @@
 # Queue Interface
-The `Queue` interface is part of the `java.util` package and represents a collection designed to hold elements before processing, following the **FIFO** principle. It is an ordered collection where elements are inserted at the end and retrieved from the front.
+The `Queue` interface represents an ordered collection that holds elements whose insertion and retrieval/access happens in a first-in, first-out (FIFO) manner. We can not peek/access elements in between of the collection.
 
 ## Characteristics of a `Queue`
 - **FIFO Order**: The element inserted first is removed first.
 - **Null Handling**: Most implementations of `Queue` do not allow `null` elements.
 - **Common Methods**:
-    - `offer(E e)`: Inserts an element into the queue, returning `true` if successful or `false` if the queue is full.
-    - `poll()`: Retrieves and removes the head of the queue, returning `null` if the queue is empty.
-    - `peek()`: Retrieves, but does not remove, the head of the queue, returning `null` if the queue is empty.
-    - `remove()`: Removes the head of the queue, throwing an exception if the queue is empty.
+  - `offer(E e)`: Inserts an element, returning true if successful or false if the queue is full.
+  - `add(E e)`: Inserts an element, returning true if successful or throws exception if the queue is full.
+  - `peek()`: retrieves, but does not remove the head, returning null if the queue is empty.
+  - `element()`: retrieves, but does not remove the head, throws exception if the queue is empty.
+  - `poll()`: retrieves and removes the head, returning null if the queue is empty.
+  - `remove()`: retrieves and removes the head, throws exception if the queue is empty.
 
 ## Implementations: PriorityQueue
 The `PriorityQueue` is a special kind of queue where elements are ordered based on their priority rather than their insertion order. The elements are ordered either according to their natural ordering or by a `Comparator` provided at queue creation.
 
-### Key characteristics of `PriorityQueue`
-- **Priority-based ordering**: The head of the queue is the least element, according to the specified ordering.
-- **Non-FIFO behavior**: Unlike a regular queue, the `PriorityQueue` does not guarantee FIFO behavior.
-- **Not thread-safe**: `PriorityQueue` is not synchronized and should be used with proper synchronization in concurrent environments.
-- **Null Handling**: `PriorityQueue` does not allow `null` elements.
-- **Common Methods**:
-  - `offer(E e)`: Inserts the element into the priority queue, ordering it by priority.
-  - `poll()`: Retrieves and removes the head of the queue (the element with the highest priority).
+### Distinct characteristics of `PriorityQueue`
+- **Non-FIFO behavior**: It does not guarantee FIFO behavior.
+- **Not thread-safe**: It is not synchronized and should be used carefully in concurrent environments.
+- **Null Handling**: It does not allow `null` elements.
 
 ### Example
 ```java
 import java.util.PriorityQueue;
 
 public class PriorityQueueExample {
-    public static void main(String[] args) {
-        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
-        
-        priorityQueue.offer(20);
-        priorityQueue.offer(10);
-        priorityQueue.offer(30);
-        
-        System.out.println("PriorityQueue: " + priorityQueue);  // Output: [10, 20, 30]
-        
-        System.out.println("Polling: " + priorityQueue.poll()); // Removes and returns the head (10)
-        System.out.println("After polling: " + priorityQueue);  // Output: [20, 30]
-    }
+  public static void main(String[] args) {
+    PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
+
+    priorityQueue.offer(20);
+    priorityQueue.offer(10);
+    priorityQueue.offer(30);
+
+    System.out.println("PriorityQueue: " + priorityQueue);  // Output: PriorityQueue: [10, 20, 30]
+
+    System.out.println("Polling: " + priorityQueue.poll()); // Output: Polling: 10
+    // Removes and returns the head (10)
+
+    System.out.println("After polling: " + priorityQueue);  // Output: After polling: [20, 30]
+  }
 }
 ```
 
@@ -49,13 +49,59 @@ The `Deque` (double-ended queue) interface extends `Queue` and allows elements t
 - **Double-ended**: Elements can be added and removed from both the head and the tail.
 - **Null Handling**: Most implementations do not permit `null` elements.
 - **Common Methods**:
-    - `addFirst(E e)`, `addLast(E e)`: Insert elements at the front or the end of the deque.
-    - `removeFirst()`, `removeLast()`: Remove elements from the front or the end.
-    - `getFirst()`, `getLast()`: Retrieve, but do not remove, the first or last element.
+    - `offerFirst(E e)`, `offerLast(E e)`: Inserts an element at the front or the end of the deque, returns true if successful or false if the dequeue is full.
+    - `addFirst(E e)`, `addLast(E e)`: Inserts an element at the front or the end of the deque, returns true if successful or false if the dequeue is full.
+    - `peekFirst()`, `peekLast()`: Retrieve, but do not remove, the first or last element. Returning null if the queue is empty.
+    - `getFirst()`, `getLast()`: Retrieve, but do not remove, the first or last element. Throws exception if the queue is empty.
+    - `pollFirst()`, `pollLast()`: Remove elements from the front or the end. Returns null if the queue is empty.
+    - `removeFirst()`, `removeLast()`: Remove elements from the front or the end. Throws an exception if the queue is empty.
+
+## Mimicking stack
+- **push(E e)**: Equivalent to `addFirst()`, inserts the element at the head of the deque.
+- **pop()**: Equivalent to `removeFirst()`, removes and returns the first element.
+- **peek()**: Equivalent to `peekFirst()`, retrieves but does not remove the first element.
 
 ## Common Deque Implementations
 - **ArrayDeque**: A resizable array implementation of the `Deque` interface. It is faster than `LinkedList` for both stack and queue operations and has no capacity restrictions.
 - **LinkedList**: Also implements `Deque`, allowing operations on both ends of the list.
+
+## Implementation: ArrayDeque
+`ArrayDeque` is a resizable array implementation of the `Deque` interface. It is efficient for both insertions and deletions at the front and back of the deque.
+
+### Advantages
+- No capacity restrictions (other than memory limits).
+- Amortized constant time complexity for most operations (O(1)).
+- Can be used both as a stack and a queue.
+
+### Disadvantages
+- Not thread-safe (needs external synchronization for concurrent access).
+
+### Example
+```java
+import java.util.Deque;
+import java.util.ArrayDeque;
+
+public class Main {
+	public static void main(String[] args) {
+		Deque<Integer> deque = new ArrayDeque<>();
+        deque.addFirst(1);
+        deque.addLast(2);
+        System.out.println(deque); // Output: [1, 2]
+        
+        deque.removeFirst(); // Removes 1
+        deque.removeLast();  // Removes 2
+        System.out.println(deque); // Output: []
+	}
+}
+```
+
+## Specialized Deque Implementations
+- **ConcurrentLinkedDeque**: It is a thread-safe, lock-free implementation of a deque. It is ideal for use in concurrent environments where multiple threads access the deque simultaneously.
+### Advantages
+- Non-blocking and lock-free, providing thread safety with high performance under concurrency.
+### Disadvantages
+- Higher complexity due to concurrency control.
+- Slightly slower than non-concurrent implementations like ArrayDeque or LinkedList in single-threaded scenarios.
 
 # BlockingQueue Interface
 The `BlockingQueue` interface extends `Queue` and represents a thread-safe queue that supports operations that wait for the queue to become non-empty when retrieving elements and to become non-full when adding elements.
