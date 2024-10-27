@@ -11,33 +11,35 @@ import java.util.Map;
 import java.util.Set;
 
 public class S007_cf_154b {
-    static int MAX = 100001;
-    private static int[] spf = null;
+    static final int MAX = 100001;
+    private static int[] spf = new int[MAX+1];
     private static Map<Integer, Integer> primeProducerMap = new HashMap<>();
     private static Set<Integer> activeColliders = new HashSet<>();
 
     private static void processSpfTill(int n) {
-        spf = new int[n+1];
-
-        for (int i = 0; i <= n; i++) spf[i] = i;
-
+        for (int i = 1; i <= n; i++) spf[i] = i;
         for (int p = 2; p * p <= n; p++) {
             if (spf[p] == p) {
                 for (int multiple = p * p; multiple <= n; multiple += p) {
-                    spf[multiple] = p;
+                    if (spf[multiple] == multiple) spf[multiple] = p;
                 }
             }
         }
     }
 
-    private static boolean hasConflict(int prime, int collider, BufferedWriter bw) throws IOException {
+    private static boolean hasConflict(int prime, BufferedWriter bw) throws IOException {
         if (primeProducerMap.containsKey(prime)) {
-            if (primeProducerMap.get(prime) == collider) {
-                bw.write("Already on\n");
-                return true;
-            }
-            bw.write("Conflict with " + primeProducerMap.get(prime) + " \n");
+            bw.write("Conflict with " + primeProducerMap.get(prime) + "\n");
             return true;
+        }
+        return false;
+    }
+
+    private static boolean conflictFound(int x, BufferedWriter bw) throws IOException {
+        while (x > 1) {
+            int prime = spf[x];
+            if (hasConflict(prime, bw)) return true;
+            while (x % prime == 0) x /= prime;
         }
         return false;
     }
@@ -45,9 +47,10 @@ public class S007_cf_154b {
     private static void createMapping(int collider, BufferedWriter bw) throws IOException {
         int x = collider;
 
+        if (conflictFound(x, bw)) return;
+
         while (x != 1) {
             int prime = spf[x];
-            if (hasConflict(prime, collider, bw)) return;
             primeProducerMap.put(prime, collider);
             while (x % prime == 0) x /= prime;
         }
@@ -56,10 +59,9 @@ public class S007_cf_154b {
     }
 
     private static boolean wasActive(int collider, BufferedWriter bw) throws IOException {
+        if (!activeColliders.contains(collider)) return false;
+
         int x = collider;
-
-        if (!activeColliders.contains(x)) return false;
-
         while (x > 1) {
             int prime = spf[x];
             primeProducerMap.remove(prime);
@@ -81,12 +83,12 @@ public class S007_cf_154b {
 
         while (m-- > 0) {
             String[] vals = br.readLine().trim().split(" ");
+            int collider = Integer.parseInt(vals[1]);
             if (vals[0].equals("+")) {
-                createMapping(Integer.parseInt(vals[1]), bw);
-            }
-            if (vals[0].equals("-")) {
-                if (!wasActive(Integer.parseInt(vals[1]), bw))
-                    bw.write("Already off\n");
+                if (!activeColliders.contains(collider)) createMapping(collider, bw);
+                else bw.write("Already on\n");
+            } else {
+                if (!wasActive(collider, bw)) bw.write("Already off\n");
             }
         }
         bw.flush();
