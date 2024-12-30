@@ -1,25 +1,36 @@
 package be.springboot.pp.dsalgo.maths;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class S004_pp_t_prime {
+    private static final int MAX = 1_000_000;
+    private static boolean[] isPrime = new boolean[MAX + 1];
+
+    private static void processPrimes(int n) {
+        Arrays.fill(isPrime, true);
+
+        isPrime[0] = false;
+        isPrime[1] = false;
+
+        for (int p = 2; p * p <= n; p++) {
+            if (isPrime[p]) {
+                for (int multiple = p * p; multiple <= n; multiple += p) {
+                    isPrime[multiple] = false;
+                }
+            }
+        }
+    }
 
     private static boolean isTPrime(long n) {
         long val = (long) Math.sqrt(n);
-        if (val*val != n) return false;
-        int count = 2;
-        for (int i = 2; i <= val; i++) {
-            if (count > 3) return false;
-            if (n%i == 0) {
-                if (i == n/i) count++;
-                else count += 2;
-            }
-        }
-        if (count == 3) return true;
-        return false;
+        // Check if n is a perfect square and its square root is a prime number
+        return val * val == n && isPrime[(int) val];
     }
 
     public static void main(String[] args) {
+        processPrimes(MAX);
+
         Scanner sc = new Scanner(System.in);
 
         int n = sc.nextInt();
