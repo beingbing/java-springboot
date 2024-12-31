@@ -7,45 +7,55 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-public class S001_sp_rmqsq {
+public class S001_sp_rmqsq { // range minimum queries
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine().trim());
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int[] arr = new int[n];
-        StringTokenizer st = new StringTokenizer(br.readLine().trim());
-        for (int i = 0; i < n; i++) arr[i] = Integer.parseInt(st.nextToken());
+        int numberOfElements = Integer.parseInt(bufferedReader.readLine().trim());
 
-        int q = Integer.parseInt(br.readLine().trim());
-        int[][] queries = new int[q][2];
-        for (int i = 0; i < q; i++) {
-            st = new StringTokenizer(br.readLine().trim());
-            queries[i][0] = Integer.parseInt(st.nextToken());
-            queries[i][1] = Integer.parseInt(st.nextToken());
+        int[] inputArray = new int[numberOfElements];
+        StringTokenizer tokenizer = new StringTokenizer(bufferedReader.readLine().trim());
+        for (int index = 0; index < numberOfElements; index++)
+            inputArray[index] = Integer.parseInt(tokenizer.nextToken());
+
+        int numberOfQueries = Integer.parseInt(bufferedReader.readLine().trim());
+
+        SqrtDecomposition sqrt = new SqrtDecomposition(inputArray); // Ideal for static range queries with occasional updates.
+        SparseTable st = new SparseTable(inputArray); // Best for static range queries when no updates are required.
+        SegmentTree segTree = new SegmentTree(inputArray); // Optimal when frequent updates and queries are needed.
+
+        StringBuilder queryResults = new StringBuilder();
+        int queryType, leftIndex, rightIndex, updateIndex, newValue;
+
+        for (int queryIndex = 0; queryIndex < numberOfQueries; queryIndex++) {
+            tokenizer = new StringTokenizer(bufferedReader.readLine().trim());
+            queryType = Integer.parseInt(tokenizer.nextToken());
+
+            if (queryType == 1) {
+                leftIndex = Integer.parseInt(tokenizer.nextToken());
+                rightIndex = Integer.parseInt(tokenizer.nextToken());
+                queryResults.append(sqrt.query(leftIndex, rightIndex)).append("\n");
+                queryResults.append(st.query(leftIndex, rightIndex)).append("\n"); // Pre-processing: O(n log n), query: O(1)
+                queryResults.append(segTree.query(leftIndex, rightIndex)).append("\n");
+            } else {
+                updateIndex = Integer.parseInt(tokenizer.nextToken());
+                newValue = Integer.parseInt(tokenizer.nextToken());
+                inputArray[updateIndex] = newValue;
+                sqrt.update(updateIndex, newValue);
+                st.update(updateIndex, newValue, inputArray.length);
+                segTree.update(updateIndex, newValue);
+            }
         }
 
-        // SqrtDecomposition sqrt = new SqrtDecomposition(arr); // Ideal for static range queries with occasional updates.
-        // SparseTable st = new SparseTable(arr); // Best for static range queries when no updates are required.
-        SegmentTree segTree = new SegmentTree(arr); // Optimal when frequent updates and queries are needed.
+        // Write all results in one go
+        bufferedWriter.write(queryResults.toString());
+        bufferedWriter.flush();
 
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < q; i++) {
-            int l = queries[i][0];
-            int r = queries[i][1];
-
-            // Uncomment for the chosen method
-            // System.out.println(sqrt.query(l, r));
-            // System.out.println(st.query(l, r));
-            result.append(segTree.query(l, r)).append("\n");
-        }
-
-        bw.write(result.toString());
-        bw.flush();
-        bw.close();
-        br.close();
+        // Close streams
+        bufferedReader.close();
+        bufferedWriter.close();
     }
 
 }
