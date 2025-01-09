@@ -33,7 +33,7 @@ public class EventContainer {
     }
 
     /*
-    * As we learned in Compound.java, compound actions need to be synchronized,
+    * SlidingWindowMedianMultiset we learned in Compound.java, compound actions need to be synchronized,
     * making individual actions thread-safe is not enough.
     *
     * But here, something more is also happening. Thread t is getting context
@@ -55,7 +55,7 @@ public class EventContainer {
     }
 
     /*
-    * As EventContainer is responsible for updating both title and syllabus, so do not let
+    * SlidingWindowMedianMultiset EventContainer is responsible for updating both title and syllabus, so do not let
     * getter execute until setter is completed, hence getter needs to be locked by the same
     * lock which is implemented on setter. Hence, adding synchronized in its declaration as
     * well.

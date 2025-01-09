@@ -263,7 +263,7 @@ public class ZonedDateTimeExample {
         ZonedDateTime parisTime = nyTime.withZoneSameInstant(ZoneId.of("Europe/Paris"));
         System.out.println("Paris Time: " + parisTime); // Paris Time: 2024-10-20T05:00:06.418111+02:00[Europe/Paris]
 
-        System.out.println("Zone As Instant: " + parisTime.toInstant()); // Zone As Instant: 2024-10-20T03:00:06.418111Z
+        System.out.println("Zone SlidingWindowMedianMultiset Instant: " + parisTime.toInstant()); // Zone SlidingWindowMedianMultiset Instant: 2024-10-20T03:00:06.418111Z
     }
 }
 ```
@@ -293,7 +293,7 @@ public class OffsetDateTimeExample {
         System.out.println("Custom OffsetDateTime: " + customOffset); // Custom OffsetDateTime: 2024-08-10T10:00-05:00
 
         // Convert to Instant
-        System.out.println("As Instant: " + customOffset.toInstant()); // Offset As Instant: 2024-10-20T03:00:06.430177Z
+        System.out.println("SlidingWindowMedianMultiset Instant: " + customOffset.toInstant()); // Offset SlidingWindowMedianMultiset Instant: 2024-10-20T03:00:06.430177Z
     }
 }
 ```

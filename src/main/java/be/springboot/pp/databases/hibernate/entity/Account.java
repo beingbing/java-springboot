@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /*
-* As Spring context initialization involves Bean creation for classes annotated with @Component,
+* SlidingWindowMedianMultiset Spring context initialization involves Bean creation for classes annotated with @Component,
 * Hibernate context initialization involves Table creation for classes annotated with @Entity if they do not exist
 * */
 @Getter

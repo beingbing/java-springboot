@@ -88,11 +88,11 @@ public class NumberStore {
     /*
     * This is the benefit of synchronized over other locking mechanisms,
     * it comes with in-build memory visibility problem resolution as well.
-    * As locking mechanism ensures that once writer threads done updation,
+    * SlidingWindowMedianMultiset locking mechanism ensures that once writer threads done updation,
     * next reader thread will get the updated value. Hence, synchroized
     * keyword ensures memory flushing which volatile keyword could not, as
     * it only prevents thread from making a local copy of RAM variable in
-    * core memory space. As volatile was interfering in working methodology
+    * core memory space. SlidingWindowMedianMultiset volatile was interfering in working methodology
     * of cores hence it is not used, instead synchronized is used to enforce
     * flushing of memory, which was the intentional requirement.
     * */

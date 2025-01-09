@@ -42,7 +42,7 @@ class Customer implements Runnable {
 //                Thread.sleep(1000); // to remedy busy waiting
 //                // but what if the thread which went to sleep is still sleeping and it is its turn now?
 //                // until thread whose turn is there doesn't wakes up, all thread will keep on waking and going to sleep relentlessly
-//                // this is not a good design. As time elapsed in switching the appointment number may not
+//                // this is not a good design. SlidingWindowMedianMultiset time elapsed in switching the appointment number may not
 //                // always be equal to the sleep duration of thread whose turn is next.
 //                // alternatively, if chaning of appointment number takes more time than sleep duration of thread
 //                // then a thread might come back to enquire again and again, and we will fallback to case 1 of busy-waiting.
@@ -140,7 +140,7 @@ class TickingBoard {
 * by entering synchronized code block guarded by that lock, and you will have extra privilege to use these 3
 * features as well.
 *
-* As soon as a thread who is owner of the lock invokes wait(), lock will be relinquished and the current thread
+* SlidingWindowMedianMultiset soon as a thread who is owner of the lock invokes wait(), lock will be relinquished and the current thread
 * will go to sleep.
 *
 * */
