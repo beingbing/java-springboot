@@ -21,8 +21,7 @@ public class S007_lc_0126 {
 
         // Step 1: BFS to find shortest paths
         Map<String, List<String>> parentMap = new HashMap<>(); // Tracks parent nodes
-        Map<String, Integer> distance = new HashMap<>();       // Tracks distances
-        bfs(beginWord, endWord, wordSet, parentMap, distance);
+        bfs(beginWord, endWord, wordSet, parentMap);
 
         // Step 2: Backtrack to generate all paths
         List<String> path = new ArrayList<>();
@@ -32,8 +31,8 @@ public class S007_lc_0126 {
         return result;
     }
 
-    private void bfs(String beginWord, String endWord, Set<String> wordSet,
-                     Map<String, List<String>> parentMap, Map<String, Integer> distance) {
+    private void bfs(String beginWord, String endWord, Set<String> wordSet, Map<String, List<String>> parentMap) {
+        Map<String, Integer> distance = new HashMap<>();
         Queue<String> queue = new LinkedList<>();
         queue.offer(beginWord);
         distance.put(beginWord, 0); // Start distance as 0
@@ -90,7 +89,7 @@ public class S007_lc_0126 {
         for (String parent : parentMap.getOrDefault(currentWord, new ArrayList<>())) {
             path.add(parent);
             backtrack(parent, beginWord, parentMap, result, path);
-            path.remove(path.size() - 1); // Undo last addition (backtrack)
+            path.removeLast(); // Undo last addition (backtrack)
         }
     }
 
