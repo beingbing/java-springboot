@@ -1,0 +1,13 @@
+package be.springboot.pp.designpattern.behavioral.iterator.library;
+
+public class Book {
+    private String title;
+
+    public Book(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+}
