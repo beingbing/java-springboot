@@ -1,6 +1,6 @@
-package be.springboot.pp.cricketscoreboard.correctimpl.subscribers;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.subscribers;
 
-import be.springboot.pp.cricketscoreboard.correctimpl.publishers.Publisher;
+import be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.publishers.Publisher;
 
 public interface Subscriber {
 //    void update(int runs, int wickets, float overs);

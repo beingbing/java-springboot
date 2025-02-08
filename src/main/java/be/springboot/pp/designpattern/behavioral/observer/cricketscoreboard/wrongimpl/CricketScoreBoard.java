@@ -1,4 +1,4 @@
-package be.springboot.pp.cricketscoreboard.wrongimpl;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.wrongimpl;
 
 /*
 * There is a status api in which we receive latest values for each respective field

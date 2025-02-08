@@ -1,4 +1,4 @@
-package be.springboot.pp.cricketscoreboard.wrongimpl.anotherapproach;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.wrongimpl.anotherapproach;
 
 public class CricketScoreBoard {
     private int runs;

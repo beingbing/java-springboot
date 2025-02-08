@@ -1,16 +1,16 @@
-package be.springboot.pp.cricketscoreboard.correctimpl.subscribers;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.subscribers;
 
-import be.springboot.pp.cricketscoreboard.correctimpl.publishers.Publisher;
+import be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.publishers.Publisher;
 
 import java.util.List;
 
-public class RunRateBoardSubscriber implements Subscriber {
+public class ProjectedScoreSubscriber implements Subscriber {
     private int runs;
     private int wickets;
     private float overs;
-    private List<Publisher> publishers;
+    private final List<Publisher> publishers;
 
-    public RunRateBoardSubscriber(List<Publisher> publishers) {
+    public ProjectedScoreSubscriber(List<Publisher> publishers) {
         this.publishers = publishers;
         for (Publisher publisher : this.publishers)
             publisher.subscribe(this);
@@ -19,9 +19,10 @@ public class RunRateBoardSubscriber implements Subscriber {
     @Override
     public void update(Publisher publisher) {
         this.runs = publisher.getRuns();
+        this.wickets = publisher.getWickets();
         this.overs = publisher.getOvers();
         // additional logic to do other stuff
-        System.out.println("RunRateBoardSubscriber: update: " + runs + " " + wickets + " " + overs);
+        System.out.println("ProjectedScoreSubscriber: update: " + runs + " " + wickets + " " + overs);
     }
 
     public List<Publisher> getPublishers() {

@@ -1,10 +1,10 @@
-package be.springboot.pp.cricketscoreboard.wrongimpl;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.wrongimpl;
 
 public class ProjectedScoreBoard {
     private int runs;
     private int wickets;
     private float overs;
-    private CricketScoreBoard cricketScoreBoard;
+    private final CricketScoreBoard cricketScoreBoard;
 
     public ProjectedScoreBoard(CricketScoreBoard cricketScoreBoard) {
         this.cricketScoreBoard = cricketScoreBoard;

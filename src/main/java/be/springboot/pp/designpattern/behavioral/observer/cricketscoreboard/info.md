@@ -19,3 +19,6 @@ This interaction is called PubSub interface and is also known as Observer design
 
 ### Improvements
 If there are multiple publishers, then `update()` will notify all subscribers about a new update, but won't tell which publisher has it. So we need to provide the publisher as well, who is pushing the latest update.
+
+### Note
+When needed another publisher/subscriber with different characteristics. Don't try to accomodate that in currently existing publisher and subscriber interfaces. User interface segregation principle and create separate publisher and subscriber interfaces for them.

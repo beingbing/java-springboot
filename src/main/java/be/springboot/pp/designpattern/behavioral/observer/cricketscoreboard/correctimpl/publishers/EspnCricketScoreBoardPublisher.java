@@ -1,22 +1,23 @@
-package be.springboot.pp.cricketscoreboard.correctimpl.publishers;
+package be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.publishers;
 
-import be.springboot.pp.cricketscoreboard.correctimpl.subscribers.Subscriber;
+import be.springboot.pp.designpattern.behavioral.observer.cricketscoreboard.correctimpl.subscribers.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SonyCricketScoreBoardPublisher implements Publisher {
+public class EspnCricketScoreBoardPublisher implements Publisher {
     private int runs;
     private int wickets;
     private float overs;
     private final List<Subscriber> subscribers;
 
-    public SonyCricketScoreBoardPublisher() {
+    public EspnCricketScoreBoardPublisher() {
         this.subscribers = new ArrayList<>();
     }
 
     @Override
     public void notifyAll(int runs, int wickets, float overs) {
+        System.out.println("EspnCricketScoreBoardPublisher: notifyAll: runs: " + runs + " wickets: " + wickets + " overs: " + overs);
         this.runs = runs;
         this.wickets = wickets;
         this.overs = overs;
