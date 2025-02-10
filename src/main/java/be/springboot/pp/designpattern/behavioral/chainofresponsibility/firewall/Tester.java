@@ -4,15 +4,21 @@ public class Tester {
 
     public static void main(String[] args) {
         // Create Handlers
+        /*
+        * We can also put factory-pattern in use to create
+        * the instances of all these handlers.
+        * */
         FirewallHandler ipCheck = new IPWhitelistHandler();
         FirewallHandler rateLimiter = new RateLimitingHandler();
         FirewallHandler contentFilter = new ContentFilterHandler();
         FirewallHandler authCheck = new AuthenticationHandler();
+        FirewallHandler idleConfirmation = new IdleHandler();
 
         // Form the chain: IP -> Rate Limit -> Content Filter -> Authentication
         ipCheck.setNextHandler(rateLimiter);
         rateLimiter.setNextHandler(contentFilter);
         contentFilter.setNextHandler(authCheck);
+        authCheck.setNextHandler(idleConfirmation);
 
         // Test Cases
         System.out.println("\n=== Request 1: Valid Request ===");

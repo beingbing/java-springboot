@@ -23,8 +23,8 @@ public class RateLimitingHandler implements FirewallHandler {
         }
         System.out.println("✅ Rate Limit Check Passed");
 
-        if (nextHandler != null) {
+//        if (nextHandler != null) {
             nextHandler.handleRequest(request);
-        }
+//        }
     }
 }

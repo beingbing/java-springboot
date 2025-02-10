@@ -1,9 +1,9 @@
 package be.springboot.pp.designpattern.behavioral.chainofresponsibility.firewall;
 
 public class Request {
-    private String ip;
-    private String data;
-    private boolean authenticated;
+    private final String ip;
+    private final String data;
+    private final boolean authenticated;
 
     public Request(String ip, String data, boolean authenticated) {
         this.ip = ip;

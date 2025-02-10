@@ -25,8 +25,14 @@ public class IPWhitelistHandler implements FirewallHandler {
         }
         System.out.println("✅ IP Check Passed");
 
-        if (nextHandler != null) {
+        // we kept this null-check on each handler implementation to prevent last handler
+        // in the chain from invoking the next handler. To Preventing null-exception in last
+        // handler we put a null check in all handlers. Instead, we can create an idle-handler
+        // which will be our last handler and do not write any next-handler execution logic in
+        // that. This way, we can do away with null-checks and prevent the last handler null-exception
+        // as well.
+//        if (nextHandler != null) {
             nextHandler.handleRequest(request);
-        }
+//        }
     }
 }

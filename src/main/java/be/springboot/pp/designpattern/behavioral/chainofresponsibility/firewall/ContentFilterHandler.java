@@ -22,8 +22,8 @@ public class ContentFilterHandler implements FirewallHandler {
         }
         System.out.println("✅ Content Check Passed");
 
-        if (nextHandler != null) {
+//        if (nextHandler != null) {
             nextHandler.handleRequest(request);
-        }
+//        }
     }
 }

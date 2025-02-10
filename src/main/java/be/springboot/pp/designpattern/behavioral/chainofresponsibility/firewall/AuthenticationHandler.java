@@ -16,8 +16,8 @@ public class AuthenticationHandler implements FirewallHandler {
         }
         System.out.println("✅ Authentication Passed");
 
-        if (nextHandler != null) {
+//        if (nextHandler != null) {
             nextHandler.handleRequest(request);
-        }
+//        }
     }
 }
