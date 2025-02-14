@@ -17,11 +17,17 @@ public class HasMoneyState implements VendingMachineState {
     @Override
     public void pressButton() {
         System.out.println("✔ Product selected. Dispensing...");
-        machine.setState(machine.getDispensingState());
+        machine.setState(StateFactory.getState(VendingState.DISPENSING, machine));
+        machine.getState().dispense();
     }
 
     @Override
     public void dispense() {
         System.out.println("❌ Press the button to get your product.");
+    }
+
+    @Override
+    public VendingState getState() {
+        return VendingState.HAS_MONEY;
     }
 }

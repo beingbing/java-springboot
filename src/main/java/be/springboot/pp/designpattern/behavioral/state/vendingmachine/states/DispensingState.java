@@ -21,11 +21,15 @@ public class DispensingState implements VendingMachineState {
 
     @Override
     public void dispense() {
-        System.out.println("🎁 Product dispensed.");
-        if (machine.getProductCount() > 0) {
-            machine.setState(machine.getIdleState());
-        } else {
-            machine.setState(machine.getOutOfStockState());
-        }
+        if (machine.getProductCount() > 0) machine.setProductCount(machine.getProductCount() - 1);
+        System.out.println("🎁 Product dispensed. remaining products " + machine.getProductCount());
+
+        if (machine.getProductCount() > 0) machine.setState(StateFactory.getState(VendingState.IDLE, machine));
+        else machine.setState(StateFactory.getState(VendingState.OUT_OF_STOCK, machine));
+    }
+
+    @Override
+    public VendingState getState() {
+        return VendingState.DISPENSING;
     }
 }

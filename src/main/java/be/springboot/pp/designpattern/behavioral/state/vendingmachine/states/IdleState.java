@@ -12,7 +12,7 @@ public class IdleState implements VendingMachineState {
     @Override
     public void insertMoney() {
         System.out.println("💰 Money inserted. You can now select a product.");
-        machine.setState(machine.getHasMoneyState());
+        machine.setState(StateFactory.getState(VendingState.HAS_MONEY, machine));
     }
 
     @Override
@@ -23,5 +23,10 @@ public class IdleState implements VendingMachineState {
     @Override
     public void dispense() {
         System.out.println("❌ No product selected.");
+    }
+
+    @Override
+    public VendingState getState() {
+        return VendingState.IDLE;
     }
 }

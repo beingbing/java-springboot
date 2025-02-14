@@ -4,4 +4,5 @@ public interface VendingMachineState {
     void insertMoney();
     void pressButton();
     void dispense();
+    VendingState getState();
 }

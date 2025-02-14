@@ -23,4 +23,9 @@ public class OutOfStockState implements VendingMachineState {
     public void dispense() {
         System.out.println("❌ No product available.");
     }
+
+    @Override
+    public VendingState getState() {
+        return VendingState.OUT_OF_STOCK;
+    }
 }
