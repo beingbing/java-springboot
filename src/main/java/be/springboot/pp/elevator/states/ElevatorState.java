@@ -1,12 +1,12 @@
 package be.springboot.pp.elevator.states;
 
-import be.springboot.pp.elevator.enums.Direction;
-import be.springboot.pp.elevator.dtos.Floor;
+import be.springboot.pp.elevator.Direction;
+import be.springboot.pp.elevator.Floor;
 
 public interface ElevatorState {
     void destine(Floor floor, Direction direction);
-    void open(Floor floor);
-    void close(Floor floor);
-    void stop(Floor floor);
+    void open();
+    void close();
+    void stop();
     StateType getState();
 }

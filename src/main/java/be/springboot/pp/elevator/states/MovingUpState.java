@@ -1,14 +1,14 @@
 package be.springboot.pp.elevator.states;
 
-import be.springboot.pp.elevator.ElevatorManager;
-import be.springboot.pp.elevator.dtos.Floor;
-import be.springboot.pp.elevator.enums.Direction;
+import be.springboot.pp.elevator.Elevator;
+import be.springboot.pp.elevator.Floor;
+import be.springboot.pp.elevator.Direction;
 import be.springboot.pp.elevator.moves.Move;
 
 public class MovingUpState implements ElevatorState {
-    private final ElevatorManager elevator;
+    private final Elevator elevator;
 
-    public MovingUpState(ElevatorManager elevator) {
+    public MovingUpState(Elevator elevator) {
         this.elevator = elevator;
     }
 
@@ -24,17 +24,17 @@ public class MovingUpState implements ElevatorState {
     }
 
     @Override
-    public void open(Floor floor) {
+    public void open() {
         throw new IllegalStateException("Opening gates not allowed when elevator is moving");
     }
 
     @Override
-    public void close(Floor floor) {
+    public void close() {
         System.out.println("Elevator gates are already closed");
     }
 
     @Override
-    public void stop(Floor floor) {
+    public void stop() {
         this.elevator.getMoveStore().priorityCleared();
         this.elevator.setState(StateFactory.getState(StateType.IDLE, elevator));
     }

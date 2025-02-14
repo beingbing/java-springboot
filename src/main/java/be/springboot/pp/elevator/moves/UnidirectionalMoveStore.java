@@ -1,6 +1,6 @@
 package be.springboot.pp.elevator.moves;
 
-import be.springboot.pp.elevator.enums.Direction;
+import be.springboot.pp.elevator.Direction;
 
 import java.util.Optional;
 import java.util.PriorityQueue;

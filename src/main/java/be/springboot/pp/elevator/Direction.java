@@ -1,4 +1,4 @@
-package be.springboot.pp.elevator.enums;
+package be.springboot.pp.elevator;
 
 public enum Direction {
     UP,

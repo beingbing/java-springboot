@@ -1,4 +1,4 @@
-package be.springboot.pp.elevator.dtos;
+package be.springboot.pp.elevator;
 
 import lombok.ToString;
 

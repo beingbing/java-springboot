@@ -1,23 +1,23 @@
 package be.springboot.pp.elevator;
 
-import be.springboot.pp.elevator.dtos.Floor;
-import be.springboot.pp.elevator.enums.Direction;
+import be.springboot.pp.elevator.moves.UnidirectionalMoveStore;
 
 public class ElevatorController {
+    private final Elevator elevator = new Elevator(new UnidirectionalMoveStore());
 
     public void destinationFloor(Floor floor, Direction direction) {
-        //
+        this.elevator.destine(floor, direction);
     }
 
-    public void openGate(Floor floor) {
-        //
+    public void openGate() {
+        this.elevator.open();
     }
 
-    public void closeGate(Floor floor) {
-        //
+    public void closeGate() {
+        this.elevator.close();
     }
 
-    public void stopElevator(Floor floor) {
-        //
+    public void stopElevator() {
+        this.elevator.stop();
     }
 }

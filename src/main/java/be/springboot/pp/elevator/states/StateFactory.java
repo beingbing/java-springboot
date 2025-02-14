@@ -1,12 +1,12 @@
 package be.springboot.pp.elevator.states;
 
-import be.springboot.pp.elevator.ElevatorManager;
+import be.springboot.pp.elevator.Elevator;
 
 public class StateFactory {
 
     private StateFactory() {}
 
-    public static ElevatorState getState(StateType stateType, ElevatorManager elevator) {
+    public static ElevatorState getState(StateType stateType, Elevator elevator) {
         return switch (stateType) {
             case IDLE -> new IdleState(elevator);
             case GATE_OPEN -> new GateOpenState(elevator);

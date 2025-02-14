@@ -1,14 +1,13 @@
 package be.springboot.pp.elevator.states;
 
-import be.springboot.pp.elevator.enums.GateStatus;
-import be.springboot.pp.elevator.enums.Direction;
-import be.springboot.pp.elevator.ElevatorManager;
-import be.springboot.pp.elevator.dtos.Floor;
+import be.springboot.pp.elevator.Elevator;
+import be.springboot.pp.elevator.Floor;
+import be.springboot.pp.elevator.Direction;
 
 public class GateOpenState implements ElevatorState {
-    private final ElevatorManager elevator;
+    private final Elevator elevator;
 
-    public GateOpenState(ElevatorManager elevator) {
+    public GateOpenState(Elevator elevator) {
         this.elevator = elevator;
     }
 
@@ -18,13 +17,12 @@ public class GateOpenState implements ElevatorState {
     }
 
     @Override
-    public void open(Floor floor) {
+    public void open() {
         System.out.println("Elevator gate is already open");
     }
 
     @Override
-    public void close(Floor floor) {
-        this.elevator.setGateStatus(GateStatus.CLOSE);
+    public void close() {
         Direction direction = this.elevator.getMoveStore().getCurrentDirection();
         switch (direction) {
             case UP -> this.elevator.setState(StateFactory.getState(StateType.MOVING_UP, elevator));
@@ -34,7 +32,7 @@ public class GateOpenState implements ElevatorState {
     }
 
     @Override
-    public void stop(Floor floor) {
+    public void stop() {
         System.out.println("Elevator is already stationary and gates are open");
     }
 

@@ -1,7 +1,5 @@
 package be.springboot.pp.elevator;
 
-import be.springboot.pp.elevator.dtos.Floor;
-import be.springboot.pp.elevator.enums.Direction;
 import be.springboot.pp.elevator.moves.UnidirectionalMoveStore;
 import be.springboot.pp.elevator.states.StateFactory;
 import be.springboot.pp.elevator.states.StateType;
@@ -9,10 +7,11 @@ import be.springboot.pp.elevator.states.StateType;
 public class Tester {
 
     public static void main(String[] args) {
-        ElevatorManager elevator = new ElevatorManager(new UnidirectionalMoveStore());
+        Elevator elevator = new Elevator(new UnidirectionalMoveStore());
         elevator.setState(StateFactory.getState(StateType.IDLE, elevator));
         elevator.setCurrentFloor(new Floor(0, "Ground"));
         elevator.destine(new Floor(4, "Fourth"), Direction.UP);
+        elevator.close();
         System.out.println(elevator.getState().getState());
 
         elevator.destine(new Floor(7, "Seventh"), Direction.UP);
@@ -25,13 +24,13 @@ public class Tester {
 
         elevator.setCurrentFloor(new Floor(4, "Fourth"));
 
-        elevator.stop(new Floor(4, "Fourth"));
+        elevator.stop();
         System.out.println(elevator.getState().getState());
 
-        elevator.open(new Floor(4, "Fourth"));
+        elevator.open();
         System.out.println(elevator.getState().getState());
 
-        elevator.close(new Floor(4, "Fourth"));
+        elevator.close();
         System.out.println(elevator.getState().getState());
 
         System.out.println(elevator.getMoveStore().getPriorityMove().get().getDestinationFloor()
@@ -40,13 +39,13 @@ public class Tester {
         elevator.destine(new Floor(3, "Third"), Direction.DOWN);
 
         elevator.setCurrentFloor(new Floor(7, "Seventh"));
-        elevator.stop(new Floor(7, "Seventh"));
+        elevator.stop();
         System.out.println(elevator.getState().getState());
 
-        elevator.open(new Floor(7, "Seventh"));
+        elevator.open();
         System.out.println(elevator.getState().getState());
 
-        elevator.close(new Floor(7, "Seventh"));
+        elevator.close();
         System.out.println(elevator.getState().getState());
 
         System.out.println(elevator.getMoveStore().getPriorityMove().get().getDestinationFloor()
