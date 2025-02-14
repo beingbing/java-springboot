@@ -15,7 +15,7 @@ public class DbAccessor {
 
     public static int createNewTxnId(long atmId) {
         // logic to retrieve new txn-id for atm from DB
-        return 0;
+        return 1;
     }
 
     public static void updateAtmState(long machineId, AtmState state) {
@@ -40,5 +40,6 @@ public class DbAccessor {
 
     public static float markTxnExecuted(int txnId) {
         //
+        return 0f;
     }
 }

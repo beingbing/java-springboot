@@ -1,4 +1,6 @@
-package be.springboot.pp.designpattern.behavioral.state.vendingmachine;
+package be.springboot.pp.designpattern.behavioral.state.vendingmachine.states;
+
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.VendingMachine;
 
 public class OutOfStockState implements VendingMachineState {
     private final VendingMachine machine;

@@ -1,5 +1,11 @@
 package be.springboot.pp.designpattern.behavioral.state.vendingmachine;
 
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.states.DispensingState;
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.states.HasMoneyState;
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.states.IdleState;
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.states.OutOfStockState;
+import be.springboot.pp.designpattern.behavioral.state.vendingmachine.states.VendingMachineState;
+
 public class VendingMachine {
     private final VendingMachineState idleState;
     private final VendingMachineState hasMoneyState;

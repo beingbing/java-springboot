@@ -16,28 +16,34 @@ public class DispenseCash implements ChangeState {
 
     @Override
     public int init() {
+        System.out.println("DispenseCash: init");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean cancel(int txnId) {
+        System.out.println("DispenseCash: cancel");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean readCard(CardDetails cardDetails) {
+        System.out.println("DispenseCash: readCard");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean readAmount(CardDetails cardDetails, float amount, int txnId) {
+        System.out.println("DispenseCash: readAmount");
         throw new IllegalStateException();
     }
 
     @Override
     public float dispenseCash(int txnId) {
+        System.out.println("DispenseCash: dispenseCash");
         CardType cardType = null;
         // logic to get card-details from DB
+        cardType = CardType.DEBIT;
         CardManagerFactory.getCardManager(cardType).executeWithdrawal(txnId);
         float amount = DbAccessor.markTxnExecuted(txnId);
         this.atm.changeState(StateFactory.getState(AtmState.EJECT_CARD, this.atm));
@@ -46,6 +52,7 @@ public class DispenseCash implements ChangeState {
 
     @Override
     public void ejectCard() {
+        System.out.println("DispenseCash: ejectCard");
         throw new IllegalStateException();
     }
 

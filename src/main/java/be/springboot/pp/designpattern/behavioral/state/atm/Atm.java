@@ -1,5 +1,6 @@
 package be.springboot.pp.designpattern.behavioral.state.atm;
 
+import be.springboot.pp.designpattern.behavioral.state.atm.card.CardDetails;
 import be.springboot.pp.designpattern.behavioral.state.atm.db.DbAccessor;
 import be.springboot.pp.designpattern.behavioral.state.atm.states.ChangeState;
 import be.springboot.pp.designpattern.behavioral.state.atm.states.StateFactory;
@@ -24,6 +25,24 @@ public class Atm {
 
     public boolean cancel(int txnId) {
         return this.atmState.cancel(txnId);
+    }
+
+    public boolean readCard(CardDetails cardDetails) {
+        return this.atmState.readCard(cardDetails);
+    }
+
+    public boolean readAmount(CardDetails cardDetails, float amount, int txnId) {
+        return this.atmState.readAmount(cardDetails, amount, txnId);
+    }
+
+    public float dispenseCash(int txnId) {
+        float cash = this.atmState.dispenseCash(txnId);
+        this.ejectCard();
+        return cash;
+    }
+
+    public void ejectCard() {
+        this.atmState.ejectCard();
     }
 
     public long getAtmId() {

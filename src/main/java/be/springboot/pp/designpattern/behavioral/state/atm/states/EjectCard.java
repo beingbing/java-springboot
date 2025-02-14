@@ -13,31 +13,37 @@ public class EjectCard implements ChangeState {
 
     @Override
     public int init() {
+        System.out.println("EjectCard: init");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean cancel(int txnId) {
+        System.out.println("EjectCard: cancel");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean readCard(CardDetails cardDetails) {
+        System.out.println("EjectCard: readCard");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean readAmount(CardDetails cardDetails, float amount, int txnId) {
+        System.out.println("EjectCard: readAmount");
         throw new IllegalStateException();
     }
 
     @Override
     public float dispenseCash(int txnId) {
+        System.out.println("EjectCard: dispenseCash");
         throw new IllegalStateException();
     }
 
     @Override
     public void ejectCard() {
+        System.out.println("EjectCard: ejectCard");
         this.atm.changeState(StateFactory.getState(AtmState.READY, this.atm));
     }
 

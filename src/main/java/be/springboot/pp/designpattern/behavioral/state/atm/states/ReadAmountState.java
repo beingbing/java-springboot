@@ -16,11 +16,13 @@ public class ReadAmountState implements ChangeState {
 
     @Override
     public int init() {
+        System.out.println("ReadAmountState: init");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean cancel(int txnId) {
+        System.out.println("ReadAmountState: cancel");
         DbAccessor.saveTxnCancellation(txnId);
         this.atm.changeState(StateFactory.getState(AtmState.EJECT_CARD, this.atm));
         return true;
@@ -28,11 +30,13 @@ public class ReadAmountState implements ChangeState {
 
     @Override
     public boolean readCard(CardDetails cardDetails) {
+        System.out.println("ReadAmountState: readCard");
         throw new IllegalStateException();
     }
 
     @Override
     public boolean readAmount(CardDetails cardDetails, float amount, int txnId) {
+        System.out.println("ReadAmountState: readAmount");
         boolean isAmountValid = CardManagerFactory
                 .getCardManager(cardDetails.getCardType())
                 .validateWithdrawalAmount(cardDetails, amount, txnId);
@@ -48,11 +52,13 @@ public class ReadAmountState implements ChangeState {
 
     @Override
     public float dispenseCash(int txnId) {
+        System.out.println("ReadAmountState: dispenseCash");
         throw new IllegalStateException();
     }
 
     @Override
     public void ejectCard() {
+        System.out.println("ReadAmountState: ejectCard");
         throw new IllegalStateException();
     }
 
