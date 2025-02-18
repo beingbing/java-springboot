@@ -1,11 +1,15 @@
 package be.springboot.pp.librarymanagementsystem.search.books;
 
-import be.springboot.pp.librarymanagementsystem.book.BookCopy;
+import be.springboot.pp.librarymanagementsystem.entities.Book;
+import be.springboot.pp.librarymanagementsystem.entities.BookCopy;
+import be.springboot.pp.librarymanagementsystem.repository.BookCopyRepository;
+import be.springboot.pp.librarymanagementsystem.repository.BookRepository;
 
 import java.util.List;
 
 public class NameBasedBookSearcher implements BookSearcher {
-
+    private BookRepository bookRepository;
+    private BookCopyRepository bookCopyRepository;
     private final String bookName;
 
     public NameBasedBookSearcher(String bookName) {
@@ -14,6 +18,7 @@ public class NameBasedBookSearcher implements BookSearcher {
 
     @Override
     public List<BookCopy> search() {
-        return List.of();
+        Book book = bookRepository.findByName(bookName);
+        return bookCopyRepository.findByBookId(book.getId());
     }
 }

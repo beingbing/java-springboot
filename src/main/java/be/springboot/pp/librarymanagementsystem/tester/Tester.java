@@ -1,11 +1,11 @@
 package be.springboot.pp.librarymanagementsystem.tester;
 
 import be.springboot.pp.librarymanagementsystem.auth.UserAuthenticator;
-import be.springboot.pp.librarymanagementsystem.book.BookCopy;
-import be.springboot.pp.librarymanagementsystem.book.BookDetails;
-import be.springboot.pp.librarymanagementsystem.generator.IdGenerator;
+import be.springboot.pp.librarymanagementsystem.dtos.NewBookCopy;
+import be.springboot.pp.librarymanagementsystem.entities.BookCopy;
+import be.springboot.pp.librarymanagementsystem.entities.Member;
 import be.springboot.pp.librarymanagementsystem.inventory.InventoryManager;
-import be.springboot.pp.librarymanagementsystem.member.MemberManager;
+import be.springboot.pp.librarymanagementsystem.managers.MemberManager;
 import be.springboot.pp.librarymanagementsystem.search.books.AuthorBasedBookSearcher;
 import be.springboot.pp.librarymanagementsystem.search.books.BookSearcher;
 import be.springboot.pp.librarymanagementsystem.search.books.IdBasedBookSearcher;
@@ -13,7 +13,7 @@ import be.springboot.pp.librarymanagementsystem.search.books.NameBasedBookSearch
 import be.springboot.pp.librarymanagementsystem.search.members.IdBasedMemberSearcher;
 import be.springboot.pp.librarymanagementsystem.search.members.MemberSearcher;
 import be.springboot.pp.librarymanagementsystem.search.members.NameBasedMemberSearcher;
-import be.springboot.pp.librarymanagementsystem.user.Member;
+import be.springboot.pp.librarymanagementsystem.services.BookCopyService;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -23,10 +23,9 @@ import java.util.List;
 * Whenever writing an API, always validate the parameters.
 * */
 public class Tester {
-
     private final InventoryManager inventoryManager;
-
     private final MemberManager memberManager;
+    private BookCopyService bookCopyService;
 
     public Tester(InventoryManager inventoryManager, MemberManager memberManager) {
         this.inventoryManager = inventoryManager;
@@ -47,6 +46,17 @@ public class Tester {
 
         BookSearcher bookSearcher = new AuthorBasedBookSearcher(authors);
         return bookSearcher.search();
+    }
+
+    public boolean isBookCopyAvailable(Long bookCopyId) {
+        if (ObjectUtils.isEmpty(bookCopyId))
+            throw new IllegalArgumentException("no book-copy id provided");
+
+        BookSearcher bookSearcher = new IdBasedBookSearcher(bookCopyId);
+        List<BookCopy> bookCopyList = bookSearcher.search();
+        if (bookCopyList.isEmpty()) return false;
+        BookCopy bookCopy = bookCopyList.getFirst();
+        return bookCopy.isAvailable();
     }
 
     public List<Member> searchMemberByName(String memberName, String adminToken) throws IllegalAccessException {
@@ -80,8 +90,7 @@ public class Tester {
         * TODO: validation for book details
         * */
 
-        BookCopy bookCopy = new BookCopy(new BookDetails(name, publicationDate, authors), IdGenerator.getUniqueId());
-        return inventoryManager.addBookCopy(bookCopy);
+        return bookCopyService.addBookCopy(new NewBookCopy());
     }
 
     public boolean deleteBook(Long bookCopyId, String adminToken) throws IllegalAccessException {

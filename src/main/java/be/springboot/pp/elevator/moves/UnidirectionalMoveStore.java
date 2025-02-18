@@ -11,15 +11,20 @@ public class UnidirectionalMoveStore implements MoveStore {
     private Direction currentDirection;
 
     public UnidirectionalMoveStore() {
-        this.upMoveMinHeap = new PriorityQueue<>((f1, f2) -> f1.getDestinationFloor().getNumber() - f2.getDestinationFloor().getNumber());
-        this.downMoveMaxHeap = new PriorityQueue<>((f1, f2) -> f2.getDestinationFloor().getNumber() - f1.getDestinationFloor().getNumber());
+        this.upMoveMinHeap = new PriorityQueue<>(
+                (f1, f2) -> f1.getDestinationFloor().getNumber() - f2.getDestinationFloor().getNumber());
+        this.downMoveMaxHeap = new PriorityQueue<>(
+                (f1, f2) -> f2.getDestinationFloor().getNumber() - f1.getDestinationFloor().getNumber());
         this.currentDirection = Direction.HALT;
     }
 
     @Override
     public void addMove(Move move) {
-        if (upMoveMinHeap.isEmpty() && downMoveMaxHeap.isEmpty()) currentDirection = move.getDestinationDirection();
-        if (move.getDestinationDirection().equals(Direction.UP)) upMoveMinHeap.add(move);
+        if (upMoveMinHeap.isEmpty() && downMoveMaxHeap.isEmpty())
+            currentDirection = move.getDestinationDirection();
+
+        if (move.getDestinationDirection().equals(Direction.UP))
+            upMoveMinHeap.add(move);
         else downMoveMaxHeap.add(move);
     }
 

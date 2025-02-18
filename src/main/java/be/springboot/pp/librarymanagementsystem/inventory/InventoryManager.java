@@ -1,7 +1,7 @@
 package be.springboot.pp.librarymanagementsystem.inventory;
 
-import be.springboot.pp.librarymanagementsystem.book.BookCopy;
-import be.springboot.pp.librarymanagementsystem.user.Member;
+import be.springboot.pp.librarymanagementsystem.entities.BookCopy;
+import be.springboot.pp.librarymanagementsystem.entities.Member;
 
 public class InventoryManager {
 
