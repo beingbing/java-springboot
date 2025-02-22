@@ -56,7 +56,7 @@ public class Tester {
         List<BookCopy> bookCopyList = bookSearcher.search();
         if (bookCopyList.isEmpty()) return false;
         BookCopy bookCopy = bookCopyList.getFirst();
-        return bookCopy.isAvailable();
+        return false;
     }
 
     public List<Member> searchMemberByName(String memberName, String adminToken) throws IllegalAccessException {
@@ -122,7 +122,7 @@ public class Tester {
         if (ObjectUtils.isEmpty(memberList) || memberList.isEmpty())
             throw new RuntimeException("No book copy found for given id");
 
-        return memberManager.blockMember(memberList.getFirst());
+        return false;
     }
 
     public boolean issueBookToMember(Long bookCopyId, Long memberId, String adminToken) throws IllegalAccessException {
@@ -196,6 +196,6 @@ public class Tester {
         if (ObjectUtils.isEmpty(memberList) || memberList.isEmpty())
             throw new RuntimeException("No book copy found for given id");
 
-        return memberManager.getIssuedBooksToMember(memberList.getFirst());
+        return null;
     }
 }

@@ -12,6 +12,7 @@ public class S001_cf_371c {
         long nb = scanner.nextLong(), ns = scanner.nextLong(), nc = scanner.nextLong();
         long pb = scanner.nextLong(), ps = scanner.nextLong(), pc = scanner.nextLong();
         long rubles = scanner.nextLong();
+        scanner.close();
 
         // Count ingredients needed per hamburger from the recipe
         long requiredB = recipe.chars().filter(c -> c == 'B').count();
@@ -20,7 +21,6 @@ public class S001_cf_371c {
 
         // Binary search to find the maximum number of hamburgers
         long left = 0, right = (long) 1e13; // Safe high bound due to constraints
-        long maxHamburgers = 0;
 
         while (left <= right) {
             long mid = left + (right - left) / 2;
@@ -34,13 +34,11 @@ public class S001_cf_371c {
             long totalCost = neededB * pb + neededS * ps + neededC * pc;
 
             // Check if we can afford this cost with available rubles
-            if (totalCost <= rubles) {
-                maxHamburgers = mid; // Valid solution, try making more
-                left = mid + 1;
-            } else right = mid - 1; // Too costly, try fewer hamburgers
+            if (totalCost <= rubles) left = mid + 1;
+            else right = mid - 1; // Too costly, try fewer hamburgers
         }
 
-        System.out.println(maxHamburgers); // Output the maximum hamburgers possible
+        System.out.println(right); // Output the maximum hamburgers possible
         scanner.close();
     }
 }

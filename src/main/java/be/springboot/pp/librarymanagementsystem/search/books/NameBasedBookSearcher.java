@@ -19,6 +19,6 @@ public class NameBasedBookSearcher implements BookSearcher {
     @Override
     public List<BookCopy> search() {
         Book book = bookRepository.findByName(bookName);
-        return bookCopyRepository.findByBookId(book.getId());
+        return null;
     }
 }

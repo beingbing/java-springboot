@@ -56,3 +56,43 @@ public class S003_lc_0483 {
         return "1";
     }
 }
+
+class Solution {
+    public String smallestGoodBase(String str) {
+        long n = Long.parseLong(str);
+
+        for (int m = (int) (Math.log(n) / Math.log(2)); m >= 1; m--) {
+            long k = findBase(n, m);
+            if (k != -1) return String.valueOf(k);
+        }
+
+        return String.valueOf(n - 1);
+    }
+
+    private long findBase(long n, int m) {
+        long left = 2, right = n - 1;
+
+        while (left <= right) {
+            long k = left + (right - left) / 2;
+            int result = checkSum(n, k, m);
+
+            if (result == 0) return k; // Found valid base
+            else if (result > 0) right = k - 1; // Sum exceeded n
+            else left = k + 1; // Sum less than n
+        }
+
+        return -1;
+    }
+
+    private int checkSum(long n, long k, int m) {
+        long sum = 1, term = 1;
+
+        for (int i = 1; i <= m; i++) {
+            if (term > (n - sum) / k) return 1; // Overflow, sum > n
+            term *= k;
+            sum += term;
+        }
+
+        return Long.compare(sum, n);
+    }
+}

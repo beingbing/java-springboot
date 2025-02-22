@@ -3,35 +3,27 @@ package be.springboot.pp.dsalgo.searching;
 import java.util.Arrays;
 
 public class S004_lc_0719 {
-    public int smallestDistancePair(int[] nums, int k) {
-        // Sort the array to facilitate pair counting by distance
-        Arrays.sort(nums);
+    public int smallestDistancePair(int[] a, int k) {
+        Arrays.sort(a);
 
-        // Define binary search range on the possible distances
-        int low = 0;
-        int high = nums[nums.length - 1] - nums[0];
+        int n = a.length;
+        int low = 0, high = a[n - 1] - a[0];
 
-        // Binary search on the distance
-        while (low < high) {
+        while (low <= high) {
             int mid = low + (high - low) / 2;
 
-            // Count pairs with distance <= mid
-            if (countPairs(nums, mid) >= k) high = mid;
+            if (countPairs(a, mid) >= k) high = mid - 1;
             else low = mid + 1;
         }
 
-        // When binary search completes, low (or high) contains the k-th smallest distance
         return low;
     }
 
-    // Helper function to count pairs with distance <= target
-    private int countPairs(int[] nums, int target) {
-        int count = 0;
-        int left = 0;
+    private int countPairs(int[] a, int target) {
+        int n = a.length, count = 0, left = 0;
 
-        // For each right pointer, find the valid left pointer for distance <= target
-        for (int right = 0; right < nums.length; right++) {
-            while (nums[right] - nums[left] > target) left++;
+        for (int right = 0; right < n; right++) {
+            while (a[right] - a[left] > target) left++;
             count += right - left;
         }
 

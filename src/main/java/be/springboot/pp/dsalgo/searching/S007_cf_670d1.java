@@ -3,7 +3,6 @@ package be.springboot.pp.dsalgo.searching;
 import java.util.Scanner;
 
 public class S007_cf_670d1 {
-    // Function to check if x cookies can be baked with available ingredients and magic powder
     private static boolean canBake(int[] wtNeeded, int[] wtPresent, int ingredientsCnt, long xtra, long x) {
         long totalShortage = 0;
 
@@ -18,21 +17,43 @@ public class S007_cf_670d1 {
         return true;
     }
 
-    private static long maxCookies(int[] wtNeeded, int[] wtPresent, int ingredientsCnt, long xtra) {
-        long left = 0, right = Integer.MIN_VALUE, maxCookies = 0;
+    private static long getMaxPossible(int[] wtPresent, long xtra) {
+        long maxIngredient = 0;
+        for (int wt : wtPresent) maxIngredient = Math.max(maxIngredient, wt);
+        return maxIngredient + xtra;
+    }
 
-        for (int wt : wtPresent) right = Math.max(wt, right);
-        right += xtra;
+    private static long maxCookies(int[] wtNeeded, int[] wtPresent, int ingredientsCnt, long xtra) {
+        long left = 0, right = getMaxPossible(wtPresent, xtra);
 
         while (left <= right) {
             long mid = left + (right - left) / 2;
 
-            if (canBake(wtNeeded, wtPresent, ingredientsCnt, xtra, mid)) {
-                maxCookies = mid; // Mid is feasible, try for more cookies
-                left = mid + 1;
-            } else right = mid - 1; // Reduce the range
+            if (canBake(wtNeeded, wtPresent, ingredientsCnt, xtra, mid)) left = mid + 1;
+            else right = mid - 1; // Reduce the range
         }
 
-        return maxCookies;
+        return right;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        readInput(sc);
+        System.out.println(maxCookies(a, b, n, k));
+        sc.close();
+    }
+
+    private static int n;
+    private static long k;
+    private static int[] a, b;
+
+    private static void readInput(Scanner sc) {
+        n = sc.nextInt();
+        k = sc.nextLong();
+        a = new int[n];
+        b = new int[n];
+
+        for (int i = 0; i < n; i++) a[i] = sc.nextInt();
+        for (int i = 0; i < n; i++) b[i] = sc.nextInt();
     }
 }
