@@ -3,30 +3,24 @@ package be.springboot.pp.dsalgo.twopointers;
 import java.util.Arrays;
 
 public class S003_gfg_pair_diff_2 {
-    public static String hasPairWithDifference(int[] arr, int N, int K) {
-        // Step 1: Sort the array in ascending order
+    public String hasPairWithDifference(int[] arr, int N, int K) {
         Arrays.sort(arr);
 
-        // Step 2: Initialize two pointers
-        int i = 0, j = 1;
+        int left = 0, right = 1;
 
-        // Step 3: Traverse the array using two-pointer technique
-        while (j < N) {
-            // Ensure pointers are not overlapping
-            if (i == j) {
-                j++;
+        while (right < N) {
+            if (left == right) {
+                right++;
                 continue;
             }
 
-            int diff = arr[j] - arr[i];
+            int diff = arr[right] - arr[left];
 
-            // Check if the difference equals K
-            if (diff == K) return "Yes"; // Pair found
-            else if (diff < K) j++; // Increase difference by moving right pointer
-            else i++; // Decrease difference by moving left pointer
+            if (diff == K) return "Yes";
+            else if (diff < K) right++;
+            else left++;
         }
 
-        // Step 4: No pair found
         return "No";
     }
 }
