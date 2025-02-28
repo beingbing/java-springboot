@@ -1,86 +1,83 @@
 package be.springboot.pp.dsalgo.backtracking;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class S002_lc_1307 {
-    private Map<Character, Integer> charToDigit = new HashMap<>();
-    private boolean[] usedDigits = new boolean[10];
-    private Set<Character> leadingChars = new HashSet<>();
+    private static final int[] POWERS_OF_TEN = {1, 10, 100, 1000, 10000, 100000, 1000000};
 
     public boolean isSolvable(String[] words, String result) {
-        Set<Character> uniqueChars = new HashSet<>();
+        Set<Character> uniqueCharacters = new HashSet<>();
+        int[] characterWeights = new int[91]; // ASCII range for 'A' to 'Z' is in 65-90
+        boolean[] cannotBeZero = new boolean[91];
 
-        // Collect all unique characters
-        for (String word : words) {
-            for (char ch : word.toCharArray()) uniqueChars.add(ch);
-            leadingChars.add(word.charAt(0)); // Leading chars cannot map to 0
+        calculateCharacterWeights(words, uniqueCharacters, characterWeights, cannotBeZero);
+        updateResultWeights(result, uniqueCharacters, characterWeights, cannotBeZero);
+
+        char[] characterList = new char[uniqueCharacters.size()];
+        int index = 0;
+        for (char c : uniqueCharacters) {
+            characterList[index++] = c;
         }
 
-        for (char ch : result.toCharArray()) uniqueChars.add(ch);
-        leadingChars.add(result.charAt(0));
-
-        // If we have more than 10 unique characters, it's impossible to map them uniquely
-        if (uniqueChars.size() > 10) return false;
-
-        List<Character> characters = new ArrayList<>(uniqueChars);
-        return backtrack(0, characters, words, result);
+        return solveWithBacktracking(new boolean[10],
+                characterList, cannotBeZero, 0, 0, characterWeights);
     }
 
-    // Backtracking function to assign digits to characters
-    private boolean backtrack(int index, List<Character> characters, String[] words, String result) {
-        // Base case: all characters are assigned
-        if (index == characters.size()) {
-            return checkSolution(words, result);
+    private void calculateCharacterWeights(String[] words,
+                                           Set<Character> uniqueCharacters,
+                                           int[] characterWeights,
+                                           boolean[] cannotBeZero) {
+        for (String word : words) {
+            char[] characters = word.toCharArray();
+            for (int i = 0; i < characters.length; i++) {
+                if (i == 0 && characters.length > 1) cannotBeZero[characters[i]] = true;
+                uniqueCharacters.add(characters[i]);
+                characterWeights[characters[i]] += POWERS_OF_TEN[characters.length - i - 1];
+            }
         }
+    }
 
-        char ch = characters.get(index);
-        for (int digit = 0; digit < 10; digit++) {
-            // Avoid using the same digit or assigning zero to a leading character
-            if (usedDigits[digit] || (digit == 0 && leadingChars.contains(ch))) continue;
+    private void updateResultWeights(String result,
+                                     Set<Character> uniqueCharacters,
+                                     int[] characterWeights,
+                                     boolean[] cannotBeZero) {
+        char[] characters = result.toCharArray();
+        for (int i = 0; i < characters.length; i++) {
+            if (i == 0 && characters.length > 1) cannotBeZero[characters[i]] = true;
+            uniqueCharacters.add(characters[i]);
+            characterWeights[characters[i]] -= POWERS_OF_TEN[characters.length - i - 1];
+        }
+    }
 
-            // Try assigning digit to character ch
-            charToDigit.put(ch, digit);
-            usedDigits[digit] = true;
+    private boolean solveWithBacktracking(boolean[] usedDigits,
+                                          char[] characterList,
+                                          boolean[] cannotBeZero,
+                                          int index,
+                                          int currentSum,
+                                          int[] characterWeights) {
+        if (index == characterList.length) return currentSum == 0;
 
-            if (backtrack(index + 1, characters, words, result)) return true;
-
-            // Backtrack
-            charToDigit.remove(ch);
-            usedDigits[digit] = false;
+        char currentCharacter = characterList[index];
+        for (int digit = 0; digit <= 9; digit++) {
+            if (!usedDigits[digit] && (digit > 0 || !cannotBeZero[currentCharacter])) {
+                usedDigits[digit] = true;
+                if (solveWithBacktracking(usedDigits,
+                        characterList,
+                        cannotBeZero,
+                        index + 1,
+                        currentSum + characterWeights[currentCharacter] * digit,
+                        characterWeights)) return true;
+                usedDigits[digit] = false;
+            }
         }
         return false;
     }
 
-    // Check if the current mapping satisfies the equation
-    private boolean checkSolution(String[] words, String result) {
-        int sum = 0;
-
-        // Calculate the sum of all words as numbers
-        for (String word : words) {
-            int wordValue = getWordValue(word);
-            if (wordValue == -1) return false; // Invalid mapping (e.g., leading zero)
-            sum += wordValue;
-        }
-
-        // Calculate the result as a number
-        int resultValue = getWordValue(result);
-        return resultValue != -1 && sum == resultValue;
-    }
-
-    // Convert a word to its integer value based on current char-to-digit mapping
-    private int getWordValue(String word) {
-        int value = 0;
-        for (char ch : word.toCharArray()) {
-            if (!charToDigit.containsKey(ch)) return -1;
-            value = value * 10 + charToDigit.get(ch);
-        }
-        // Check for leading zero
-        if (word.length() > 1 && charToDigit.get(word.charAt(0)) == 0) return -1;
-        return value;
+    public static void main(String[] args) {
+        S002_lc_1307 solver = new S002_lc_1307();
+        String[] words = {"SEND", "MORE"};
+        String result = "MONEY";
+        System.out.println(solver.isSolvable(words, result));
     }
 }

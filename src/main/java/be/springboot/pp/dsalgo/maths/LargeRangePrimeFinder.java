@@ -22,15 +22,22 @@ public class LargeRangePrimeFinder {
 
     public static ArrayList<Long> segmentedSieve(long l, long r) {
         int limit = (int) Math.sqrt(r); // Step 1: calculate sqrt of r
+        System.out.println("limit: " + limit);
         ArrayList<Integer> primes = sieve(limit); // step 2: find primes till sqrt of r
+        System.out.println("primes: " + primes);
 
         // step 3: create a pseudo array to represent each number in given range as a potential prime.
         boolean[] isPrime = new boolean[(int) (r - l + 1)];
+        System.out.println("isPrime: " + isPrime.length);
         Arrays.fill(isPrime, true);
 
         // step 4: Marking off multiples of each prime in the range [l, r]
         for (int prime : primes) {
+            System.out.println("prime: " + prime);
+            System.out.println(prime * prime);
+            System.out.println((l + prime - 1) / prime * prime);
             long start = Math.max((long) prime * prime, (l + prime - 1) / prime * prime);
+            System.out.println("start: " + start);
             for (long multiple = start; multiple <= r; multiple += prime) {
                 isPrime[(int) (multiple - l)] = false;
             }
