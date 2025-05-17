@@ -8,7 +8,7 @@ import java.util.Queue;
 
 public abstract class BoardGame {
 
-    private final Board board;
+    protected final Board board;
     private final Queue<Player> players;// for multiple players to play turn by turn, queue is standard way to do it
 
     public BoardGame(Board board, Queue<Player> players) {
@@ -21,9 +21,10 @@ public abstract class BoardGame {
             board.display();
             Player currentPlayer = players.poll();
             Move move = currentPlayer.makeMove();
-            board.applyMove(move);
+            board.applyMove(move, currentPlayer);
 
             if (isOver()) {
+                board.display();
                 System.out.println("Game Over... " + currentPlayer.getName() + " won!!");
                 break;
             }

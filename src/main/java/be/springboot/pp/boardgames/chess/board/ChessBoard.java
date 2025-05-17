@@ -3,6 +3,7 @@ package be.springboot.pp.boardgames.chess.board;
 import be.springboot.pp.boardgames.boardgame.board.Board;
 import be.springboot.pp.boardgames.boardgame.move.Move;
 import be.springboot.pp.boardgames.boardgame.move.Pair;
+import be.springboot.pp.boardgames.boardgame.player.Player;
 import be.springboot.pp.boardgames.chess.pieces.Bishop;
 import be.springboot.pp.boardgames.chess.pieces.ChessPiece;
 import be.springboot.pp.boardgames.chess.pieces.Color;
@@ -34,7 +35,7 @@ public class ChessBoard implements Board {
     }
 
     @Override
-    public void applyMove(Move move) {
+    public void applyMove(Move move, Player player) {
         ChessCell sourceCell = getCell(move.getSource());
         ChessPiece chessPiece = sourceCell.getChessPiece().get();
         chessPiece.move(sourceCell, getCell(move.getDestination()), this);

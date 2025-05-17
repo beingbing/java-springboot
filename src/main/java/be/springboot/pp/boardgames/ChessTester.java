@@ -7,7 +7,7 @@ import be.springboot.pp.boardgames.chess.pieces.Color;
 import be.springboot.pp.boardgames.chess.player.ChessPlayer;
 import be.springboot.pp.boardgames.chess.player.HumanChessPlayer;
 
-public class Tester {
+public class ChessTester {
 
     public static void main(String[] args) {
         ChessBoard chessBoard = new ChessBoard();
