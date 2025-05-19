@@ -4,7 +4,7 @@ import be.springboot.pp.fooddeliverysystem.dtos.Restaurant;
 import be.springboot.pp.fooddeliverysystem.enums.CuisineType;
 import be.springboot.pp.fooddeliverysystem.enums.MealType;
 import be.springboot.pp.fooddeliverysystem.enums.StarRating;
-import be.springboot.pp.fooddeliverysystem.searchers.RestaurantSearcher;
+import be.springboot.pp.fooddeliverysystem.service.searchers.RestaurantSearcher;
 import be.springboot.pp.fooddeliverysystem.service.filters.RestaurantFilter;
 import be.springboot.pp.fooddeliverysystem.service.filters.impl.CuisineTypeFilter;
 import be.springboot.pp.fooddeliverysystem.service.filters.impl.MealTypeFilter;

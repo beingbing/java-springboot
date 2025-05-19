@@ -4,7 +4,7 @@ import be.springboot.pp.fooddeliverysystem.dtos.FoodItem;
 import be.springboot.pp.fooddeliverysystem.managers.CartManager;
 import be.springboot.pp.fooddeliverysystem.managers.UserManager;
 import be.springboot.pp.fooddeliverysystem.pojos.User;
-import be.springboot.pp.fooddeliverysystem.searchers.FoodItemSearcher;
+import be.springboot.pp.fooddeliverysystem.service.searchers.FoodItemSearcher;
 
 public class Cart {
 

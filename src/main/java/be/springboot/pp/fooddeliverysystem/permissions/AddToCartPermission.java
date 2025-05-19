@@ -4,7 +4,7 @@ import be.springboot.pp.fooddeliverysystem.dtos.FoodItem;
 import be.springboot.pp.fooddeliverysystem.dtos.Restaurant;
 import be.springboot.pp.fooddeliverysystem.managers.DeliveryManager;
 import be.springboot.pp.fooddeliverysystem.pojos.User;
-import be.springboot.pp.fooddeliverysystem.searchers.RestaurantSearcher;
+import be.springboot.pp.fooddeliverysystem.service.searchers.RestaurantSearcher;
 
 public class AddToCartPermission implements Permissions {
     private final User user;
