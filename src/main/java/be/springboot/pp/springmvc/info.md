@@ -146,7 +146,6 @@ public class SimpleController {
 ### @RestController
 Spring MVC supports building RESTful web services using `@RestController`. It combines `@Controller` and `@ResponseBody` by automatically converting Java objects into JSON (or XML) using Jackson (or another library) via custom response class getters/setters (@Getter/@Setter can also be used) and writing it directly to the HTTP response body. The conversion ability of jackson is abstracted in `HTTPMessageConverter` interface. Spring MVC comes with only Java objects to JSON serialization/deserialization implementation of `HTTPMessageConverter` interface out of the box. If serialization/deserialization of any other format (like xml) is required, then its implementation needs to be imported as a dependency (`jackson-dataformat-xml`).
 ```java
-// produces: response produced is serialized into an XML file
 @RequestMapping(method = RequestMethod.GET, value = "result", produces = "application/xml")
 public ExamResult getExamResult() {
     System.out.println("Received result request");
@@ -155,7 +154,7 @@ public ExamResult getExamResult() {
 ```
 
 #### Note:
-Usually `GET` request do not contain a body, as we do not prefer too much data via `GET method. So, Spring Jackson has capability to bind HTTP request-params into a request body object by using its constructor/setter (if it can be translated).
+Spring Jackson has capability to bind HTTP request-params into a request body object by using its constructor/setter (if it can be translated).
 ```java
 // Do not use it extensively, as it is not reliable and not a good practice as well.
 // Curl --location 'http://localhost:8080/simple/result/examine?physics=70&chemistry=65&maths=80'
