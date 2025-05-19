@@ -13,10 +13,10 @@ public class PaymentFactory {
                     .userName(paymentInfo.get("userName"))
                     .build();
         } else if (paymentMode.equalsIgnoreCase("CardPayment")) {
-            paymentManager = NetBankingPayment
+            paymentManager = CardBasedPayment
                     .builder()
                     .bankName(paymentInfo.get("bankName"))
-                    .userName(paymentInfo.get("userName"))
+                    .cardNumber(paymentInfo.get("cardNumber"))
                     .build();
         } else throw new RuntimeException("Invalid payment mode");
 
