@@ -81,7 +81,6 @@ In this example, the event listener will only be invoked if the username in the 
 Spring's event system also supports publishing events across a hierarchy of ApplicationContexts. Child contexts can publish events that are received by listeners in parent contexts, but not the other way around.
 
 ## Miscellaneous
-- what is Observation/Observer Pattern ?
 - event-driven/event-based system ?
 - What events SpringBoot application emits ?
 - Are all events application-wide or can we make them package specific ?
