@@ -22,13 +22,6 @@ public class JSON {
         return keys;
     }
 
-    /*
-    * If we create a getter to access map then its not a good design as we are exposing
-    * internal data-structure details. Furthermore, client will need to figure out how to
-    * handle this extra detail. Also, if we changed internal implementation from map to
-    * something else then client need to understand handling of that as well.
-    * */
-
     public boolean isLeaf() {
         return (this.keyValue.size() == 1)
                 && (this.keyValue.entrySet().iterator().next().getValue() == null);
