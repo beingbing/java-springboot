@@ -24,7 +24,7 @@ A manager class responsible for creating objects introduces several issues:
 Spring’s IoC container avoids these problems by creating and providing objects externally. This ensures no application class is responsible for creating any dependencies, making the codebase more modular and maintainable.
 
 ## Inversion of Control (IoC)
-It's a design principle where the control of object creation, configuration and lifecycle management is handled by an external container, rather than being managed within the application code.
+It's a design principle where the control of object creation, configuration and lifecycle management is handled by an external container/entity, rather than being managed within the application code.
 
 ### IoC Container
 Spring Core provides two main types of IoC containers -
@@ -84,7 +84,7 @@ public class MyService {
 ```
 
 ## Beans
-A bean is any object managed by Spring's IoC container. Beans are instantiated, configured, and injected by the container based on the definitions provided in the annotation configuration.
+A bean is any Java object managed by Spring's IoC container. Beans are instantiated, configured, and injected by the container based on the definitions provided in the annotation configuration.
 
 ### Bean lifecycle
 - **Instantiation:** The IoC container creates an instance of the bean.
@@ -143,7 +143,7 @@ Spring can automatically resolve and inject beans by their type using autowiring
 
 When creating bean dependencies, ensure they form a Directed Acyclic Graph (DAG). Spring cannot resolve cyclic dependencies, and the application will fail. Also, even if two entities have a one-to-one mapping in the database, it’s not always necessary to reflect that relationship in object modeling. For example, while `Customer` and `Cart` entities may have a one-to-one relationship, it's not required for a `Customer` object to hold a `Cart` object and vice versa. Avoid these circular dependencies in your object models.
 
-## Spring Profiles
+## Spring Profiles (not created notes for this)
 Spring Profiles allow you to define different configurations for different environments (development, production, etc.). For example, you might want to use different data sources for development and production. You can activate profiles through configuration files, environment variables, or JVM arguments.
 ```java
 @Configuration
@@ -227,9 +227,9 @@ One of the most powerful features of Spring Boot is its auto-configuration abili
   - An embedded Tomcat server to serve the application.
     You can always override this auto-configuration by defining your own configurations.
 
-## Setting Up a Spring Boot Project
+## Setting Up a Spring Boot Project (Not making Anki Notes)
 The simplest way to create a Spring Boot project is by using Spring Initializr (https://start.spring.io/). Here, you can select the dependencies you want and download the pre-configured project. You can also create the project manually by setting up a pom.xml (for Maven) or build.gradle (for Gradle). Here’s a basic pom.xml for Maven:
-```xml
+```
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -338,16 +338,6 @@ java -jar myapp.jar --spring.profiles.active=prod
 spring.profiles.active=prod
 ```
 
-## Spring Boot DevTools
-Spring Boot DevTools provides utilities to improve the development experience. This includes automatic restart when files change, live reloading, and configurations for speeding up the development process. To add DevTools:
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-devtools</artifactId>
-    <scope>runtime</scope>
-</dependency>
-```
-
 ## Spring Boot Actuator
 Spring Boot Actuator provides production-ready features to help monitor and manage your application. It includes features like health checks, metrics, and auditing. To include Actuator:
 ```xml
@@ -381,82 +371,3 @@ public class MyApp {
     }
 }
 ```
-
-## Testing in Spring Boot
-Spring Boot simplifies testing by including spring-boot-starter-test. This provides:
-- **JUnit 5**: For writing unit and integration tests.
-- **Spring Test**: To easily load the application context for testing.
-- **Mockito**: For creating mocks.
-  You can annotate your test classes with `@SpringBootTest` to load the full application context.
-```java
-@SpringBootTest
-class MyApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
-}
-```
-For specific slices of the application, Spring Boot provides specialized annotations like:
-- `@WebMvcTest`: To test only the web layer.
-- `@DataJpaTest`: To test only the JPA layer.
-
-## Spring Boot Security
-Spring Boot also supports Spring Security, making it easy to add authentication and authorization to your application. Add the `spring-boot-starter-security` dependency:
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
-```
-This will secure all endpoints by default, requiring authentication for every request.
-
-You can configure custom security rules by defining a `SecurityConfig` class and extending `WebSecurityConfigurerAdapter`:
-```java
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-            .antMatchers("/public").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .formLogin();
-    }
-}
-```
-
-# Other Spring Modules
-## Spring MVC (Model-View-Controller)
-spring MVC is used to build web applications by separating the logic into three components - model, view and controller.
-- **Controller:** handler HTTP requests and delegates logic to services
-- **Model:** contains the business logic or application's data.
-- **View:** Renders the output (e.g., JSP, Thymeleaf, etc.)
-
-## Spring Data
-It simplifies database interactions. It integrates with JPA, MongoDB, Redis, and many more.
-- **Spring Data JPA:** Builds on top of Hibernate and provides a simple way to interact with relational databases.
-- **Repository patterns:** spring data uses repositories for handling database operations.
-
-## Spring Security
-Spring Security is used to secure applications by handling Authentication (who you are) and Authorization (what you are allowed to do). You can configure security via annotations or configurations for both web and service layers. It supports integration with OAuth, LDAP, etc.
-
-## Spring Transaction Management
-Spring provides declarative transaction management via `@Transactional` annotation. It can be applied to methods or classes and manages transaction boundaries automatically.
-
-## Spring Cloud
-It extends the Spring ecosystem to build microservices and distributed systems. It offers tools for:
-- Service discovery (Eureka)
-- Load balancing (Ribbon)
-- Circuit breakers (Hystrix)
-- Distributed tracing (Sleuth)
-
-## Testing with Spring
-Spring supports testing with `@SpringBootTest` annotation, which boots up the Spring context for integration tests. You can also use mock objects with libraries like Mockito or MockMvc for testing controllers.
-
-## Further tools
-- **Spring REST:** Build RESTful web services
-- **Spring Reactive:** work with non-blocking, reactive programming.
-- **Spring Batch:** Large-scale batch processing.
-- **Spring Integration:** Message-driven architecture for enterprise applications.
