@@ -20,7 +20,7 @@ public class TicTacToe extends BoardGame {
 
     @Override
     public boolean isOver() {
-        return hasWinningLine(boardCells);
+        return hasWinningLine(boardCells); // || isBoardFull();
     }
 
     private boolean hasWinningLine(List<List<TicTacToeCell>> board) {

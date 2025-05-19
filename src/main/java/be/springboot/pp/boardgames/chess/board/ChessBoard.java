@@ -62,10 +62,6 @@ public class ChessBoard implements Board {
         return this.cells.get(pair.getX()).get(pair.getY());
     }
 
-    public ChessCell getCell(ChessCell cell) {
-        return this.cells.get(cell.getX()).get(cell.getY());
-    }
-
     public void putPiece(ChessPiece chessPiece, int row, int col) {
         ChessCell initialCell = getCell(new Pair(row, col));
         initialCell.setChessPiece(Optional.of(chessPiece));
