@@ -11,7 +11,9 @@ public class PermissionFactory {
         return Optional.of(new SearchProductPermission(user));
     }
 
-    public static Optional<Permission> getAddToCartPermission(User user) {
-        return Optional.empty();
+    public static Optional<Permission> getAddToCartPermission(User user, ProductCopy productCopy) {
+        // check in DB, if user has permission to add given item in product or not
+        // if no
+        return Optional.of(new AddToCartPermission(user, productCopy));
     }
 }

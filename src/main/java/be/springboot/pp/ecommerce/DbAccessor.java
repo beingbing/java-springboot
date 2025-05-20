@@ -9,4 +9,16 @@ public class DbAccessor {
     public static List<Product> getProductsByName(String productName) {
         return null;
     }
+
+    public static ProductCopy getProductCopyById(int productId) {
+        return null;
+    }
+
+    public static Cart getCart(User user) {
+        return null;
+    }
+
+    public static void persistCart(Cart cart, User user) {
+        //
+    }
 }
