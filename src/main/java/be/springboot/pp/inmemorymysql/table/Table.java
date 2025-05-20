@@ -52,7 +52,7 @@ public class Table {
         rows.add(newRow);
     }
 
-    public void deleteRows(Row row) {
+    public void deleteRow(Row row) {
         if (!this.rows.contains(row)) throw new IllegalArgumentException("Row does not exist.");
         for (Constraint constraint : constraints) constraint.applyOnDeleteRow(row);
         rows.remove(row);
