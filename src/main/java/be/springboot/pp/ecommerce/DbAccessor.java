@@ -21,4 +21,8 @@ public class DbAccessor {
     public static void persistCart(Cart cart, User user) {
         //
     }
+
+    public static void checkoutCart(User user, Order order) {
+        //
+    }
 }

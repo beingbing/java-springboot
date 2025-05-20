@@ -18,4 +18,8 @@ public class CartManager {
         cart.remove(productCopy);
         DbAccessor.persistCart(cart, user);
     }
+
+    public void checkoutCart(User user, Order order) {
+        DbAccessor.checkoutCart(user, order);
+    }
 }
