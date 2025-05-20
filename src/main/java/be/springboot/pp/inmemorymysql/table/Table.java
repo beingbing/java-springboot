@@ -40,6 +40,13 @@ public class Table {
         }
     }
 
+    public Column getColumn(String colName) {
+        for (Column column : columns) {
+            if (column.name().equals(colName)) return column;
+        }
+        throw new IllegalArgumentException("Column does not exist.");
+    }
+
     public void insertRow(Row newRow) {
         for (Constraint constraint : constraints) constraint.applyOnInsertRow(newRow);
         rows.add(newRow);
