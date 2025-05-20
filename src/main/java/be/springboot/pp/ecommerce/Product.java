@@ -1,8 +1,10 @@
 package be.springboot.pp.ecommerce;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class Product {
     private final int id;
     private final String name;
