@@ -1,4 +1,9 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.cart;
+
+import be.springboot.pp.ecommerce.db.DbAccessor;
+import be.springboot.pp.ecommerce.order.Order;
+import be.springboot.pp.ecommerce.dto.ProductCopy;
+import be.springboot.pp.ecommerce.dto.User;
 
 public class CartManager {
 

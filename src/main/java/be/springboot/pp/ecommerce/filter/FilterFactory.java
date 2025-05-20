@@ -1,6 +1,6 @@
 package be.springboot.pp.ecommerce.filter;
 
-import be.springboot.pp.ecommerce.FilterDetails;
+import be.springboot.pp.ecommerce.dto.FilterDetails;
 import be.springboot.pp.ecommerce.filter.impl.IdleFilter;
 import be.springboot.pp.ecommerce.filter.impl.PayOnDeliveryFilter;
 import be.springboot.pp.ecommerce.filter.impl.PriceFilter;

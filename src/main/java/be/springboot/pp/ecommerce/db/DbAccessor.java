@@ -1,4 +1,10 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.db;
+
+import be.springboot.pp.ecommerce.cart.Cart;
+import be.springboot.pp.ecommerce.dto.Product;
+import be.springboot.pp.ecommerce.dto.ProductCopy;
+import be.springboot.pp.ecommerce.dto.User;
+import be.springboot.pp.ecommerce.order.Order;
 
 import java.util.List;
 
@@ -24,5 +30,9 @@ public class DbAccessor {
 
     public static void checkoutCart(User user, Order order) {
         //
+    }
+
+    public static Order getOrderById(int orderId) {
+        return null;
     }
 }

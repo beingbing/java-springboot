@@ -1,4 +1,11 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.controller;
+
+import be.springboot.pp.ecommerce.cart.CartManager;
+import be.springboot.pp.ecommerce.db.DbAccessor;
+import be.springboot.pp.ecommerce.permission.Permission;
+import be.springboot.pp.ecommerce.permission.PermissionFactory;
+import be.springboot.pp.ecommerce.dto.ProductCopy;
+import be.springboot.pp.ecommerce.dto.User;
 
 import java.util.Optional;
 

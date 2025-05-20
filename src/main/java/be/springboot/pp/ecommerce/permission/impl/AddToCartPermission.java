@@ -1,4 +1,10 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.permission.impl;
+
+import be.springboot.pp.ecommerce.cart.Cart;
+import be.springboot.pp.ecommerce.db.DbAccessor;
+import be.springboot.pp.ecommerce.dto.ProductCopy;
+import be.springboot.pp.ecommerce.dto.User;
+import be.springboot.pp.ecommerce.permission.Permission;
 
 public class AddToCartPermission implements Permission {
     private static final double MAX_CART_AMOUNT = 100000.0;

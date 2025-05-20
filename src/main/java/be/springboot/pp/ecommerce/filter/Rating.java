@@ -1,4 +1,4 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.filter;
 
 public enum Rating {
     ONE(1),

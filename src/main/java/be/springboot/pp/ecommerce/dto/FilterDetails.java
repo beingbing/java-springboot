@@ -1,5 +1,6 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.dto;
 
+import be.springboot.pp.ecommerce.filter.Rating;
 import lombok.Getter;
 
 import java.util.Optional;

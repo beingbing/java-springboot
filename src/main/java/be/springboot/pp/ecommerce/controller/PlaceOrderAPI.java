@@ -1,4 +1,4 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.controller;
 
 public class PlaceOrderAPI {
 

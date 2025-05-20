@@ -1,4 +1,4 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.permission;
 
 public interface Permission {
     boolean isPermitted();

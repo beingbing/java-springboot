@@ -1,6 +1,6 @@
 package be.springboot.pp.ecommerce.filter;
 
-import be.springboot.pp.ecommerce.Product;
+import be.springboot.pp.ecommerce.dto.Product;
 
 import java.util.List;
 

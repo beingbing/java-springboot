@@ -1,4 +1,6 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.cart;
+
+import be.springboot.pp.ecommerce.dto.ProductCopy;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,10 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.order;
+
+import be.springboot.pp.ecommerce.payment.PaymentProcessor;
+import be.springboot.pp.ecommerce.dto.User;
+import be.springboot.pp.ecommerce.cart.Cart;
+import be.springboot.pp.ecommerce.cart.CartManager;
+import be.springboot.pp.ecommerce.dto.Address;
 
 public class OrderManager {
     private final CartManager cartManager;

@@ -1,4 +1,11 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.controller;
+
+import be.springboot.pp.ecommerce.dto.FilterDetails;
+import be.springboot.pp.ecommerce.filter.ProductSearcher;
+import be.springboot.pp.ecommerce.dto.User;
+import be.springboot.pp.ecommerce.dto.Product;
+import be.springboot.pp.ecommerce.permission.Permission;
+import be.springboot.pp.ecommerce.permission.PermissionFactory;
 
 import java.util.List;
 import java.util.Optional;

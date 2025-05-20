@@ -1,6 +1,8 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.filter;
 
-import be.springboot.pp.ecommerce.filter.FilterFactory;
+import be.springboot.pp.ecommerce.db.DbAccessor;
+import be.springboot.pp.ecommerce.dto.FilterDetails;
+import be.springboot.pp.ecommerce.dto.Product;
 
 import java.util.List;
 

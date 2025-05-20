@@ -1,4 +1,7 @@
-package be.springboot.pp.ecommerce;
+package be.springboot.pp.ecommerce.permission.impl;
+
+import be.springboot.pp.ecommerce.dto.User;
+import be.springboot.pp.ecommerce.permission.Permission;
 
 public class SearchProductPermission implements Permission {
     private final User user;
