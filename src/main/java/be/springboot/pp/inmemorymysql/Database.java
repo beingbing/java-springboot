@@ -1,6 +1,7 @@
 package be.springboot.pp.inmemorymysql;
 
 import be.springboot.pp.inmemorymysql.column.Column;
+import be.springboot.pp.inmemorymysql.table.Table;
 
 import java.util.Collection;
 import java.util.HashMap;
