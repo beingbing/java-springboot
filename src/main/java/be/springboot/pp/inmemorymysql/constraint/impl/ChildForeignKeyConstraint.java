@@ -32,7 +32,8 @@ public class ChildForeignKeyConstraint implements Constraint {
         for (Row row : childTable.getRows()) {
             boolean allMatch = true;
             for (ColumnMapping mapping : columnMappings) {
-                if (!row.get(mapping.foreignTableColumn()).equals(rowToBeDeleted.get(mapping.currentTableColumn())))
+                if (!row.get(mapping.foreignTableColumn())
+                        .equals(rowToBeDeleted.get(mapping.currentTableColumn())))
                     allMatch = false;
             }
             if (allMatch) throw new IllegalArgumentException("Child Foreign key constraint violation.");

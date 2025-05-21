@@ -5,13 +5,13 @@ import be.springboot.pp.inmemorymysql.operator.Operator;
 public class GreaterThanOperator implements Operator {
     @Override
     public Boolean apply(String curVal, String expectedVal) {
-        try {
+        try { // if comparators are numbers
             Double curValDouble = Double.parseDouble(curVal);
             Double expectedValDouble = Double.parseDouble(expectedVal);
             return curValDouble > expectedValDouble;
         } catch (NumberFormatException e) {
             System.out.println("GreaterThanOperator: NumberFormatException: " + e.getMessage());
         }
-        return curVal.compareTo(expectedVal) > 0;
+        return curVal.compareTo(expectedVal) > 0; // if comparators are strings
     }
 }

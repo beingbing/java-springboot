@@ -47,6 +47,10 @@ public class Table {
         throw new IllegalArgumentException("Column does not exist.");
     }
 
+    public Set<Column> getColumns() {
+        return new HashSet<>(columns);
+    }
+
     public void insertRow(Row newRow) {
         for (Constraint constraint : constraints) constraint.applyOnInsertRow(newRow);
         rows.add(newRow);
@@ -60,10 +64,6 @@ public class Table {
 
     public void addConstraint(Constraint constraint) {
         constraints.add(constraint);
-    }
-
-    public Set<Column> getColumns() {
-        return new HashSet<>(columns);
     }
 
     public List<Constraint> getConstraintsByType(ConstraintType type) {

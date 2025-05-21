@@ -19,13 +19,14 @@ public class ParentForeignKeyConstraint implements Constraint {
 
     @Override
     public void applyOnInsertRow(Row rowToBeInserted) {
-        for (Row row : parentTable.getRows()) {
+        for (Row row : parentTable.getRows()) { // iterate over each row
             boolean allMatch = true;
-            for (ColumnMapping mapping : columnMappings) {
-                if (!row.get(mapping.foreignTableColumn()).equals(rowToBeInserted.get(mapping.currentTableColumn())))
-                    allMatch = false;
+            for (ColumnMapping mapping : columnMappings) { // check presence of row in parent for FK column
+                String parentValue = row.get(mapping.foreignTableColumn());
+                String newChildValue = rowToBeInserted.get(mapping.currentTableColumn());
+                if (!parentValue.equals(newChildValue)) allMatch = false;
             }
-            if (allMatch) return;
+            if (allMatch) return; // match found, constraint satisfied
         }
         throw new IllegalArgumentException("Parent Foreign key constraint violation.");
     }
