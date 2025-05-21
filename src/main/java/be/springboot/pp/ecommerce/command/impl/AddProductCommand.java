@@ -1,9 +1,10 @@
 package be.springboot.pp.ecommerce.command.impl;
 
+import be.springboot.pp.ecommerce.command.Command;
 import be.springboot.pp.ecommerce.dto.ProductCopy;
 import be.springboot.pp.ecommerce.dto.User;
 
-public class AddProductCommand {
+public class AddProductCommand implements Command {
     private final User user;
     private final ProductCopy productCopy;
 
@@ -13,4 +14,8 @@ public class AddProductCommand {
     }
 
 
+    @Override
+    public void execute() {
+        //
+    }
 }
