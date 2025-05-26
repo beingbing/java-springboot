@@ -1,4 +1,4 @@
-package be.springboot.pp.dsalgo.dynamicprogramming.module2;
+package be.springboot.pp.dsalgo.dynamicprogramming.module02;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,18 +9,21 @@ import java.util.StringTokenizer;
 
 public class BoredomGame {
     public static long maxPoints(long[] a) {
-        long maxNum = 100_000;
-        long[] freq = new long[(int) (maxNum + 1)];
-        for (long num : a) freq[(int) num]++;
-
-        long second = 0, first = freq[1];
-        for (long i = 2; i <= maxNum; i++) {
-            long cur = Math.max(first, second + i * freq[(int) i]);
-            second = first;
-            first = cur;
+        long maxNum = Integer.MIN_VALUE;
+        long[] freq = new long[100001];
+        for (long num : a) {
+            freq[(int) num]++;
+            maxNum = Math.max(maxNum, num);
         }
 
-        return first;
+        long pen = 0, pre = freq[1] * 1, cur; // penultimate, previous, current
+        for (long i = 2; i <= maxNum; i++) {
+            cur = Math.max(pre, pen + freq[(int)i] * i);
+            pen = pre;
+            pre = cur;
+        }
+
+        return pre;
     }
 
     public static void main(String[] args) throws IOException {

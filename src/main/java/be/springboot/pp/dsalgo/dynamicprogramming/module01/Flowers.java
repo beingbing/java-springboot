@@ -1,4 +1,4 @@
-package be.springboot.pp.dsalgo.dynamicprogramming.module1;
+package be.springboot.pp.dsalgo.dynamicprogramming.module01;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
