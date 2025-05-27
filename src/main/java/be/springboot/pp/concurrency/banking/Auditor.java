@@ -14,17 +14,23 @@ public class Auditor implements Runnable {
     @Override
     public void run() {
         while (true) {
-            int sum = 0;
-            for (Account account : accounts) {
-                System.out.println(account.getId() + " : " + account.getAmount());
-                sum += account.getAmount();
-            }
-            System.out.println("total amount: " + sum);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            synchronized(bank) {
+                int sum = 0;
+                for (Account account : accounts) {
+                    System.out.println(account.getId() + " : " + account.getAmount());
+                    sum += account.getAmount();
+                }
+                System.out.println("total amount: " + sum);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 }
+
+/*
+* By doing this we bottleneck all threads on bank object. This will fix the problem but heavily degrade the performance.
+* */
