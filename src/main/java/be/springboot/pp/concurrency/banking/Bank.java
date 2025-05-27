@@ -11,13 +11,30 @@ public class Bank {
     *
     * Although all accounts are unrelated. But got stuck.
     * */
+//    public synchronized void transfer(Account source, Account destination, int amount) {
+//        source.deduct(amount);
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        destination.add(amount);
+//    }
+
     public synchronized void transfer(Account source, Account destination, int amount) {
-        source.deduct(amount);
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        Account a1, a2;
+        if (source.getId() < destination.getId()) {
+            a1 = source;
+            a2 = destination;
+        } else {
+            a1 = destination;
+            a2 = source;
         }
-        destination.add(amount);
+        synchronized(a1) {
+            synchronized(a2) {
+                source.deduct(amount);
+                destination.add(amount);
+            }
+        }
     }
 }

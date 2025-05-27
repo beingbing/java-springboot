@@ -14,17 +14,26 @@ public class Auditor implements Runnable {
     @Override
     public void run() {
         while (true) {
-            synchronized(bank) {
-                int sum = 0;
-                for (Account account : accounts) {
-                    System.out.println(account.getId() + " : " + account.getAmount());
-                    sum += account.getAmount();
-                }
-                System.out.println("total amount: " + sum);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            // assume we have only 5 accounts for now
+            synchronized(accounts.get(0)) {
+                synchronized(accounts.get(1)) {
+                    synchronized(accounts.get(2)) {
+                        synchronized(accounts.get(3)) {
+                            synchronized(accounts.get(4)) {
+                                int sum = 0;
+                                for (Account account : accounts) {
+                                    System.out.println(account.getId() + " : " + account.getAmount());
+                                    sum += account.getAmount();
+                                }
+                                System.out.println("total amount: " + sum);
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -32,5 +41,10 @@ public class Auditor implements Runnable {
 }
 
 /*
-* By doing this we bottleneck all threads on bank object. This will fix the problem but heavily degrade the performance.
+ * By doing this we bottleneck all threads on bank object. This will fix the problem but heavily degrade the performance.
+ * */
+
+/*
+* Audit only happens after lock is acquired on all available accounts, so that when audit is happening then no
+* txn happen.
 * */
