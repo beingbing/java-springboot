@@ -13,6 +13,11 @@ public class Bank {
     * */
     public synchronized void transfer(Account source, Account destination, int amount) {
         source.deduct(amount);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         destination.add(amount);
     }
 }
