@@ -2,7 +2,16 @@ package be.springboot.pp.concurrency.banking;
 
 public class Bank {
 
-    public void transfer(Account source, Account destination, int amount) {
+    /*
+    * By synchronizing this function we have synchronized all transfer operations.
+    * Now if t1 is transferring from a1 to a2 and
+    * t2 is transferring from a7 to a9
+    * none of them do so if t3 acquired the lock, entered this block and is transferring
+    * from a3 to a4.
+    *
+    * Although all accounts are unrelated. But got stuck.
+    * */
+    public synchronized void transfer(Account source, Account destination, int amount) {
         source.deduct(amount);
         destination.add(amount);
     }
