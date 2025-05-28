@@ -118,3 +118,6 @@ An implementation of Lock interface allowing us to acquire lock on the same obje
 
 ## LiveLock
 Objects are not stuck or halted, but they keep oscillating between states unable to make progress.
+
+## Hand-over-hand locking
+in built-in locks, like `synchronized` keyword, we always needed to release locks in reverse order of the order in which they were acquired. But with custom locks, we are not bound with that condition. We can release multiple acquired locks in any order depending on our needs. This approach is caled hand-over-hand locking.
