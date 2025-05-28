@@ -23,12 +23,15 @@ public class ReadWriteLock {
     }
 
     private boolean allowReadAccess() {
+        if (Thread.currentThread().equals(enteredWriter)) return true; // enough to switch from write to read
         if (readerEntracy.containsKey(Thread.currentThread())) return true;
         if (writerEntryCount > 0 || writeReq > 0) return false;
         return true;
     }
 
     private boolean allowWriteAccess() {
+        // to allow write access to a single existing reader
+        if (readerEntracy.size() == 1 && readerEntracy.get(Thread.currentThread()) != null) return true;
         if (!readerEntracy.isEmpty()) return false;
         if (enteredWriter == null) return true;
         if (Thread.currentThread().equals(enteredWriter)) return true;
@@ -100,13 +103,13 @@ class Store {
     }
 
     public void log(String name) throws InterruptedException {
-        lock.lockRead();
+        lock.lockWrite();
         try {
             System.out.println("log printed: " + name);
         } catch (Exception e) {
             //
         } finally {
-            lock.unlockRead();
+            lock.unlockWrite();
         }
     }
 
@@ -123,8 +126,8 @@ class Store {
     }
 
     public void action() throws InterruptedException {
-        lock.lockWrite();
-        lock.unlockWrite();
+        lock.lockRead();
+        lock.unlockRead();
     }
 }
 
@@ -194,12 +197,12 @@ class Tester {
         Store store = new Store(lock);
         Thread r1 = new Thread(new Reader(store));
         Thread w1 = new Thread(new Writer(store));
-        Thread r2 = new Thread(new Reader(store));
-        Thread w2 = new Thread(new Writer(store));
+//        Thread r2 = new Thread(new Reader(store));
+//        Thread w2 = new Thread(new Writer(store));
         r1.start();
         w1.start();
-        r2.start();
-        w2.start();
+//        r2.start();
+//        w2.start();
     }
 }
 /*
@@ -209,4 +212,15 @@ class Tester {
 * r1 trying to reacquire lock, won't leave unless it does so.
 * So, we are in a deadlock. Reader attempting reentrance, writer blocked further readers.
 * Solution: block new readers entry, reentry of existing reader should be allowed.
+* */
+
+/*
+* If thread switches behavior from write -> read: downgraded
+* If thread switches behavior from read -> write: upgraded
+*
+* We allow a reader to acquire a write lock iff it is the only reader
+*
+* In case of two readers requesting write access together, both of them can still stuck in deadlock.
+* That's why in many languages whenever a reader requests write access, it is enforced that first
+* read access is relinquished.
 * */
