@@ -25,6 +25,11 @@ parameter, then we can use hashcode of objects to establish an order.
 The issue with this is there can come a scenario where 2 objects can have same hash-code. This is very rare.
 But in such scenarios, we acquire lock on some third object called as tiebreaker lock, then on the intended
 two locks. This way, both of them wont go in deadlock. because tiebreaker will be exclusive among those two.
+
+Alien method calls leading to deadlocks -
+It is advised that if you are invoking a user-defined method not known to you then relinquish all the locks
+before doing so. Because it may contain further locking on some other object and you get into nested locking
+scenario unintentionally. Which can lead to deadlock with some other thread.
  */
 
 public class Deadlock {
