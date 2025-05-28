@@ -6,7 +6,7 @@ import java.util.Map;
 // simultaneous reads are allowed
 // when writing is done both reading and writing not allowed
 // this feature can't be enforced by built-in tools, we always need to design a solution for our own.
-public class ReadWriteLock {
+public class MyReadWriteLock {
     private int writerEntryCount, writeReq;
 
     /*
@@ -15,7 +15,7 @@ public class ReadWriteLock {
     private final Map<Thread, Integer> readerEntracy;
     private Thread enteredWriter;
 
-    public ReadWriteLock() {
+    public MyReadWriteLock() {
         this.writerEntryCount = 0;
         this.writeReq = 0;
         this.readerEntracy = new HashMap<>();
@@ -81,9 +81,9 @@ public class ReadWriteLock {
 
 class Store {
     private volatile String name;
-    private final ReadWriteLock lock;
+    private final MyReadWriteLock lock;
 
-    public Store(ReadWriteLock lock) {
+    public Store(MyReadWriteLock lock) {
         this.lock = lock;
         this.name = "bla";
     }
@@ -170,7 +170,7 @@ class Writer implements Runnable {
 
 //class Tester {
 //    public static void main(String[] args) {
-//        ReadWriteLock lock = new ReadWriteLock();
+//        MyReadWriteLock lock = new MyReadWriteLock();
 //        Store store = new Store(lock);
 //        Thread r1 = new Thread(new Reader(store));
 //        Thread r2 = new Thread(new Reader(store));
@@ -193,7 +193,7 @@ class Writer implements Runnable {
 // reader reentring along with writer: fine
 class Tester {
     public static void main(String[] args) {
-        ReadWriteLock lock = new ReadWriteLock();
+        MyReadWriteLock lock = new MyReadWriteLock();
         Store store = new Store(lock);
         Thread r1 = new Thread(new Reader(store));
         Thread w1 = new Thread(new Writer(store));
