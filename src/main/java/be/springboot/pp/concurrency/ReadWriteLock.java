@@ -7,34 +7,41 @@ import java.util.Map;
 // when writing is done both reading and writing not allowed
 // this feature can't be enforced by built-in tools, we always need to design a solution for our own.
 public class ReadWriteLock {
-    private int writers, readers, writeReq;
+    private int writerEntryCount, writeReq;
 
     /*
     Store threads entered as readers, maintain count if they reenter. Hence keeping a map
     * */
     private final Map<Thread, Integer> readerEntracy;
+    private Thread enteredWriter;
 
     public ReadWriteLock() {
-        this.writers = 0;
-        this.readers = 0;
+        this.writerEntryCount = 0;
         this.writeReq = 0;
         this.readerEntracy = new HashMap<>();
+        this.enteredWriter = null;
     }
 
-    private boolean allowedReadAccess() {
+    private boolean allowReadAccess() {
         if (readerEntracy.containsKey(Thread.currentThread())) return true;
-        if (writers > 0 || writeReq > 0) return false;
+        if (writerEntryCount > 0 || writeReq > 0) return false;
         return true;
     }
 
+    private boolean allowWriteAccess() {
+        if (!readerEntracy.isEmpty()) return false;
+        if (enteredWriter == null) return true;
+        if (Thread.currentThread().equals(enteredWriter)) return true;
+        return false;
+    }
+
     public synchronized void lockRead() throws InterruptedException {
-        while (!allowedReadAccess()) {
+        while (!allowReadAccess()) {
             wait();
         }
         System.out.println(Thread.currentThread().getId() + " acquired read-lock");
 //        readers++;
         Integer cnt = readerEntracy.getOrDefault(Thread.currentThread(), 0);
-        if (cnt == 0) readers++;
         readerEntracy.put(Thread.currentThread(), cnt+1);
     }
 
@@ -44,7 +51,6 @@ public class ReadWriteLock {
         if (cnt > 1) readerEntracy.put(Thread.currentThread(), cnt-1);
         else {
             readerEntracy.remove(Thread.currentThread());
-            readers--;
             notifyAll();
         }
         System.out.println(Thread.currentThread().getId() + " released read-lock");
@@ -52,16 +58,21 @@ public class ReadWriteLock {
 
     public synchronized void lockWrite() throws InterruptedException {
         writeReq++;
-        while (readers > 0 || writers > 0) {
-            wait();
-        }
+        while (!allowWriteAccess()) wait();
+        System.out.println(Thread.currentThread().getId() + " acquired write-lock");
         writeReq--;
-        writers++;
+        enteredWriter = Thread.currentThread();
+        writerEntryCount++;
     }
 
     public synchronized void unlockWrite() {
-        writers--;
-        notifyAll();
+        if (!Thread.currentThread().equals(enteredWriter)) return;
+        writerEntryCount--;
+        if (writerEntryCount == 0) {
+            enteredWriter = null;
+            notifyAll();
+        }
+        System.out.println(Thread.currentThread().getId() + " released write-lock");
     }
 }
 
@@ -103,11 +114,17 @@ class Store {
         lock.lockWrite();
         try {
             name += "bla"; // changes are done outside synchronized block hence memory visibility issues may appear
+            action();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             lock.unlockWrite();
         }
+    }
+
+    public void action() throws InterruptedException {
+        lock.lockWrite();
+        lock.unlockWrite();
     }
 }
 
@@ -144,7 +161,7 @@ class Writer implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("writer wrote");
+        System.out.println(Thread.currentThread().getId() + " writer wrote");
     }
 }
 
@@ -177,8 +194,12 @@ class Tester {
         Store store = new Store(lock);
         Thread r1 = new Thread(new Reader(store));
         Thread w1 = new Thread(new Writer(store));
+        Thread r2 = new Thread(new Reader(store));
+        Thread w2 = new Thread(new Writer(store));
         r1.start();
         w1.start();
+        r2.start();
+        w2.start();
     }
 }
 /*
