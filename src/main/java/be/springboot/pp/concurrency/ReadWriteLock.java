@@ -16,12 +16,13 @@ public class ReadWriteLock {
         while (writers > 0 || writeReq > 0) {
             wait();
         }
-
+        System.out.println(Thread.currentThread().getId() + " acquired read-lock");
         readers++;
     }
 
     public synchronized void unlockRead() {
         readers--;
+        System.out.println(Thread.currentThread().getId() + " released read-lock");
         notifyAll();
     }
 
@@ -52,9 +53,23 @@ class Store {
     public String read() throws InterruptedException {
         lock.lockRead();
         try {
-            return name;
+            String val = name;
+            Thread.sleep(1000); // getting into deadlock
+            log(val);
+            return val;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            lock.unlockRead();
+        }
+    }
+
+    public void log(String name) throws InterruptedException {
+        lock.lockRead();
+        try {
+            System.out.println("log printed: " + name);
+        } catch (Exception e) {
+            //
         } finally {
             lock.unlockRead();
         }
@@ -109,23 +124,44 @@ class Writer implements Runnable {
     }
 }
 
+//class Tester {
+//    public static void main(String[] args) {
+//        ReadWriteLock lock = new ReadWriteLock();
+//        Store store = new Store(lock);
+//        Thread r1 = new Thread(new Reader(store));
+//        Thread r2 = new Thread(new Reader(store));
+//        Thread r3 = new Thread(new Reader(store));
+//        Thread r4 = new Thread(new Reader(store));
+//        Thread r5 = new Thread(new Reader(store));
+//        Thread r6 = new Thread(new Reader(store));
+//        Thread w1 = new Thread(new Writer(store));
+//        r1.start();
+//        r2.start();
+//        r3.start();
+//        w1.start(); // writer is starving
+//        r4.start();
+//        r5.start();
+//        r6.start();
+//    }
+//}
+
+// reader reentering alone: fine
+// reader reentring along with writer: fine
 class Tester {
     public static void main(String[] args) {
         ReadWriteLock lock = new ReadWriteLock();
         Store store = new Store(lock);
         Thread r1 = new Thread(new Reader(store));
-        Thread r2 = new Thread(new Reader(store));
-        Thread r3 = new Thread(new Reader(store));
-        Thread r4 = new Thread(new Reader(store));
-        Thread r5 = new Thread(new Reader(store));
-        Thread r6 = new Thread(new Reader(store));
         Thread w1 = new Thread(new Writer(store));
         r1.start();
-        r2.start();
-        r3.start();
-        w1.start(); // writer is starving
-        r4.start();
-        r5.start();
-        r6.start();
+        w1.start();
     }
 }
+/*
+* here deadlock is because -
+* r1 entered
+* w1 entered, blocked any further reader entry
+* r1 trying to reacquire lock, won't leave unless it does so.
+* So, we are in a deadlock. Reader attempting reentrance, writer blocked further readers.
+* Solution: block new readers entry, reentry of existing reader should be allowed.
+* */
