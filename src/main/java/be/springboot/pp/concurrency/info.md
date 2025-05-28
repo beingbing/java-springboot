@@ -101,3 +101,17 @@ The ExecutorService also allows for more advanced execution models, such as:
 - **Thread Pool:** A pool of threads is maintained, and tasks are assigned to the next available thread.
 - **New Thread:** A new thread is created for each task.
 The ExecutorService replaces the need for manually creating and managing thread pools, providing a more robust and manageable approach to concurrency.
+
+# Custom locks
+We used synchronized keyword until now to performing locking, but there is a custom way as well. 
+
+## Lock interface
+Any classes implementing it got to implement its methods then we can use objects of that class as locks.
+- `void lock()`: simply allows us to lock an object. 
+- `boolean tryLock()`: It acquires a lock only if it is free at the time of invocation. Acquires the lock if it is available and returns immediately with a value true. If the lock is not available then this method will return false immediately.
+It is very different from `synchronized`. In that, we had to wait for a lock to get freed, until then we stayed stuck. But it is giving us a new option to do something else while waiting for the lock. It can help us in dealing with deadlocks as well.
+
+## Reentrant Lock
+An implementation of Lock interface allowing us to acquire lock on the same object multiple times. With a condition, that we need to release lock as many times as it was acquired.`synchronized` keyword is one such implementation.
+
+> Note: Custom locks needs to be release manually without miss if an exception occurs, otherwise other threads will get left out. In case of language provided locks, this is done automatically.
