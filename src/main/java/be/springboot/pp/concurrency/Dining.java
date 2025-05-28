@@ -26,6 +26,10 @@ class Chopstick {
     Chopstick(int id) {
         this.id = id;
     }
+
+    public int getId() {
+        return id;
+    }
 }
 
 class Philosopher implements Runnable {
@@ -40,15 +44,25 @@ class Philosopher implements Runnable {
 
     @Override
     public void run() {
+        int x = 0;
         while (true) {
             try {
                 System.out.println(name + " is thinking...");
                 Thread.sleep(2000);
-                synchronized(left) {
+                Chopstick c1, c2;
+                if (left.getId() < right.getId()) {
+                    c1 = left;
+                    c2 = right;
+                } else {
+                    c1 = right;
+                    c2 = left;
+                }
+                synchronized(c1) {
                     Thread.sleep(200);
-                    synchronized(right) {
+                    synchronized(c2) {
+                        if (x == 2) break;
                         System.out.println(name + " is eating.... :)");
-                        Thread.sleep(2000);
+                        x++;
                     }
                 }
             } catch (InterruptedException e) {
