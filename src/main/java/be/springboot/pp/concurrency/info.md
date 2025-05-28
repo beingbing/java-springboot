@@ -121,3 +121,11 @@ Objects are not stuck or halted, but they keep oscillating between states unable
 
 ## Hand-over-hand locking
 in built-in locks, like `synchronized` keyword, we always needed to release locks in reverse order of the order in which they were acquired. But with custom locks, we are not bound with that condition. We can release multiple acquired locks in any order depending on our needs. This approach is caled hand-over-hand locking.
+
+## Latch
+In real-life latch is something used to close a door. If you have a thread A whose work is dependent upon some other thread B. If you want to make A wait until B has done some job, then you use a latch.
+
+Analogy: You are waiting outside the room, it is latched and others are decorating the room. So you wait outside until they finish. Once they are done, they will open the latch and you can come inside. 
+
+In java, we have CountDownLatch. You initialize with a counter, and a thread is made to wait on that latch by calling `.await()`, then it will wait until counter becomes 0. Other threads responsibility is to make that counter 0. All the threads on which current thread has a dependency, will hold an instance of the latch, until they are running. Once done with their job, other threads will decrement the counter. Once the counter goes back to 0, waiting thread is woken up and made to proceed.
+
