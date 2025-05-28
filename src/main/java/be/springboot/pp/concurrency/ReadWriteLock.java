@@ -1,29 +1,53 @@
 package be.springboot.pp.concurrency;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // simultaneous reads are allowed
 // when writing is done both reading and writing not allowed
 // this feature can't be enforced by built-in tools, we always need to design a solution for our own.
 public class ReadWriteLock {
     private int writers, readers, writeReq;
 
+    /*
+    Store threads entered as readers, maintain count if they reenter. Hence keeping a map
+    * */
+    private final Map<Thread, Integer> readerEntracy;
+
     public ReadWriteLock() {
         this.writers = 0;
         this.readers = 0;
         this.writeReq = 0;
+        this.readerEntracy = new HashMap<>();
+    }
+
+    private boolean allowedReadAccess() {
+        if (readerEntracy.containsKey(Thread.currentThread())) return true;
+        if (writers > 0 || writeReq > 0) return false;
+        return true;
     }
 
     public synchronized void lockRead() throws InterruptedException {
-        while (writers > 0 || writeReq > 0) {
+        while (!allowedReadAccess()) {
             wait();
         }
         System.out.println(Thread.currentThread().getId() + " acquired read-lock");
-        readers++;
+//        readers++;
+        Integer cnt = readerEntracy.getOrDefault(Thread.currentThread(), 0);
+        if (cnt == 0) readers++;
+        readerEntracy.put(Thread.currentThread(), cnt+1);
     }
 
     public synchronized void unlockRead() {
-        readers--;
+        if (!readerEntracy.containsKey(Thread.currentThread())) return;
+        Integer cnt = readerEntracy.get(Thread.currentThread());
+        if (cnt > 1) readerEntracy.put(Thread.currentThread(), cnt-1);
+        else {
+            readerEntracy.remove(Thread.currentThread());
+            readers--;
+            notifyAll();
+        }
         System.out.println(Thread.currentThread().getId() + " released read-lock");
-        notifyAll();
     }
 
     public synchronized void lockWrite() throws InterruptedException {
