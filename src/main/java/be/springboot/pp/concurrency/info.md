@@ -115,3 +115,6 @@ It is very different from `synchronized`. In that, we had to wait for a lock to 
 An implementation of Lock interface allowing us to acquire lock on the same object multiple times. With a condition, that we need to release lock as many times as it was acquired.`synchronized` keyword is one such implementation.
 
 > Note: Custom locks needs to be release manually without miss if an exception occurs, otherwise other threads will get left out. In case of language provided locks, this is done automatically.
+
+## LiveLock
+Objects are not stuck or halted, but they keep oscillating between states unable to make progress.
