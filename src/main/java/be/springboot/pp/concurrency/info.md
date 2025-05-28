@@ -129,3 +129,16 @@ Analogy: You are waiting outside the room, it is latched and others are decorati
 
 In java, we have CountDownLatch. You initialize with a counter, and a thread is made to wait on that latch by calling `.await()`, then it will wait until counter becomes 0. Other threads responsibility is to make that counter 0. All the threads on which current thread has a dependency, will hold an instance of the latch, until they are running. Once done with their job, other threads will decrement the counter. Once the counter goes back to 0, waiting thread is woken up and made to proceed.
 
+## Semaphore
+It's a controlling synchronizer. It allows you to control the number of permissions/permits. It has a wide variety of use-cases.
+
+Example, you want to establish your backend connection with database for that you want to create a fixed thread connection pool. Because your DB connection has limit and can entertain only a limited amount of connection at any given time. Which mean if there are more connection then that, it will collapse. But our BE is capable of handling 10x the load. Then although it doesn't matter how many requests BE accepted, only a fixed k amount of connections can be made between BE and DB.
+The connection pool maintains a fixed amount of objects/threads, and the incoming request need to pick 1 out of that to talk to DB, After processing, the object will be put back. So that some other thread can use it.
+There can be race condition in trying to pick an object from the connection pool for establishing connection. This is what Semaphore allows us to take care of.
+Semaphore allows us to create a connection-pool with fixed amount of permit objects which can be used to establish a connection, and then the object can be released for next request in line.
+
+This is true anywhere, API rate-limiting is also implemented using Semaphore. So, If you are asked to build a synchroniser with let's say 10 connection, then you will use a Semaphore.
+
+By releasing the permit object means, increment the count back, and by acquiring we mean, decrementing the permit count.
+
+The difference between Semaphore and Mutex is that Semaphore allows a fixed amount of threads work concurrently whereas Mutex is to ensure mutual exclusion between two threads. Thus Semaphore works at a much larger scale.
