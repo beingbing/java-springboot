@@ -159,3 +159,12 @@ Similarly, we have ConcurrentHashMap.
 If we launch 10 concurrent threads to solve a complicated problem. Once all of them finished their jobs, then we need to do some inspection. Trying to merge the result, or checking if it fits intended problem or not. And if it's not the case, then launch those threads again. They will attempt again, and again evaluation will be done. And if eventually inspection succeeds, then we will terminate, otherwise we will launch those threads again.
 
 > Useful Synchronisers: Lecture 5: Barrier got left out. Thus skipping Lecture 6 and 7 as well, which were Barrier implementation 1 and 2.
+
+## Futures
+### Callable
+Till now we have seen Runnable, which exposes `void run()`. We didn't had any way to make threads communicate as well by returning a value from exiting thread using Runnable.Because different threads have their own execution stack.
+
+If we had a `get()` which blocks until an asynchronously executing thread is completed to get us a value, then our work will be very easy. This is what `Callable` is capable of doing.
+
+Thread consumes FutureTask (an implementation of Runnable) which can consume Callable and execute it
+FutureTask has a `get()` method which returns the result of `run()` of `FutureTask`.
