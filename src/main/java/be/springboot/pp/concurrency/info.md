@@ -142,3 +142,15 @@ This is true anywhere, API rate-limiting is also implemented using Semaphore. So
 By releasing the permit object means, increment the count back, and by acquiring we mean, decrementing the permit count.
 
 The difference between Semaphore and Mutex is that Semaphore allows a fixed amount of threads work concurrently whereas Mutex is to ensure mutual exclusion between two threads. Thus Semaphore works at a much larger scale.
+
+## What are synchronizers?
+They are simply some types which takes care of synchronization needs, so that the client do not have to worry about it.
+
+## BlockingQueue
+Our first synchronizer DS. If we use BlockingQueue in our producer/consumer problem, then we don't need to worry our concurrency in our producer/consumer implementation. It will be taken care of by quue itself.
+
+So, if working with Queue and multiple threads, go with blocking-queue. 
+
+`put()` and `take()` provides us concurrency facilities. 
+
+Similarly, we have ConcurrentHashMap.
