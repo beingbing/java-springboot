@@ -154,3 +154,8 @@ So, if working with Queue and multiple threads, go with blocking-queue.
 `put()` and `take()` provides us concurrency facilities. 
 
 Similarly, we have ConcurrentHashMap.
+
+## Barrier
+If we launch 10 concurrent threads to solve a complicated problem. Once all of them finished their jobs, then we need to do some inspection. Trying to merge the result, or checking if it fits intended problem or not. And if it's not the case, then launch those threads again. They will attempt again, and again evaluation will be done. And if eventually inspection succeeds, then we will terminate, otherwise we will launch those threads again.
+
+> Useful Synchronisers: Lecture 5: Barrier got left out. Thus skipping Lecture 6 and 7 as well, which were Barrier implementation 1 and 2.
