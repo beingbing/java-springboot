@@ -46,16 +46,23 @@ class Adder implements Runnable {
     private final List<Integer> nums;
     private final MyCountDownLatch countDownLatch;
     private final OverallSum overallSum;
+    private final MyCountDownLatch getSetGo;
 
-    Adder(int s, int e, List<Integer> nums, MyCountDownLatch countDownLatch, OverallSum overallSum) {
+    Adder(int s, int e, List<Integer> nums, MyCountDownLatch countDownLatch, OverallSum overallSum, MyCountDownLatch getSetGo) {
         this.s = s;
         this.e = e;
         this.nums = nums;
         this.countDownLatch = countDownLatch;
         this.overallSum = overallSum;
+        this.getSetGo = getSetGo;
     }
 
     public void run() {
+        try {
+            getSetGo.await();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
         int a = 0;
         for (int i = s; i <= e; i++) a += nums.get(i);
         overallSum.add(a);
@@ -90,15 +97,17 @@ class LatchTester {
         for (int i = 0; i < 100; i++) nums.add(i);
         int size = 25;
         Thread g = new Thread(new Getter(overallSum, countDownLatch));
-        Thread a1 = new Thread(new Adder(0, size - 1, nums, countDownLatch, overallSum));
-        Thread a2 = new Thread(new Adder(size, 2*size - 1, nums, countDownLatch, overallSum));
-        Thread a3 = new Thread(new Adder(2*size, 3*size - 1, nums, countDownLatch, overallSum));
-        Thread a4 = new Thread(new Adder(3*size, 4*size - 1, nums, countDownLatch, overallSum));
+        MyCountDownLatch getSetGo = new MyCountDownLatch(1);
+        Thread a1 = new Thread(new Adder(0, size - 1, nums, countDownLatch, overallSum, getSetGo));
+        Thread a2 = new Thread(new Adder(size, 2*size - 1, nums, countDownLatch, overallSum, getSetGo));
+        Thread a3 = new Thread(new Adder(2*size, 3*size - 1, nums, countDownLatch, overallSum, getSetGo));
+        Thread a4 = new Thread(new Adder(3*size, 4*size - 1, nums, countDownLatch, overallSum, getSetGo));
         g.start();
         a1.start();
         a2.start();
         a3.start();
         a4.start();
+        getSetGo.countDown();
         /*
         * here first a1 is starting then s2 and goes on ...
         * What if we want to start all of them together ?
