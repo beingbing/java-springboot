@@ -30,6 +30,13 @@ Alien method calls leading to deadlocks -
 It is advised that if you are invoking a user-defined method not known to you then relinquish all the locks
 before doing so. Because it may contain further locking on some other object and you get into nested locking
 scenario unintentionally. Which can lead to deadlock with some other thread.
+
+Nested Monitor lockout -
+Object1 acquiring lock1, then lock2 and then going to sleep after releasing lock2.
+Object2 needs to wake object1, but for that it needs to acquire lock1.
+This scenario is not a proper deadlock, as lock2 which is needed to wake up obj1 is still not
+held by anyone, so if it is notifiec by any third object, obj1 will wake up and everything will
+get sorted out.
  */
 
 public class Deadlock {
