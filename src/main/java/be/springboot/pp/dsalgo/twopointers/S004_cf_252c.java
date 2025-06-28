@@ -19,4 +19,19 @@ public class S004_cf_252c {
 
         return result;
     }
+
+    public long countPoints(int[] a, int d) {
+        int n = a.length, right = 0;
+        long ans = 0;
+
+        for (int left = 0; left < n; left++) {
+            while (right < n && a[right] - a[left] <= d) right++;
+
+            int len = right - left - 1; // i is fixed, so -1.
+            if (len >= 2) // if remaining len can accommodate j and k.
+                ans += (long) len * (len - 1) / 2;
+        }
+
+        return ans;
+    }
 }

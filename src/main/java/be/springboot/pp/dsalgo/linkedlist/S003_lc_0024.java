@@ -1,7 +1,7 @@
 package be.springboot.pp.dsalgo.linkedlist;
 
 public class S003_lc_0024 {
-    public Node swapPairs(Node head) {
+    public Node swapPairsIterative(Node head) {
         // Base case: If the list has 0 or 1 nodes, return as it is
         if (head == null || head.next == null) return head;
 
@@ -26,7 +26,23 @@ public class S003_lc_0024 {
             curr = first.next;
         }
 
-        // Return the new head of the list
         return dummy.next;
+    }
+
+    public Node swapPairsRecursive(Node head) {
+        // Base case: if less than 2 nodes, nothing to swap
+        if (head == null || head.next == null) return head;
+
+        // Nodes to be swapped
+        Node first = head;
+        Node second = head.next;
+
+        // Recursively call for the rest of the list
+        first.next = swapPairsRecursive(second.next);
+
+        // Swap the two nodes
+        second.next = first;
+
+        return second;
     }
 }

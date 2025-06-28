@@ -25,4 +25,27 @@ public class S002_self_count_distinct_pairs_2 {
 
         return count;
     }
+
+    public int findDistinctPairs(int[] a, int k) {
+        Arrays.sort(a);
+        int n = a.length;
+        int left = 0, right = n - 1;
+        int count = 0;
+
+        while (left < right) {
+            int sum = a[left] + a[right];
+
+            if (sum == k) {
+                count++;
+                int curLeft = left;
+                int curRight = right;
+
+                while (left < right && a[left] == curLeft) left++;
+                while (left < right && a[right] == curRight) right--;
+            } else if (sum < k) left++;
+            else right--;
+        }
+
+        return count;
+    }
 }

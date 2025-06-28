@@ -29,4 +29,29 @@ public class S004_gfg_distinct_pair_diff_1 {
 
         return count;
     }
+
+    public int findDistinctDiffPairs(int[] a, int k) {
+        HashSet<Integer> seen = new HashSet<>();
+        HashSet<String> pairs = new HashSet<>();
+
+        for (int ele : a) {
+            int compliment = ele + k;
+            evaluate(seen, pairs, ele, compliment);
+
+            compliment = ele > k ? ele - k : k - ele;
+            evaluate(seen, pairs, ele, compliment);
+
+            seen.add(ele);
+        }
+
+        return pairs.size();
+    }
+
+    private void evaluate(HashSet<Integer> seen, HashSet<String> pairs, int ele, int compliment) {
+        if (!seen.contains(compliment)) return;
+        int fst = Math.min(ele, compliment);
+        int sec = Math.max(ele, compliment);
+        String pair = fst + "," + sec;
+        pairs.add(pair);
+    }
 }

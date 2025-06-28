@@ -1,45 +1,43 @@
 package be.springboot.pp.dsalgo.sorting;
 
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class S003_gfg_equation_sorting {
-    // Function to compute sorted transformed array
-    private static int[] sortedTransformedArray(int[] arr, int A, int B, int C) {
-        int N = arr.length;
-        int[] result = new int[N];
-        int left = 0, right = N - 1;
-        int index = (A > 0) ? N - 1 : 0;  // Start filling from the end if A > 0
+    public ArrayList<Integer> sortArray(int[] a, int A, int B, int C) {
+        int n = a.length;
+        int left = 0, right = n - 1;
+        int fill = (A < 0) ? 0 : n - 1;
+        int[] ans = new int[n];
 
-        // Two-pointer approach
         while (left <= right) {
-            int leftVal = applyQuadratic(arr[left], A, B, C);
-            int rightVal = applyQuadratic(arr[right], A, B, C);
+            int leftVal = applyQuadratic(A, B, C, a[left]);
+            int rightVal = applyQuadratic(A, B, C, a[right]);
 
-            if (A > 0) {
-                // For upward parabola, place larger values at the end
-                if (leftVal > rightVal) {
-                    result[index--] = leftVal;
+            if (A < 0) {
+                if (leftVal < rightVal) {
+                    ans[fill++] = leftVal;
                     left++;
                 } else {
-                    result[index--] = rightVal;
+                    ans[fill++] = rightVal;
                     right--;
                 }
             } else {
-                // For downward parabola, place smaller values at the start
                 if (leftVal < rightVal) {
-                    result[index++] = leftVal;
-                    left++;
-                } else {
-                    result[index++] = rightVal;
+                    ans[fill--] = rightVal;
                     right--;
+                } else {
+                    ans[fill--] = leftVal;
+                    left++;
                 }
             }
         }
-        return result;
+
+        return IntStream.of(ans).boxed().collect(Collectors.toCollection(ArrayList::new));
     }
 
-    // Apply the quadratic transformation
-    private static int applyQuadratic(int x, int A, int B, int C) {
+    private int applyQuadratic(int A, int B, int C, int x) {
         return A * x * x + B * x + C;
     }
 }

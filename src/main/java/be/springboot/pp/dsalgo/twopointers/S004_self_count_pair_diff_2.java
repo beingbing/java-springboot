@@ -54,26 +54,37 @@ public class S004_self_count_pair_diff_2 {
         return count;
     }
 
-    public static void main(String[] args) {
-        // Test cases
-        int[] arr1 = {5, 20, 3, 2, 5, 80};
-        int K1 = 78;
-        System.out.println(countPairsWithDifference(arr1, K1)); // Output: 1
+    private int findAllDiffPairs(int[] a, int k) {
+        Arrays.sort(a);
+        int n = a.length;
+        int left = 0, right = 1;
+        int count = 0;
 
-        int[] arr2 = {1, 1, 1, 1};
-        int K2 = 0;
-        System.out.println(countPairsWithDifference(arr2, K2)); // Output: 6
+        while (right < n) {
+            int diff = a[right] - a[left];
 
-        int[] arr3 = {1, 5, 3, 4, 2};
-        int K3 = 2;
-        System.out.println(countPairsWithDifference(arr3, K3)); // Output: 3
+            if (diff == k) {
+                int leftCount = 1, curLeft = a[left];
+                int rightCount = 1, curRight = a[right];
 
-        int[] arr4 = {1, 2, 2, 2, 3};
-        int K4 = 1;
-        System.out.println(countPairsWithDifference(arr4, K4)); // Output: 6
+                while (left < n && a[left] == curLeft) {
+                    left++;
+                    leftCount++;
+                }
 
-        int[] arr5 = {1, 2, 2, 2, 3, 5, 5, 5};
-        int K5 = 3;
-        System.out.println(countPairsWithDifference(arr5, K5)); // Output: 9
+                while (right < n && a[right] == curRight) {
+                    right++;
+                    rightCount++;
+                }
+
+                if (curLeft == curRight) count += leftCount * (leftCount - 1) / 2;
+                else count += leftCount * rightCount;
+            } else if (diff < k) right++;
+            else left++;
+
+            if (left >= right) right = left + 1;
+        }
+
+        return count;
     }
 }

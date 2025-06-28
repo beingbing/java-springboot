@@ -15,4 +15,16 @@ public class S006_gfg_pair_sum {
         }
         return false;
     }
+
+    public boolean pairSum(Node head, int k) {
+        Set<Integer> seen = new HashSet<>();
+        Node dmy = head;
+        while (dmy != null) {
+            int compliment = k - dmy.data;
+            if (seen.contains(compliment)) return true;
+            seen.add(dmy.data);
+            dmy = dmy.next;
+        }
+        return false;
+    }
 }

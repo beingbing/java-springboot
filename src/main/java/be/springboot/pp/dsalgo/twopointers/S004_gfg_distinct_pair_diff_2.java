@@ -36,4 +36,24 @@ public class S004_gfg_distinct_pair_diff_2 {
 
         return count;
     }
+
+    public int findDistinctDiffPairs(int[] a, int k) {
+        Arrays.sort(a);
+        int n = a.length, count = 0, left = 0, right = 1;
+
+        while (right < n) {
+            if (left == right) right++;
+            int diff = a[right] - a[left];
+
+            if (diff == k) {
+                count++;
+                int curLeft = left;
+                int curRight = right;
+                while (left < n && a[left] == curLeft) left++;
+                while (right < n && a[right] == curRight) right++;
+            } else if (diff < k) right++;
+            else left++;
+        }
+        return count;
+    }
 }
