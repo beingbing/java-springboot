@@ -6,7 +6,7 @@ import java.util.List;
 class MainEvent {
 
     public static void main(String[] args) {
-        System.out.println("MainEvent: main: args: " + args + " " + Thread.currentThread().getName());
+        System.out.println("MainEvent: main: args: " + Arrays.toString(args) + " " + Thread.currentThread().getName());
 
         try {
             EventContainer eventContainer = new EventContainer(new EventTitle(), new EventSyllabus());
@@ -22,9 +22,7 @@ class MainEvent {
 }
 
 public class EventContainer {
-
     private final EventTitle title;
-
     private final EventSyllabus syllabus;
 
     public EventContainer(EventTitle title, EventSyllabus syllabus) {
@@ -33,7 +31,7 @@ public class EventContainer {
     }
 
     /*
-    * SlidingWindowMedianMultiset we learned in Compound.java, compound actions need to be synchronized,
+    * As we learned in Compound.java, compound actions need to be synchronized,
     * making individual actions thread-safe is not enough.
     *
     * But here, something more is also happening. Thread t is getting context
@@ -55,7 +53,7 @@ public class EventContainer {
     }
 
     /*
-    * SlidingWindowMedianMultiset EventContainer is responsible for updating both title and syllabus, so do not let
+    * As EventContainer is responsible for updating both title and syllabus, so do not let
     * getter execute until setter is completed, hence getter needs to be locked by the same
     * lock which is implemented on setter. Hence, adding synchronized in its declaration as
     * well.
@@ -67,7 +65,6 @@ public class EventContainer {
 
 class EventTitle {
     private static final List<String> titles = Arrays.asList("DSA", "LLD", "Concurrency", "HLD");
-
     private int counter = 0;
 
     public synchronized void next() {
@@ -81,7 +78,6 @@ class EventTitle {
 
 class EventSyllabus {
     private static final List<String> syllabus = Arrays.asList("DSA", "LLD", "Concurrency", "HLD");
-
     private int counter = 0;
 
     public synchronized void next() {
@@ -95,7 +91,6 @@ class EventSyllabus {
 }
 
 class EventWorker implements Runnable {
-
     private final EventContainer eventContainer;
 
     public EventWorker(EventContainer eventContainer) {
@@ -104,6 +99,6 @@ class EventWorker implements Runnable {
 
     @Override
     public void run() {
-            eventContainer.increment();
+        eventContainer.increment();
     }
 }

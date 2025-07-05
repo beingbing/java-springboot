@@ -305,7 +305,7 @@ public class DispatcherServlet extends FrameworkServlet {
   
             // Executes postHandle() methods of interceptors
             mappedHandler.applyPostHandle(request, response, processedResponse);
-        } catch (Exception ex) { // execution of controller method / interceptor threw an error. SlidingWindowMedianMultiset postHandle() won't run now, so exception lead to interceptor.afterCompletion() invocation
+        } catch (Exception ex) { // execution of controller method / interceptor threw an error. As postHandle() won't run now, so exception lead to interceptor.afterCompletion() invocation
             dispatchException = ex;
         } catch (Throwable er) { // an error occured, Spring is going down
             dispatchException = new ServletException("Handler dispatch failed: " + er, er);

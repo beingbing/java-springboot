@@ -263,7 +263,7 @@ public class ZonedDateTimeExample {
         ZonedDateTime parisTime = nyTime.withZoneSameInstant(ZoneId.of("Europe/Paris"));
         System.out.println("Paris Time: " + parisTime); // Paris Time: 2024-10-20T05:00:06.418111+02:00[Europe/Paris]
 
-        System.out.println("Zone SlidingWindowMedianMultiset Instant: " + parisTime.toInstant()); // Zone SlidingWindowMedianMultiset Instant: 2024-10-20T03:00:06.418111Z
+        System.out.println("Zone As Instant: " + parisTime.toInstant()); // Zone SlidingWindowMedianMultiset Instant: 2024-10-20T03:00:06.418111Z
     }
 }
 ```

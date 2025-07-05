@@ -57,14 +57,14 @@ When writing concurrent programs, you must watch out for these common issues:
 
 # Threads
 ## Programming Implementation of Concurrency Concepts
-One of the most commonly used constructs for implementing concurrency in Java is called Threads. A thread allows a portion of a program's logic to run concurrently with other parts of the program.
+One of the most commonly used constructs for implementing concurrency in Java is called `Threads`. A thread allows a portion of a program's logic to run concurrently with other parts of the program.
 
-Even in non-concurrent Java programs, there is always a main thread called the "main thread", which executes the code inside the main() method. To introduce concurrency, we can create new threads, kickstart them, and have them run concurrently alongside the main thread or other existing threads.
+Even in non-concurrent Java programs, there is always a main thread called the "main thread", which executes the code inside the `main()` method. To introduce concurrency, we can create new threads, kickstart them, and have them run concurrently alongside the main thread or other existing threads.
 
 ### Threads and the Runnable Interface
-When we create a new thread, it requires an object that implements the Runnable interface. The Runnable interface has only one method - `public abstract void run();`
+When we create a new thread, it requires an object that implements the `Runnable` interface. The `Runnable` interface has only one method - `public abstract void run();`
 
-The run() method contains the logic that the thread will execute when it is started. Once a thread is created and started, the logic inside its run() method is executed concurrently with the program's other threads.
+The `run()` method contains the logic that the thread will execute when it is started. Once a thread is created and started, the logic inside its `run()` method is executed concurrently with the program's other threads.
 
 ### Local and Shared Variables
 Each thread has its own set of local variables, but there may also be shared variables that multiple threads access. Shared variables can lead to race conditions if not properly managed, since multiple threads might try to modify them simultaneously, leading to unpredictable results.
