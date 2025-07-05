@@ -70,7 +70,7 @@ The run() method contains the logic that the thread will execute when it is star
 Each thread has its own set of local variables, but there may also be shared variables that multiple threads access. Shared variables can lead to race conditions if not properly managed, since multiple threads might try to modify them simultaneously, leading to unpredictable results.
 
 ## callstack
-Each thread has its own call stack, which is a structure that tracks function calls and their return values. The call stack is private to each thread, meaning one thread’s stack cannot be accessed or modified by another thread. For example, if thread A starts thread B, and thread B throws an exception, thread A will not be able to catch that exception because each thread operates within its own call stack.
+Each thread has its own call stack, which is a structure that tracks function calls and their return values. The call stack is private to each thread, meaning one thread’s stack cannot be accessed or modified by another thread. For example, if thread A starts thread B, and thread B throws an exception, thread A will not be able to catch that exception because each thread operates within its own call stack. Hence, that exception will be logged as uncaught.
 
 Similarly, if thread B performs a computation, thread A cannot directly access the result of that computation unless the result is stored in a shared variable that both threads can access. After thread B completes its execution, thread A can retrieve the result from this shared variable.
 

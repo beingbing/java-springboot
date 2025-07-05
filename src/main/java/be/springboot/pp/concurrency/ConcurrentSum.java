@@ -1,6 +1,7 @@
 package be.springboot.pp.concurrency;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,7 +21,7 @@ public class ConcurrentSum {
     public static AtomicInteger cnt = new AtomicInteger(0);
 
     public static void main(String[] args) {
-        System.out.println("ConcurrentSum: main: args: " + args + " " + Thread.currentThread().getName());
+        System.out.println("ConcurrentSum: main: args: " + Arrays.toString(args) + " " + Thread.currentThread().getName());
 
         try {
             List<Integer> nums = new ArrayList<>();
@@ -68,7 +69,7 @@ public class ConcurrentSum {
         t4.start();
 
         while (cnt.get() < 4) {} // busy waiting
-//        System.out.println("ConcurrentSum: concurrentSum: sum: " + sum.get() + " " + Thread.currentThread().getName());
+        System.out.println("ConcurrentSum: concurrentSum: sum: " + sum.get() + " " + Thread.currentThread().getName());
     }
 }
 
@@ -94,9 +95,9 @@ class Worker implements Runnable {
             // concurrent sum will have worse performance as compared to sequential sum because of contention.
         }
 //        System.out.println("Worker: run: s: " + s + " " + Thread.currentThread().getName());
-        long sum = ConcurrentSum.sum.addAndGet(s);
+        ConcurrentSum.sum.addAndGet(s);
 //        System.out.println("Worker: run: sum: " + sum + " " + Thread.currentThread().getName());
-        int cnt = ConcurrentSum.cnt.incrementAndGet();
+        ConcurrentSum.cnt.incrementAndGet();
 //        System.out.println("Worker: run: cnt: " + cnt + " " + Thread.currentThread().getName());
     }
 }
