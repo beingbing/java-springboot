@@ -1,4 +1,4 @@
-# Concurrency
+# Multi-threading
 ## Explanation
 Imagine you're working from home and have some office tasks pending, but you also feel hungry. You decide to cook food, so you place the ingredients in a pressure cooker and set it on the stove. While the cooker is doing its job, you return to your office work. The cooker operates independently, and you're able to focus on your tasks.
 
@@ -11,7 +11,7 @@ This concept reflects how we design systems to execute tasks concurrently, ensur
 In computing systems, this type of multitasking is managed by the underlying architecture of the machine, such as operating systems and programming techniques that allow concurrent execution. By structuring and organizing tasks correctly, machines can handle multiple independent tasks without unnecessary delays, improving overall efficiency.
 
 ## Concurrency VS Parallelism
-In earlier days, machines could only perform instructions serially, meaning tasks were executed one after another without skipping any. The idea of "jumping" to another task while the current task was still unfinished wasn’t possible. Modern machines, however, allow for skipping over tasks that are dependent on a task which got context switched without getting finished, enabling the processor to switch to an independent task in the meantime. Let’s look at two scenarios to understand the difference between concurrency and parallelism.
+In earlier days, machines could only perform instructions serially, meaning tasks were executed one after another without skipping any. The idea of "jumping" to another task while the current task was still unfinished wasn’t possible. Modern machines, however, allow for skipping over the steps of a task which got context switched without getting finished, enabling the processor to switch to an independent task in the meantime. There are two ways in which this is achieved. Let’s look at both the scenarios.
 
 ### Parallelism
 Imagine you're using a machine with two cores. One core is handling your web browsing task, while the other core is performing some calculations. In this scenario, both tasks are being executed simultaneously because each core is dedicated to a specific task. This is called parallelism. Both tasks run in parallel on separate cores.

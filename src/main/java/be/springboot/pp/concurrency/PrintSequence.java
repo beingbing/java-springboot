@@ -1,4 +1,7 @@
 package be.springboot.pp.concurrency;
+
+import java.util.Arrays;
+
 // 1
 /*
 * as soon as t1.start() is invoked, we have 2 independent threads for running concurrently.
@@ -33,9 +36,9 @@ public class PrintSequence {
     * -print "PrintSequence: main: ends"
     * */
     public static void main(String[] args) {
-        System.out.println("PrintSequence: main: args: " + args);
-        Thread t1 = new Thread(new Sequencer());
-        Thread t2 = new Thread(new ReverseSequencer());
+        System.out.println("PrintSequence: main: args: " + Arrays.toString(args));
+        Thread t1 = new Thread(new Sequencer(), "Sequencer-Thread");
+        Thread t2 = new Thread(new ReverseSequencer(), "ReverseSequencer-Thread");
         t1.start();
         t2.start();
         for (int i = 100; i < 110; i++)
