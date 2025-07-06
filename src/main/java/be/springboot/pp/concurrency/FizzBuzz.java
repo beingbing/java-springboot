@@ -1,4 +1,7 @@
 package be.springboot.pp.concurrency;
+
+import java.util.Arrays;
+
 // 15
 class FizzBuzzMaker {
 
@@ -18,7 +21,7 @@ class FizzBuzzMaker {
     public static int i = 1;
 
     public static void main(String[] args) {
-        System.out.println("FizzBuzzMaker: main: args: " + args + " " + Thread.currentThread().getName());
+        System.out.println("FizzBuzzMaker: main: args: " + Arrays.toString(args) + " " + Thread.currentThread().getName());
         Object lock = new Object();
         Thread fizz = new Thread(new Fizz(lock));
         Thread buzz = new Thread(new Buzz(lock));

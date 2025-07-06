@@ -1,7 +1,5 @@
 package be.springboot.pp.concurrency;
 
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 // 11, 13
@@ -11,10 +9,8 @@ import java.util.List;
 * the catch here is every customer will be an independent thread.
 * */
 class Customer implements Runnable {
-
     private final int appointmentId;
-
-    private final TickingBoard tickingBoard;
+    private final TickingBoard tickingBoard; // shared resource
 
     public Customer(int appointmentId, TickingBoard tickingBoard) {
         this.appointmentId = appointmentId;
@@ -40,12 +36,12 @@ class Customer implements Runnable {
 //            System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " waiting");
 //            try {
 //                Thread.sleep(1000); // to remedy busy waiting
-//                // but what if the thread which went to sleep is still sleeping and it is its turn now?
-//                // until thread whose turn is there doesn't wakes up, all thread will keep on waking and going to sleep relentlessly
+//                // but what if the thread which went to sleep is still sleeping, and it is its turn now?
+//                // until the thread whose turn is there doesn't wake up, all threads will keep on waking and going to sleep relentlessly
 //                // this is not a good design. As time elapsed in switching the appointment number may not
-//                // always be equal to the sleep duration of thread whose turn is next.
-//                // alternatively, if chaning of appointment number takes more time than sleep duration of thread
-//                // then a thread might come back to enquire again and again, and we will fallback to case 1 of busy-waiting.
+//                // always be equal to the sleep duration of the thread whose turn is next.
+//                // alternatively, if changing of appointment number takes more time than the sleep duration of a thread,
+//                // then a thread might come back to enquire again and again, and we will fall-back to case 1 of busy-waiting.
 //            } catch (InterruptedException e) {
 //                throw new RuntimeException(e);
 //            }
@@ -55,7 +51,7 @@ class Customer implements Runnable {
         // ---------- 3
         /*
          * Instead, the evaluation should only be done by threads when they are made aware of the appointment-id
-         * getting changes, so that they can review whether it is their turn or not. Hence, ticking board needs
+         * getting changed, so that they can review whether it is their turn or not. Hence, ticking-board needs
          * to signal all threads to check whether it is their turn or not. And until that is done, threads should
          * wait, do not keep checking.
         * */
@@ -63,7 +59,7 @@ class Customer implements Runnable {
             while (!tickingBoard.isMyTurn(appointmentId)) {
                 System.out.println("Customer: appointmentId: " + appointmentId + " " + Thread.currentThread().getName() + " waiting");
                 try {
-                    tickingBoard.wait(1000);
+                    tickingBoard.wait();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -75,9 +71,7 @@ class Customer implements Runnable {
 }
 
 class TickingBoard {
-
     private final List<Integer> appointments;
-
     private int cur;
 
     public TickingBoard(List<Integer> appointments) {
@@ -85,9 +79,9 @@ class TickingBoard {
         this.cur = 0;
     }
 
-    // it is synchronized otherwise if while loop was to be synchronized the thread would acquire look and go to infinite loop
+    // it is synchronized otherwise if while loop was to be synchronized the thread would acquire lock and go into infinite loop
     // also it might happen that one thread reads cur to be n, goes context switched and other threads updates to n+1
-    // this way when first thread again came in context will execute over stale value.
+    // this way when the previous thread again came in context will execute over stale value.
 //    public synchronized boolean isMyTurn(int appointmentId) {
     public boolean isMyTurn(int appointmentId) { // as we have synchronized its parent process hence we can remove it from here
         if (cur == appointments.size()) throw new RuntimeException("all appointments are over");
