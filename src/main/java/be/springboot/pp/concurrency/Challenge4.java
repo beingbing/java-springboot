@@ -9,7 +9,7 @@ package be.springboot.pp.concurrency;
 
 public class Challenge4 {
     public static final int limit = 20;
-    public static int cur = 1; // we can remove volatile from here now, as we acquire lock due to 2nd issue.
+    public static int cur = 1;
 
     public static void main(String[] args) {
         Object lock = new Object();

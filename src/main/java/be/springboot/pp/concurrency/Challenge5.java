@@ -22,41 +22,27 @@ import java.util.List;
 public class Challenge5 {
     public static int sum = 0;
 
-    public static void main(String[] args) throws InterruptedException {
-        Container container = new Container();
+    public static void main(String[] args) {
+        Container container = new Container(); // it will get populated
         Object lock = new Object();
 
-        Thread t0 = new Thread(new ContainerWorker(container, lock));
-        Thread t1 = new Thread(new ContainerWorker(container, lock));
-        Thread t2 = new Thread(new ContainerWorker(container, lock));
-        Thread t3 = new Thread(new ContainerWorker(container, lock));
-        Thread t4 = new Thread(new ContainerWorker(container, lock));
-        Thread t5 = new Thread(new ContainerWorker(container, lock));
-        Thread t6 = new Thread(new ContainerWorker(container, lock));
-        Thread t7 = new Thread(new ContainerWorker(container, lock));
-        Thread t8 = new Thread(new ContainerWorker(container, lock));
-        Thread t9 = new Thread(new ContainerWorker(container, lock));
-        t0.start();
-        t1.start();
-        t2.start();
-        t3.start();
-        t4.start();
-        t5.start();
-        t6.start();
-        t7.start();
-        t8.start();
-        t9.start();
-        t0.join();
-        t1.join();
-        t2.join();
-        t3.join();
-        t4.join();
-        t5.join();
-        t6.join();
-        t7.join();
-        t8.join();
-        t9.join();
-        System.out.println("sum is: " + sum);
+        int numberOfThreads = 10;
+        Thread[] workers = new Thread[numberOfThreads];
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            workers[i] = new Thread(new ContainerWorker(container, lock), "Thread-" + i);
+            workers[i].start();
+        }
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            try {
+                workers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Final Sum = " + sum);
     }
 }
 
@@ -66,7 +52,7 @@ class Container {
 
     public Container() {
         this.nums = new ArrayList<>();
-        for (int i = 0; i <= 100; i++) this.nums.add(i);
+        for (int i = 1; i <= 100; i++) this.nums.add(i);
         this.cur = 0;
     }
 
@@ -107,6 +93,7 @@ class ContainerWorker implements Runnable {
             if (x == -1) break;
             synchronized(lock) {
                 Challenge5.sum += x;
+                System.out.println(Thread.currentThread().getName() + " processed " + x + ", sum now: " + Challenge5.sum);
             }
         }
     }

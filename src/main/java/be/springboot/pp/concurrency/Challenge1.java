@@ -13,7 +13,6 @@ package be.springboot.pp.concurrency;
  * */
 
 public class Challenge1 {
-
     public static int cur = 0;
 
     public static void main(String[] args) {
@@ -88,7 +87,7 @@ class Challenge1Worker implements Runnable {
             System.out.println(Thread.currentThread().getName() + " " + val);
             synchronized(lock) {
 //                Challenge1.cur++;
-                Challenge1.cur = (Challenge1.cur + 1) % 10;
+                Challenge1.cur = (Challenge1.cur + 1) % 10; // 10 is number of threads
             }
             rounds--;
         }
@@ -98,7 +97,7 @@ class Challenge1Worker implements Runnable {
         boolean ans = false;
         synchronized(lock) {
 //            ans = val > Challenge1.cur;
-            ans = !(val == Challenge1.cur);
+            ans = !(val == Challenge1.cur); // only thread with val same as cur should be allowed to print
         }
         return ans;
     }

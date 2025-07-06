@@ -50,7 +50,7 @@ class Challenge2Worker implements Runnable {
 
 //    @Override
 //    public void run() {
-////        while (Challenge2.rounds > 0) { // this will introduce memory visibility issues
+//        while (Challenge2.rounds > 0) { // this will introduce memory visibility issues
 //        while (roundsOver()) { // Thread could have crossed it, and waited in compare() but meanwhile rounds became 0
 //            while (compare()) {}
 //            System.out.println(Thread.currentThread().getName() + " " + val);

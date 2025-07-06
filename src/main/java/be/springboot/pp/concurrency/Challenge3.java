@@ -13,16 +13,21 @@ package be.springboot.pp.concurrency;
 * */
 
 public class Challenge3 {
-    public static final int limit = 20;
+    public static final int limit = 2_00_000;
 // 1.    public static int cur = 1; // it had memory visibility issue
     public static int cur = 1; // we can remove volatile from here now, as we acquire lock due to 2nd issue.
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Object lock = new Object();
         Thread t1 = new Thread(new EvenWorker("even", lock));
         Thread t2 = new Thread(new OddWorker("Odd", lock));
         t1.start();
         t2.start();
+        long start = System.currentTimeMillis();
+        t1.join();
+        t2.join();
+        long end = System.currentTimeMillis();
+        System.out.println("Challenge3 took " + (end - start) + " ms to complete.");
     }
 }
 
