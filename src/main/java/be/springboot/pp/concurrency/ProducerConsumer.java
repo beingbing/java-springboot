@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 // 17
 public class ProducerConsumer {
-
     public static int producerCount = 2;
 
     public static void main(String[] args) {
@@ -28,11 +27,8 @@ public class ProducerConsumer {
 }
 
 class MyQueue {
-
     private int front, rear;
-
     private final List<Integer> list;
-
     private final int capacity;
 
     public MyQueue(int cap) {
@@ -66,7 +62,6 @@ class MyQueue {
 }
 
 class Producer implements Runnable {
-
     private final MyQueue queue;
 
     public Producer(MyQueue queue) {
@@ -98,7 +93,6 @@ class Producer implements Runnable {
 }
 
 class Consumer implements Runnable {
-
     private final MyQueue queue;
 
     public Consumer(MyQueue queue) {

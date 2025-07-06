@@ -1,4 +1,6 @@
 package be.springboot.pp.concurrency;
+
+import java.util.Arrays;
 // 18
 /*
 * When you use a String type object as a Monitor, then remember that Java keep a string pool, in which
@@ -16,7 +18,7 @@ package be.springboot.pp.concurrency;
 public class StringMutex {
 
     public static void main(String[] args) {
-        System.out.println("StringMutex: main: args: " + args + " " + Thread.currentThread().getName());
+        System.out.println("StringMutex: main: args: " + Arrays.toString(args) + " " + Thread.currentThread().getName());
 
         try {
             Thread waiter = new Thread(new MutexWaiter());
@@ -34,7 +36,6 @@ public class StringMutex {
 }
 
 class MutexWaiter implements Runnable {
-
     private final String str = "abc";
 
     @Override
@@ -52,7 +53,6 @@ class MutexWaiter implements Runnable {
 }
 
 class MutexNotifier implements Runnable {
-
 //    private final String string = "abcdef";
     private final String string = "abc"; // when string value changed, waiter was able to receive notifier's signal.
 
@@ -64,5 +64,4 @@ class MutexNotifier implements Runnable {
             System.out.println("Notifier: run: ends");
         }
     }
-
 }
