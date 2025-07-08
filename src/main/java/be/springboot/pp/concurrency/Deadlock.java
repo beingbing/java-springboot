@@ -35,7 +35,7 @@ Nested Monitor lockout -
 Object1 acquiring lock1, then lock2 and then going to sleep after releasing lock2.
 Object2 needs to wake object1, but for that it needs to acquire lock1.
 This scenario is not a proper deadlock, as lock2 which is needed to wake up obj1 is still not
-held by anyone, so if it is notifiec by any third object, obj1 will wake up and everything will
+held by anyone, so if it is notified by any third object, obj1 will wake up and everything will
 get sorted out.
  */
 
