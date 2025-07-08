@@ -1,5 +1,6 @@
 package be.springboot.pp.concurrency.banking;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Auditor implements Runnable {
@@ -14,6 +15,11 @@ public class Auditor implements Runnable {
     @Override
     public void run() {
         while (true) {
+            // Sort accounts by ID to avoid deadlock (global locking order)
+            List<Account> sortedAccounts = accounts.stream()
+                    .sorted(Comparator.comparingInt(Account::getId))
+                    .toList();
+
             // assume we have only 5 accounts for now
             synchronized(accounts.get(0)) {
                 synchronized(accounts.get(1)) {
@@ -21,20 +27,21 @@ public class Auditor implements Runnable {
                         synchronized(accounts.get(3)) {
                             synchronized(accounts.get(4)) {
                                 int sum = 0;
-                                for (Account account : accounts) {
+                                for (Account account : sortedAccounts) {
                                     System.out.println(account.getId() + " : " + account.getAmount());
                                     sum += account.getAmount();
                                 }
                                 System.out.println("total amount: " + sum);
-                                try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
                             }
                         }
                     }
                 }
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
