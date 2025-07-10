@@ -20,7 +20,7 @@ public class MySemaphore {
     public synchronized  void release() {
         if (permitsLeft == maxPermits) throw new RuntimeException("Illegal call");
         permitsLeft++;
-        if (permitsLeft == 1) notify();
+        if (permitsLeft == 1) notifyAll();
     }
 }
 /*

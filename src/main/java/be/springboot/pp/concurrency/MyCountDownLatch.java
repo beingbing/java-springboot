@@ -1,8 +1,11 @@
 package be.springboot.pp.concurrency;
 
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 public class MyCountDownLatch {
     private int count;
 
@@ -12,16 +15,16 @@ public class MyCountDownLatch {
 
     public synchronized void await() throws InterruptedException {
         while (count > 0) {
-            System.out.println(Thread.currentThread().getId() + " is waiting");
+            System.out.println(Thread.currentThread().getName() + " is waiting");
             wait();
         }
-        System.out.println(Thread.currentThread().getId() + " completed waiting period");
+        System.out.println(Thread.currentThread().getName() + " completed waiting period");
     }
 
     public synchronized void countDown() {
-        count--;
-        if (count == 0) notify();
-        System.out.println(Thread.currentThread().getId() + " decrements the count to: " + count);
+        if (count > 0) count--;
+        if (count == 0) notifyAll();
+        System.out.println(Thread.currentThread().getName() + " decrements the count to: " + count);
     }
 }
 
@@ -94,7 +97,7 @@ class LatchTester {
         OverallSum overallSum = new OverallSum();
         MyCountDownLatch countDownLatch = new MyCountDownLatch(4);
         List<Integer> nums = new ArrayList<>();
-        for (int i = 0; i < 100; i++) nums.add(i);
+        for (int i = 1; i <= 100; i++) nums.add(i);
         int size = 25;
         Thread g = new Thread(new Getter(overallSum, countDownLatch));
         MyCountDownLatch getSetGo = new MyCountDownLatch(1);
@@ -108,11 +111,5 @@ class LatchTester {
         a3.start();
         a4.start();
         getSetGo.countDown();
-        /*
-        * here first a1 is starting then s2 and goes on ...
-        * What if we want to start all of them together ?
-        * Then, we can use a latch. Set it to 1 and make getter set it to o and all a1, a2, a3 and a4
-        * wait on it. Once it is free, all of them will be triggered together.
-        * */
     }
 }
