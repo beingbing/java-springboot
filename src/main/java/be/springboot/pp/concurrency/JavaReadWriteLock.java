@@ -35,13 +35,13 @@ class JavaStore {
     }
 
     public void log(String name) throws InterruptedException {
-        writeLock.lock();
+        readLock.lock();
         try {
             System.out.println("log printed: " + name);
         } catch (Exception e) {
             //
         } finally {
-            writeLock.unlock();
+            readLock.unlock();
         }
     }
 
@@ -58,7 +58,8 @@ class JavaStore {
     }
 
     public void action() throws InterruptedException {
-        readLock.lock();
-        readLock.unlock();
+        writeLock.lock();
+        System.out.println("action done after acquiring reentrancy write lock");
+        writeLock.unlock();
     }
 }
